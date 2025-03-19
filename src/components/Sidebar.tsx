@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -75,7 +76,7 @@ const LogoIcon: React.FC = () => {
   return (
     <div className="w-12 h-12 flex items-center justify-center cursor-pointer rounded-lg overflow-hidden bg-blue-500">
       <img 
-        src="/lovable-uploads/82880f9b-90b3-4305-adc6-58a002e01f94.png"
+        src="/lovable-uploads/ba850fee-49fa-4eb6-ad49-fa62b5b0e048.png"
         alt="Logo"
         className="w-full h-full object-cover" 
       />
