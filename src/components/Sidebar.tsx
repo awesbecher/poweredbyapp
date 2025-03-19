@@ -10,7 +10,6 @@ import {
   BookOpen, 
   CreditCard, 
   FileText, 
-  Lightbulb,
   Sun,
   LogOut
 } from 'lucide-react';
@@ -108,7 +107,6 @@ const Sidebar: React.FC = () => {
           <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
           <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
           <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
-          <SidebarIcon icon={<Lightbulb size={20} />} tooltip="Ideas" />
         </div>
         
         {/* Bottom section */}
