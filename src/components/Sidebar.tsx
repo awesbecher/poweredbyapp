@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -74,11 +73,11 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
 
 const LogoIcon: React.FC = () => {
   return (
-    <div className="w-12 h-12 flex items-center justify-center cursor-pointer rounded-lg overflow-hidden bg-transparent">
+    <div className="w-12 h-12 flex items-center justify-center cursor-pointer">
       <img 
         src="/lovable-uploads/ae8e51ee-1015-4acb-8ff5-4da999c0777d.png"
         alt="Logo"
-        className="w-full h-full object-contain" 
+        className="w-6 h-6 object-contain" // Changed from w-full h-full to w-6 h-6 to match other icons
       />
     </div>
   );
