@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Github } from 'lucide-react';
+import { Mail, Github, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
+import { isAuthorizedUser } from '@/utils/authUtils';
 
 interface SocialLoginProps {
   setError: (error: string | null) => void;
@@ -27,11 +28,11 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
     
     // Simulate OAuth flow with specific error handling
     setTimeout(() => {
-      // Simulate a whitelisted Google user for demo
-      const mockGoogleEmail = "admin@example.com";
-      const isAuthorized = false; // Change to false to simulate unauthorized access
+      // Simulate a Google user for demo
+      const mockGoogleEmail = "andrew@poweredby.agency"; // Use one of the whitelisted emails for demo
       
-      if (isAuthorized) {
+      // Check if the email is in the whitelist
+      if (isAuthorizedUser(mockGoogleEmail)) {
         login(); // Set authenticated state
         navigate('/');
         toast({
@@ -58,34 +59,26 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
       description: "Redirecting to GitHub authentication...",
     });
     
-    // Simulate OAuth flow with specific error handling
+    // Simulate OAuth flow
     setTimeout(() => {
-      // Simulate a connection error
-      const hasConnectionError = true; // Change to true to simulate connection error
+      // Simulate a GitHub user for demo
+      const mockGithubEmail = "team@poweredby.agency"; // Use one of the whitelisted emails for demo
       
-      if (hasConnectionError) {
-        setError("Could not connect to GitHub. Please check your internet connection and try again.");
+      // Check if the email is in the whitelist
+      if (isAuthorizedUser(mockGithubEmail)) {
+        login();
+        navigate('/');
         toast({
-          title: "Connection error",
-          description: "Failed to connect to GitHub authentication servers",
-          variant: "destructive",
+          title: "Login successful",
+          description: `Logged in as ${mockGithubEmail}`,
         });
       } else {
-        // Normal flow would continue here
-        const mockGithubEmail = "user1@example.com";
-        const isAuthorized = true;
-        
-        if (isAuthorized) {
-          login();
-          navigate('/');
-        } else {
-          setError("Your GitHub account is not authorized to access this application.");
-          toast({
-            title: "Access denied",
-            description: "Your GitHub account is not in our allowed users list",
-            variant: "destructive",
-          });
-        }
+        setError("Your GitHub account is not authorized to access this application. Please contact the administrator for access.");
+        toast({
+          title: "Access denied",
+          description: "Your GitHub account is not in our allowed users list",
+          variant: "destructive",
+        });
       }
       setIsLoading(false);
     }, 1000);

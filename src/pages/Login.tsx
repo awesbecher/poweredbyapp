@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ExclamationTriangleIcon } from 'lucide-react'; 
+import { AlertTriangle } from 'lucide-react'; 
 import LoginForm from '@/components/auth/LoginForm';
 import SocialLogin from '@/components/auth/SocialLogin';
 import LoginHeader from '@/components/auth/LoginHeader';
@@ -28,7 +28,7 @@ const Login = () => {
             {error && (
               <Alert variant="destructive" className="bg-destructive/10 border border-destructive/20 text-destructive rounded-md mb-4">
                 <AlertDescription className="text-sm flex items-start">
-                  <ExclamationTriangleIcon className="h-4 w-4 mr-2 mt-0.5" />
+                  <AlertTriangle className="h-4 w-4 mr-2 mt-0.5" />
                   <span>{error}</span>
                 </AlertDescription>
               </Alert>
