@@ -27,9 +27,9 @@ const LoginForm = ({ setError }: LoginFormProps) => {
     setError(null);
     
     try {
-      const isAuthorized = await authenticateUser(email, password);
+      const isAuthenticated = await authenticateUser(email, password);
       
-      if (isAuthorized) {
+      if (isAuthenticated) {
         toast({
           title: "Login successful",
           description: "Welcome back!",
@@ -38,10 +38,10 @@ const LoginForm = ({ setError }: LoginFormProps) => {
         login(); // Set authenticated state
         navigate('/');
       } else {
-        setError("Access denied. Your email is not authorized to use this application.");
+        setError("Invalid email or password. Please check your credentials.");
         toast({
           title: "Login failed",
-          description: "Access denied. Your email is not authorized.",
+          description: "Invalid email or password.",
           variant: "destructive",
         });
       }
