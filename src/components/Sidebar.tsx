@@ -15,8 +15,7 @@ import {
   FileText, 
   Lightbulb,
   Sun,
-  LogOut,
-  ChevronRight
+  LogOut
 } from 'lucide-react';
 
 interface SidebarIconProps {
@@ -57,13 +56,8 @@ const Sidebar: React.FC = () => {
         {/* Top section - blue code icon */}
         <SidebarIcon icon={<Code size={24} />} highlight={true} />
         
-        {/* Expand/Collapse button */}
-        <div className="relative w-full flex justify-end">
-          <div className="absolute -right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md cursor-pointer">
-            <ChevronRight size={16} className="text-gray-400" />
-          </div>
-        </div>
-
+        {/* Removed the Expand/Collapse button with ChevronRight icon */}
+        
         <div className="mt-4"></div>
         
         {/* Main navigation icons */}
