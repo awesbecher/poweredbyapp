@@ -47,7 +47,13 @@ const Header: React.FC<HeaderProps> = ({
               <ArrowLeft size={20} />
             </Link>
           )}
-          <h1 className="text-2xl font-medium">{title}</h1>
+          <div className="h-8">
+            <img 
+              src="/lovable-uploads/82880f9b-90b3-4305-adc6-58a002e01f94.png" 
+              alt="Logo" 
+              className="h-full" 
+            />
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
