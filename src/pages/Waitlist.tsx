@@ -24,7 +24,14 @@ const Waitlist = () => {
   return (
     <div className="min-h-screen bg-deep-purple flex items-center justify-center p-4">
       <div className="w-full max-w-lg animate-fade-in">
-        <div className="text-center mb-8">
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <img 
+              src="/lovable-uploads/4c21c24d-5233-426f-8687-7dd9096c0e64.png" 
+              alt="Agency Logo" 
+              className="h-16 md:h-20"
+            />
+          </div>
           <h1 className="text-3xl font-bold text-white mb-2">Agent Configuration Platform</h1>
           <p className="text-accent">Join our waitlist</p>
         </div>

@@ -14,6 +14,13 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-deep-purple flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-fade-in">
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/lovable-uploads/4c21c24d-5233-426f-8687-7dd9096c0e64.png" 
+            alt="Agency Logo" 
+            className="h-16 md:h-20"
+          />
+        </div>
         <LoginHeader />
         
         <Card className="bg-white/10 backdrop-blur-md border border-white/20">
