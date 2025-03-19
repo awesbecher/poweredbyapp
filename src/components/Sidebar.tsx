@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
           
           {/* Main navigation icons */}
           <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/index" />
-          <SidebarIcon icon={<Plus size={20} />} tooltip="Add New" />
+          <SidebarIcon icon={<Plus size={20} />} tooltip="New Agent" linkTo="/voice-agent" />
           <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
           <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
           <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
