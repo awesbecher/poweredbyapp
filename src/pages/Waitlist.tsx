@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -61,7 +62,7 @@ const Waitlist = () => {
             
             <Button 
               onClick={() => window.location.href = 'https://poweredby.agency/'}
-              className="mt-4"
+              className="mt-4 font-bold text-white"
               variant="outline"
             >
               <ArrowLeft size={16} className="mr-2" />
