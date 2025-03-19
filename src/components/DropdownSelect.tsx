@@ -52,9 +52,9 @@ const DropdownSelect: React.FC<DropdownSelectProps> = ({
   }, []);
 
   return (
-    <div className={cn('space-y-2', className)} ref={dropdownRef}>
+    <div className={cn('space-y-1', className)} ref={dropdownRef}>
       {label && (
-        <label className="block text-sm font-medium text-foreground">
+        <label className="block text-xs font-medium text-foreground">
           {label}
         </label>
       )}
@@ -63,7 +63,7 @@ const DropdownSelect: React.FC<DropdownSelectProps> = ({
         <button
           type="button"
           className={cn(
-            'flex items-center justify-between w-full px-4 py-2.5 text-left bg-background border border-input rounded-lg',
+            'flex items-center justify-between w-full px-3 py-2 text-left text-sm bg-background border border-input rounded-lg',
             'hover:border-brand-blue/50 transition-colors duration-200',
             'focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue',
             disabled && 'opacity-50 cursor-not-allowed hover:border-input'
@@ -87,7 +87,7 @@ const DropdownSelect: React.FC<DropdownSelectProps> = ({
                 <div
                   key={option.value}
                   className={cn(
-                    'px-4 py-2.5 cursor-pointer hover:bg-secondary transition-colors',
+                    'px-3 py-2 cursor-pointer text-sm hover:bg-secondary transition-colors',
                     option.value === value && 'bg-primary/10 font-medium'
                   )}
                   onClick={() => handleSelect(option.value)}

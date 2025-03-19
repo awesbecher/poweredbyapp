@@ -25,8 +25,9 @@ const ModelConfigSection: React.FC<ModelConfigSectionProps> = ({
     <ConfigSection
       title="Model Configuration"
       description="Choose the AI model to power your voice agent"
+      compact={true}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DropdownSelect
           label="LLM Provider"
           options={llmProviderOptions}

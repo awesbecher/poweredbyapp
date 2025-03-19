@@ -18,6 +18,7 @@ const AgentTypeSection: React.FC<AgentTypeSectionProps> = ({
     <ConfigSection
       title="Voice Agent Type"
       description="Select the type of voice agent you want to create"
+      compact={true}
     >
       <DropdownSelect
         label="Agent Type"

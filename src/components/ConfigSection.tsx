@@ -11,6 +11,7 @@ interface ConfigSectionProps {
   children: React.ReactNode;
   showAIWriteButton?: boolean;
   onAIWriteClick?: () => void;
+  compact?: boolean;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -20,13 +21,15 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   children,
   showAIWriteButton = false,
   onAIWriteClick,
+  compact = false,
 }) => {
   return (
     <div className={cn(
-      'p-6 rounded-xl border border-white/20 shadow-sm',
+      'rounded-xl border border-white/20 shadow-sm',
       'transition-all duration-300 hover:shadow-md',
       'bg-gradient-to-br from-brand-purple-light via-brand-purple to-brand-purple-dark text-white',
       'relative',
+      compact ? 'p-4' : 'p-6',
       className
     )}>
       {showAIWriteButton && (
@@ -43,16 +46,16 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
         </div>
       )}
       
-      <div className="space-y-1 mb-5">
+      <div className={cn("space-y-1", compact ? "mb-3" : "mb-5")}>
         <h3 className="text-xl font-medium text-white">{title}</h3>
         {description && (
-          <p className="text-sm text-white/80">
+          <p className={cn("text-white/80", compact ? "text-xs" : "text-sm")}>
             {description}
           </p>
         )}
       </div>
       
-      <div className="space-y-6">
+      <div className={cn("space-y-4", compact ? "space-y-3" : "space-y-6")}>
         {children}
       </div>
     </div>

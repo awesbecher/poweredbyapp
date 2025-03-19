@@ -26,8 +26,9 @@ const VoiceServicesSection: React.FC<VoiceServicesSectionProps> = ({
     <ConfigSection
       title="Voice Services"
       description="Configure the services for speech processing"
+      compact={true}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DropdownSelect
           label="Speech-to-Text (STT) Service"
           options={sttProviderOptions}
