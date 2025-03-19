@@ -22,6 +22,7 @@ const KnowledgeBaseSection: React.FC<KnowledgeBaseSectionProps> = ({
         onChange={onKnowledgeBaseChange}
         label="Upload files for your agent to use as reference"
         accept=".pdf,.docx,.xlsx,.csv,.jpg,.jpeg,.png"
+        className="text-white"
       />
     </ConfigSection>
   );

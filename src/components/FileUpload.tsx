@@ -136,7 +136,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
-        <label className="block text-sm font-medium text-foreground">
+        <label className="block text-sm font-medium text-white">
           {label}
         </label>
       )}
@@ -144,8 +144,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
       <div
         className={cn(
           'border-2 border-dashed rounded-lg p-6 transition-colors',
-          dragActive ? 'border-brand-blue bg-brand-blue/5' : 'border-border',
-          'focus-within:border-brand-blue focus-within:ring-2 focus-within:ring-brand-blue/20'
+          dragActive ? 'border-white bg-white/10' : 'border-white/50',
+          'focus-within:border-white focus-within:ring-2 focus-within:ring-white/20'
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -155,13 +155,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
           <Upload 
             size={36} 
             className={cn(
-              'mb-2',
-              dragActive ? 'text-brand-blue' : 'text-muted-foreground'
+              'mb-2 text-white',
+              dragActive ? 'text-white' : 'text-white/80'
             )} 
           />
           
-          <h4 className="font-medium mb-1">Drag files here or click to upload</h4>
-          <p className="text-sm text-muted-foreground mb-4">
+          <h4 className="font-medium mb-1 text-white">Drag files here or click to upload</h4>
+          <p className="text-sm text-white/80 mb-4">
             Accepts PDFs, Word documents, Excel files, CSV files, and images
           </p>
           
@@ -179,6 +179,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             size="sm"
             onClick={() => inputRef.current?.click()}
             leftIcon={<Upload size={16} />}
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             Browse Files
           </Button>
@@ -193,21 +194,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
       
       {value && value.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-medium">Uploaded Files</h4>
+          <h4 className="text-sm font-medium text-white">Uploaded Files</h4>
           
           <div className="space-y-2 max-h-[300px] overflow-y-auto p-1">
             {value.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between p-3 bg-secondary rounded-lg group hover:bg-secondary/80 transition-colors"
+                className="flex items-center justify-between p-3 bg-white/10 rounded-lg group hover:bg-white/20 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   {getFileIcon(file.name)}
                   <div className="flex flex-col">
-                    <span className="font-medium text-sm truncate max-w-[200px]">
+                    <span className="font-medium text-sm truncate max-w-[200px] text-white">
                       {file.name}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-white/80">
                       {formatFileSize(file.size)}
                     </span>
                   </div>
@@ -216,7 +217,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 <button
                   type="button"
                   onClick={() => handleRemoveFile(index)}
-                  className="p-1 rounded-full hover:bg-background transition-colors"
+                  className="p-1 rounded-full hover:bg-white/10 transition-colors text-white"
                   aria-label="Remove file"
                 >
                   <X size={16} />
