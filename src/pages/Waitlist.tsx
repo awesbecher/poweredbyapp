@@ -50,9 +50,9 @@ const Waitlist = () => {
             </p>
             
             <div className="w-full">
-              {/* Tally.so form embed */}
+              {/* Tally.so form embed with the provided code */}
               <iframe
-                data-tally-src="https://tally.so/embed/example-form-id?alignLeft=1&hideTitle=1&transparentBackground=1"
+                data-tally-src="https://tally.so/embed/wMM4oE?alignLeft=1&hideTitle=1&dynamicHeight=1"
                 width="100%"
                 height="400"
                 frameBorder="0"
