@@ -112,7 +112,7 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
               className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
             />
             <p className="text-xs text-accent">
-              Enter one of the allowed emails: andrew@poweredby.agency, team@poweredby.agency, andrew@madrone.capital
+              Enter your email to sign in
             </p>
           </div>
           <div className="flex gap-2">
