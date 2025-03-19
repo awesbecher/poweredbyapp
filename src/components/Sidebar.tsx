@@ -16,21 +16,29 @@ import {
   Sun,
   LogOut
 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarIconProps {
   icon: React.ReactNode;
   isActive?: boolean;
   onClick?: () => void;
   highlight?: boolean;
+  tooltip?: string;
 }
 
 const SidebarIcon: React.FC<SidebarIconProps> = ({ 
   icon, 
   isActive = false, 
   onClick,
-  highlight = false
+  highlight = false,
+  tooltip
 }) => {
-  return (
+  const iconElement = (
     <div 
       className={cn(
         "w-12 h-12 flex items-center justify-center cursor-pointer transition-colors duration-200",
@@ -42,6 +50,21 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
       {icon}
     </div>
   );
+
+  if (tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {iconElement}
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return iconElement;
 };
 
 const LogoIcon: React.FC = () => {
@@ -63,34 +86,34 @@ const Divider: React.FC = () => {
 const Sidebar: React.FC = () => {
   return (
     <div className="fixed left-0 top-0 h-full w-16 bg-black shadow-md flex flex-col items-center py-4 z-10">
-      <div className="flex flex-col items-center space-y-1 w-full">
-        {/* Top section - Logo icon */}
-        <LogoIcon />
+      <TooltipProvider>
+        <div className="flex flex-col items-center space-y-1 w-full">
+          {/* Top section - Logo icon */}
+          <LogoIcon />
+          
+          <div className="mt-4"></div>
+          
+          {/* Main navigation icons */}
+          <SidebarIcon icon={<Home size={20} />} tooltip="Home" />
+          <SidebarIcon icon={<Plus size={20} />} tooltip="Add New" />
+          <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
+          <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
+          <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
+          <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
+          <SidebarIcon icon={<Box size={20} />} tooltip="Products" />
+          <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
+          <SidebarIcon icon={<MessageSquare size={20} />} tooltip="Messages" />
+          <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
+          <SidebarIcon icon={<Lightbulb size={20} />} tooltip="Ideas" />
+        </div>
         
-        {/* Removed the Expand/Collapse button with ChevronRight icon */}
-        
-        <div className="mt-4"></div>
-        
-        {/* Main navigation icons */}
-        <SidebarIcon icon={<Home size={20} />} />
-        <SidebarIcon icon={<Plus size={20} />} />
-        <SidebarIcon icon={<Folder size={20} />} />
-        <SidebarIcon icon={<HelpCircle size={20} />} />
-        <SidebarIcon icon={<Settings size={20} />} />
-        <SidebarIcon icon={<BookOpen size={20} />} />
-        <SidebarIcon icon={<Box size={20} />} />
-        <SidebarIcon icon={<CreditCard size={20} />} />
-        <SidebarIcon icon={<MessageSquare size={20} />} />
-        <SidebarIcon icon={<FileText size={20} />} />
-        <SidebarIcon icon={<Lightbulb size={20} />} />
-      </div>
-      
-      {/* Bottom section */}
-      <div className="flex-grow"></div>
-      <div className="flex flex-col items-center space-y-3 w-full mb-4">
-        <SidebarIcon icon={<Sun size={20} />} />
-        <SidebarIcon icon={<LogOut size={20} />} />
-      </div>
+        {/* Bottom section */}
+        <div className="flex-grow"></div>
+        <div className="flex flex-col items-center space-y-3 w-full mb-4">
+          <SidebarIcon icon={<Sun size={20} />} tooltip="Theme" />
+          <SidebarIcon icon={<LogOut size={20} />} tooltip="Logout" />
+        </div>
+      </TooltipProvider>
     </div>
   );
 };
