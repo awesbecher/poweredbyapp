@@ -9,7 +9,6 @@ import {
   Settings, 
   BookOpen, 
   CreditCard, 
-  MessageSquare, 
   FileText, 
   Lightbulb,
   Sun,
@@ -108,7 +107,6 @@ const Sidebar: React.FC = () => {
           <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
           <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
           <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
-          <SidebarIcon icon={<MessageSquare size={20} />} tooltip="Messages" />
           <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
           <SidebarIcon icon={<Lightbulb size={20} />} tooltip="Ideas" />
         </div>
