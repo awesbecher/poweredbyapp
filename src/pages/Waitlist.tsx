@@ -33,15 +33,12 @@ const Waitlist = () => {
         
         <Card className="bg-white/10 backdrop-blur-md border border-white/20">
           <CardHeader>
-            <CardTitle className="text-white">Closed Beta</CardTitle>
-            <CardDescription className="text-accent">
-              The Powered_by App is currently in closed beta
-            </CardDescription>
+            <CardTitle className="text-white">Waitlist</CardTitle>
           </CardHeader>
           
           <CardContent className="flex flex-col items-center space-y-6">
             <p className="text-white text-center">
-              If you'd like to join the waitlist to be part of our beta program, please enter your contact details below.
+              The Powered_by Platform is currently in closed beta. Please enter your contact details below to join our waitlist.
             </p>
             
             <div className="w-full">
