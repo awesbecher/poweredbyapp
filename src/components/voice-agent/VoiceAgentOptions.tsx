@@ -7,7 +7,7 @@ import {
   KnowledgeBaseSection,
   RenderButton
 } from '@/components/voice-agent';
-import { AgentTone, LLMModelProvider } from '@/lib/types';
+import { AgentTone, LLMModelProvider, STTProvider, TTSProvider, VoiceProvider } from '@/lib/types';
 
 interface VoiceAgentOptionsProps {
   modelProvider: LLMModelProvider;
@@ -16,12 +16,12 @@ interface VoiceAgentOptionsProps {
   llmProviderOptions: { value: string; label: string }[];
   onModelProviderChange: (value: LLMModelProvider) => void;
   onModelVersionChange: (value: string) => void;
-  sttProvider: string;
-  ttsProvider: string;
-  voiceProvider: string;
-  onSttProviderChange: (value: string) => void;
-  onTtsProviderChange: (value: string) => void;
-  onVoiceProviderChange: (value: string) => void;
+  sttProvider: STTProvider;
+  ttsProvider: TTSProvider;
+  voiceProvider: VoiceProvider;
+  onSttProviderChange: (value: STTProvider) => void;
+  onTtsProviderChange: (value: TTSProvider) => void;
+  onVoiceProviderChange: (value: VoiceProvider) => void;
   agentName: string;
   agentFunction: string;
   agentTone: AgentTone[];

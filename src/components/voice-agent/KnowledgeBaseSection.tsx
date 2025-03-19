@@ -15,7 +15,7 @@ const KnowledgeBaseSection: React.FC<KnowledgeBaseSectionProps> = ({
   return (
     <ConfigSection
       title="Knowledge Base"
-      description="Upload files for your agent to reference (optional)"
+      description="Upload files for your agent to use"
     >
       <FileUpload
         value={knowledgeBase}
