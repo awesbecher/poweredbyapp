@@ -1,13 +1,9 @@
-
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 
 const Waitlist = () => {
-  const navigate = useNavigate();
-
   useEffect(() => {
     // Load Tally.so script when component mounts
     const script = document.createElement('script');
@@ -64,12 +60,12 @@ const Waitlist = () => {
             </div>
             
             <Button 
-              onClick={() => navigate('/login')}
+              onClick={() => window.location.href = 'https://poweredby.agency/'}
               className="mt-4"
               variant="outline"
             >
               <ArrowLeft size={16} className="mr-2" />
-              Back to Login
+              Home
             </Button>
           </CardContent>
         </Card>
