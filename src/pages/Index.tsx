@@ -53,7 +53,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-brand-gray">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container-custom py-12">

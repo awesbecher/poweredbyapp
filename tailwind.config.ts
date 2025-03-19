@@ -68,7 +68,12 @@ export default {
 					'blue-dark': '#0056B3',
 					gray: '#F5F5F7',
 					'gray-dark': '#86868B',
-					black: '#1D1D1F'
+					black: '#1D1D1F',
+					purple: {
+						light: '#a288e3',
+						DEFAULT: '#7E57C2',
+						dark: '#5E35B1'
+					}
 				},
 				glass: 'rgba(255, 255, 255, 0.8)'
 			},

@@ -44,7 +44,7 @@ const ReviewAgent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-brand-gray">
+    <div className="min-h-screen bg-background">
       <Header 
         showBackButton 
         title="Review Voice Agent Draft" 
