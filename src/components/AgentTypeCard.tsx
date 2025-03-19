@@ -24,7 +24,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
     <div
       className={cn(
         'relative flex flex-col p-5 rounded-lg transition-all duration-200',
-        'bg-white border border-slate-200',
+        'bg-gradient-to-br from-brand-purple-light/20 via-brand-purple/15 to-brand-purple-dark/25 border border-brand-purple/20',
         'hover:border-brand-purple shadow-sm hover:shadow-md',
         isActive 
           ? 'cursor-pointer'
@@ -35,7 +35,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
       <div className="flex items-start">
         <div className={cn(
           'w-10 h-10 flex items-center justify-center rounded-md',
-          'bg-brand-purple/10 text-brand-purple'
+          'bg-white/90 text-brand-purple'
         )}>
           {icon}
         </div>
