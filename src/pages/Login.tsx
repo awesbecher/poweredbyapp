@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react'; 
+import { AlertTriangle, Info } from 'lucide-react'; 
 import LoginForm from '@/components/auth/LoginForm';
 import SocialLogin from '@/components/auth/SocialLogin';
 import LoginHeader from '@/components/auth/LoginHeader';
@@ -10,6 +11,17 @@ import LoginHeader from '@/components/auth/LoginHeader';
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check if user was redirected from a protected route
+  useEffect(() => {
+    const from = location.state?.from;
+    if (from && from.pathname !== '/login' && from.pathname !== '/signup') {
+      setRedirectMessage(`Please log in to access ${from.pathname}`);
+    }
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-deep-purple flex items-center justify-center p-4">
@@ -32,6 +44,15 @@ const Login = () => {
           </CardHeader>
           
           <CardContent>
+            {redirectMessage && (
+              <Alert className="bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md mb-4">
+                <AlertDescription className="text-sm flex items-start">
+                  <Info className="h-4 w-4 mr-2 mt-0.5" />
+                  <span>{redirectMessage}</span>
+                </AlertDescription>
+              </Alert>
+            )}
+            
             {error && (
               <Alert variant="destructive" className="bg-destructive/10 border border-destructive/20 text-destructive rounded-md mb-4">
                 <AlertDescription className="text-sm flex items-start">
