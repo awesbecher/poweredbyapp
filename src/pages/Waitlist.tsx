@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,19 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/com
 
 const Waitlist = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load Tally.so script when component mounts
+    const script = document.createElement('script');
+    script.src = 'https://tally.so/widgets/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    // Cleanup function to remove script when component unmounts
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-deep-purple flex items-center justify-center p-4">
@@ -29,9 +42,18 @@ const Waitlist = () => {
               If you'd like to join the waitlist to be part of our beta program, please enter your contact details below.
             </p>
             
-            <div className="w-full h-80 bg-white/5 rounded-md flex items-center justify-center text-accent border border-white/10">
-              {/* Placeholder for the Tally.so form that will be provided later */}
-              <p>Tally.so form will be embedded here</p>
+            <div className="w-full">
+              {/* Tally.so form embed */}
+              <iframe
+                data-tally-src="https://tally.so/embed/example-form-id?alignLeft=1&hideTitle=1&transparentBackground=1"
+                width="100%"
+                height="400"
+                frameBorder="0"
+                marginHeight={0}
+                marginWidth={0}
+                title="Waitlist Signup Form"
+                className="bg-transparent"
+              ></iframe>
             </div>
             
             <Button 
