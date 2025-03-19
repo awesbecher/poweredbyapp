@@ -29,8 +29,6 @@ const Waitlist = () => {
               className="h-16 md:h-20"
             />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Agent Configuration Platform</h1>
-          <p className="text-accent">Join our waitlist</p>
         </div>
         
         <Card className="bg-white/10 backdrop-blur-md border border-white/20">
