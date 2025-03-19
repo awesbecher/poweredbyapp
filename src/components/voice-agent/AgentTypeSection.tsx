@@ -21,7 +21,7 @@ const AgentTypeSection: React.FC<AgentTypeSectionProps> = ({
       compact={true}
     >
       <DropdownSelect
-        label="Agent Type"
+        label="" // Removed "Agent Type" label here
         options={voiceAgentTypeOptions}
         value={agentType}
         onChange={(value) => onAgentTypeChange(value as VoiceAgentType)}
