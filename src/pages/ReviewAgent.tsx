@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, ArrowLeft, Github } from 'lucide-react';
 import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import Button from '@/components/Button';
 import { useStore } from '@/lib/store';
 import { toast } from 'sonner';
@@ -45,6 +46,8 @@ const ReviewAgent = () => {
 
   return (
     <div className="min-h-screen bg-deep-purple">
+      <Sidebar />
+      
       <Header 
         showBackButton 
         title="Review Voice Agent Draft" 
@@ -59,7 +62,7 @@ const ReviewAgent = () => {
         }
       />
       
-      <main className="container-custom py-12">
+      <main className="container-custom py-12 ml-16">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm p-8 mb-8">
             <div className="mb-8">

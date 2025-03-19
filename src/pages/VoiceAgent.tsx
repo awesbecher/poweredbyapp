@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
 import ProgressModal from '@/components/ProgressModal';
 import { 
   AgentTypeSection,
@@ -127,12 +128,14 @@ const VoiceAgent = () => {
   
   return (
     <div className="min-h-screen bg-deep-purple pb-20">
+      <Sidebar />
+      
       <Header 
         showBackButton 
         title="Voice Agent Configuration" 
       />
       
-      <main className="container-custom py-12">
+      <main className="container-custom py-12 ml-16">
         <div className="max-w-3xl mx-auto space-y-10">
           {/* Agent Type Selection */}
           <AgentTypeSection 
