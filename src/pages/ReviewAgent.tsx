@@ -44,7 +44,7 @@ const ReviewAgent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-deep-purple">
       <Header 
         showBackButton 
         title="Review Voice Agent Draft" 
@@ -61,12 +61,12 @@ const ReviewAgent = () => {
       
       <main className="container-custom py-12">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl border border-border shadow-sm p-8 mb-8">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm p-8 mb-8">
             <div className="mb-8">
-              <h2 className="text-3xl font-medium mb-2">
+              <h2 className="text-3xl font-medium mb-2 text-white">
                 {voiceAgentConfig.agentName || 'My Voice Agent'}
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-accent">
                 {voiceAgentConfig.agentFunction || 'A voice-enabled AI assistant'}
               </p>
             </div>

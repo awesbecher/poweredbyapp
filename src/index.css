@@ -7,8 +7,8 @@
 
 @layer base {
   :root {
-    --background: 260 55% 92%;
-    --foreground: 240 10% 3.9%;
+    --background: 270 70% 10%;
+    --foreground: 240 10% 98%;
 
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -172,5 +172,13 @@
 
   .purple-gradient {
     @apply bg-gradient-to-br from-brand-purple-light via-brand-purple to-brand-purple-dark;
+  }
+  
+  .hero-text {
+    @apply text-white font-bold;
+  }
+  
+  .accent-text {
+    @apply text-brand-purple-light;
   }
 }

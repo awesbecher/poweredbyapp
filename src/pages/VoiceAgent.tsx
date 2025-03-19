@@ -119,7 +119,7 @@ const VoiceAgent = () => {
   };
   
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-deep-purple pb-20">
       <Header 
         showBackButton 
         title="Voice Agent Configuration" 

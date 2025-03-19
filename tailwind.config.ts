@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -70,12 +69,15 @@ export default {
 					'gray-dark': '#86868B',
 					black: '#1D1D1F',
 					purple: {
-						light: '#a288e3',
+						light: '#9b87f5',
 						DEFAULT: '#7E57C2',
-						dark: '#5E35B1'
+						dark: '#1A0B3A'
 					}
 				},
 				glass: 'rgba(255, 255, 255, 0.8)'
+			},
+			backgroundColor: {
+				'deep-purple': '#1A0B3A',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -53,14 +53,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-deep-purple">
       <Header />
       
       <main className="container-custom py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-12 text-center">
-            <h1 className="text-4xl font-medium mb-3">Agent Configuration</h1>
-            <p className="text-xl text-muted-foreground">
+            <h1 className="text-4xl font-medium mb-3 text-white">Agent Configuration</h1>
+            <p className="text-xl text-accent">
               Select the type of AI agent you want to build
             </p>
           </div>
