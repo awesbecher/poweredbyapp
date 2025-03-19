@@ -3,6 +3,8 @@ import React from 'react';
 import ConfigSection from '@/components/ConfigSection';
 import { agentToneOptions } from '@/lib/store';
 import { AgentTone } from '@/lib/types';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface AgentDetailsSectionProps {
   agentName: string;
@@ -27,6 +29,22 @@ const AgentDetailsSection: React.FC<AgentDetailsSectionProps> = ({
   onPromptDetailsChange,
   onAIWriteClick,
 }) => {
+  // Handle single tone selection 
+  const handleToneChange = (value: string) => {
+    // First, unselect all tones
+    agentToneOptions.forEach(option => {
+      if (agentTone.includes(option.value as AgentTone)) {
+        onAgentToneChange(option.value as AgentTone, false);
+      }
+    });
+    
+    // Then select the new tone
+    onAgentToneChange(value as AgentTone, true);
+  };
+
+  // Get the currently selected tone value
+  const selectedTone = agentTone.length > 0 ? agentTone[0] : undefined;
+
   return (
     <ConfigSection
       title="Model Prompt"
@@ -67,22 +85,18 @@ const AgentDetailsSection: React.FC<AgentDetailsSectionProps> = ({
           <label className="block text-sm font-medium text-foreground mb-2">
             Voice Agent Tone
           </label>
-          <div className="flex flex-wrap gap-4">
+          <RadioGroup
+            value={selectedTone}
+            onValueChange={handleToneChange}
+            className="flex flex-wrap gap-6 mt-2"
+          >
             {agentToneOptions.map((option) => (
-              <label 
-                key={option.value} 
-                className="flex items-center space-x-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={agentTone.includes(option.value as AgentTone)}
-                  onChange={(e) => onAgentToneChange(option.value as AgentTone, e.target.checked)}
-                  className="rounded border-input text-brand-blue focus:ring-brand-blue/20 h-4 w-4"
-                />
-                <span>{option.label}</span>
-              </label>
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem value={option.value} id={`tone-${option.value}`} />
+                <Label htmlFor={`tone-${option.value}`}>{option.label}</Label>
+              </div>
             ))}
-          </div>
+          </RadioGroup>
         </div>
         
         <div>
