@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import ReviewAgent from "./pages/ReviewAgent";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
+import Waitlist from "./pages/Waitlist";
 import { useState, createContext, useContext } from "react";
 
 // Create Authentication Context
@@ -58,6 +58,7 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/waitlist" element={<Waitlist />} />
               <Route 
                 path="/" 
                 element={
