@@ -22,7 +22,7 @@ const DropdownSelect: React.FC<DropdownSelectProps> = ({
   options,
   value,
   onChange,
-  placeholder = 'Select an option',
+  placeholder = 'Select',
   label,
   className,
   disabled = false,

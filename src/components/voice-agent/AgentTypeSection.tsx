@@ -25,6 +25,7 @@ const AgentTypeSection: React.FC<AgentTypeSectionProps> = ({
         options={voiceAgentTypeOptions}
         value={agentType}
         onChange={(value) => onAgentTypeChange(value as VoiceAgentType)}
+        placeholder="Select"
       />
     </ConfigSection>
   );

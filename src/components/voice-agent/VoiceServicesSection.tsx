@@ -34,6 +34,7 @@ const VoiceServicesSection: React.FC<VoiceServicesSectionProps> = ({
           options={sttProviderOptions}
           value={sttProvider}
           onChange={(value) => onSttProviderChange(value as STTProvider)}
+          placeholder="Select"
         />
         
         <DropdownSelect
@@ -41,6 +42,7 @@ const VoiceServicesSection: React.FC<VoiceServicesSectionProps> = ({
           options={ttsProviderOptions}
           value={ttsProvider}
           onChange={(value) => onTtsProviderChange(value as TTSProvider)}
+          placeholder="Select"
         />
       </div>
       
@@ -50,6 +52,7 @@ const VoiceServicesSection: React.FC<VoiceServicesSectionProps> = ({
           options={voiceProviderOptions}
           value={voiceProvider}
           onChange={(value) => onVoiceProviderChange(value as VoiceProvider)}
+          placeholder="Select"
         />
       </div>
     </ConfigSection>

@@ -33,6 +33,7 @@ const ModelConfigSection: React.FC<ModelConfigSectionProps> = ({
           options={llmProviderOptions}
           value={modelProvider}
           onChange={(value) => onModelProviderChange(value as LLMModelProvider)}
+          placeholder="Select"
         />
         
         <DropdownSelect
@@ -40,6 +41,7 @@ const ModelConfigSection: React.FC<ModelConfigSectionProps> = ({
           options={modelOptions}
           value={modelVersion}
           onChange={(value) => onModelVersionChange(value)}
+          placeholder="Select"
         />
       </div>
     </ConfigSection>
