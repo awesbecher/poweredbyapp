@@ -23,7 +23,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
   return (
     <div
       className={cn(
-        'relative flex flex-col p-7 rounded-lg transition-all duration-200',
+        'relative flex flex-col p-5 rounded-lg transition-all duration-200',
         'bg-white border border-slate-200',
         'hover:border-brand-purple shadow-sm hover:shadow-md',
         isActive 
@@ -34,7 +34,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
     >
       <div className="flex items-start">
         <div className={cn(
-          'w-12 h-12 flex items-center justify-center rounded-md',
+          'w-10 h-10 flex items-center justify-center rounded-md',
           'bg-brand-purple/10 text-brand-purple'
         )}>
           {icon}
@@ -42,7 +42,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
         
         <div className="ml-auto">
           <div className={cn(
-            "h-1.5 w-16 rounded-full",
+            "h-1.5 w-12 rounded-full",
             type === 'voice' && "bg-emerald-400",
             type === 'email' && "bg-sky-400",
             type === 'sms' && "bg-amber-400",
@@ -51,20 +51,20 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
         </div>
       </div>
       
-      <div className="mt-6 space-y-2">
-        <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
-        <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
+      <div className="mt-3 space-y-1">
+        <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
+        <p className="text-slate-500 text-xs leading-relaxed">{description}</p>
       </div>
       
       {!isActive && (
-        <div className="absolute top-5 right-5 text-xs font-medium bg-slate-100 px-2 py-1 rounded-full text-slate-600">
+        <div className="absolute top-3 right-3 text-xs font-medium bg-slate-100 px-2 py-1 rounded-full text-slate-600">
           Coming Soon
         </div>
       )}
       
-      <div className="flex items-center mt-6 pt-4 border-t border-slate-100">
+      <div className="flex items-center mt-3 pt-2 border-t border-slate-100">
         <div className={cn(
-          "text-sm font-medium",
+          "text-xs font-medium",
           type === 'voice' && "text-emerald-600",
           type === 'email' && "text-sky-600",
           type === 'sms' && "text-amber-600",
@@ -75,7 +75,7 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
           className={cn(
-            "w-4 h-4 ml-1",
+            "w-3 h-3 ml-1",
             type === 'voice' && "text-emerald-600",
             type === 'email' && "text-sky-600",
             type === 'sms' && "text-amber-600",

@@ -20,28 +20,28 @@ const Index = () => {
       type: 'voice',
       title: 'Voice Agent',
       description: 'Create AI agents that can speak and listen to users in natural conversations.',
-      icon: <Headphones size={22} />,
+      icon: <Headphones size={18} />,
       isActive: true
     },
     {
       type: 'email',
       title: 'Email Agent',
       description: 'Build AI agents that can process, understand, and respond to emails.',
-      icon: <Mail size={22} />,
+      icon: <Mail size={18} />,
       isActive: true
     },
     {
       type: 'sms',
       title: 'SMS-Text Agent',
       description: 'Develop AI agents that can communicate with users via text messages.',
-      icon: <MessageSquare size={22} />,
+      icon: <MessageSquare size={18} />,
       isActive: true
     },
     {
       type: 'workflow',
       title: 'Workflow Agent',
       description: 'Create AI agents that can manage and automate complex business processes.',
-      icon: <GitBranch size={22} />,
+      icon: <GitBranch size={18} />,
       isActive: true
     }
   ];
@@ -62,16 +62,16 @@ const Index = () => {
     <div className="min-h-screen bg-deep-purple">
       <Header />
       
-      <main className="container-custom py-16">
+      <main className="container-custom py-12">
         <div className="max-w-5xl mx-auto">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center">
             <h1 className="text-4xl font-medium mb-3 text-white">Agent Configuration</h1>
             <p className="text-xl text-accent">
               Select the type of AI agent you want to build
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {agentTypes.map((agent) => (
               <AgentTypeCard
                 key={agent.type}
