@@ -23,48 +23,70 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden flex flex-col gap-4 p-6 rounded-xl transition-all duration-300',
-        'bg-white border-0 shadow-lg hover:shadow-xl',
-        'transform hover:-translate-y-1',
+        'relative flex flex-col p-7 rounded-lg transition-all duration-200',
+        'bg-white border border-slate-200',
+        'hover:border-brand-purple shadow-sm hover:shadow-md',
         isActive 
           ? 'cursor-pointer'
           : 'opacity-70 cursor-not-allowed'
       )}
       onClick={isActive ? onClick : undefined}
     >
-      {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-brand-purple/5 opacity-80" />
-      
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-brand-purple/10 rounded-full" />
-      <div className="absolute bottom-0 left-0 w-16 h-16 -ml-8 -mb-8 bg-brand-blue/10 rounded-full" />
-      
-      {/* Content - relative position to appear above background elements */}
-      <div className="relative">
+      <div className="flex items-start">
         <div className={cn(
-          'w-14 h-14 flex items-center justify-center rounded-xl',
-          'bg-gradient-to-br from-brand-blue/20 to-brand-purple/20',
-          'text-brand-blue'
+          'w-12 h-12 flex items-center justify-center rounded-md',
+          'bg-brand-purple/10 text-brand-purple'
         )}>
           {icon}
         </div>
         
-        <div className="space-y-2 mt-4">
-          <h3 className="text-xl font-semibold text-brand-purple">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
+        <div className="ml-auto">
+          <div className={cn(
+            "h-1.5 w-16 rounded-full",
+            type === 'voice' && "bg-emerald-400",
+            type === 'email' && "bg-sky-400",
+            type === 'sms' && "bg-amber-400",
+            type === 'workflow' && "bg-violet-400",
+          )} />
         </div>
-        
-        {!isActive && (
-          <div className="absolute top-3 right-3 text-xs font-medium bg-muted px-2 py-1 rounded-full">
-            Coming Soon
-          </div>
-        )}
-        
-        {/* Subtle highlight border on hover */}
+      </div>
+      
+      <div className="mt-6 space-y-2">
+        <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
+        <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
+      </div>
+      
+      {!isActive && (
+        <div className="absolute top-5 right-5 text-xs font-medium bg-slate-100 px-2 py-1 rounded-full text-slate-600">
+          Coming Soon
+        </div>
+      )}
+      
+      <div className="flex items-center mt-6 pt-4 border-t border-slate-100">
         <div className={cn(
-          'absolute inset-0 border-2 border-brand-blue/50 rounded-xl opacity-0',
-          'group-hover:opacity-100 transition-opacity duration-300'
-        )} />
+          "text-sm font-medium",
+          type === 'voice' && "text-emerald-600",
+          type === 'email' && "text-sky-600",
+          type === 'sms' && "text-amber-600",
+          type === 'workflow' && "text-violet-600",
+        )}>
+          Configure Agent
+        </div>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          className={cn(
+            "w-4 h-4 ml-1",
+            type === 'voice' && "text-emerald-600",
+            type === 'email' && "text-sky-600",
+            type === 'sms' && "text-amber-600",
+            type === 'workflow' && "text-violet-600",
+          )} 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
       </div>
     </div>
   );
