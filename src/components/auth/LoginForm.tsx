@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,26 +11,48 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
 import { authenticateUser } from '@/utils/authUtils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+// Create a schema for form validation
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   setError: (error: string | null) => void;
 }
 
 const LoginForm = ({ setError }: LoginFormProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Initialize the form with React Hook Form and Zod validation
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const handleLogin = async (values: LoginFormValues) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const isAuthenticated = await authenticateUser(email, password);
+      const isAuthenticated = await authenticateUser(values.email, values.password);
       
       if (isAuthenticated) {
         toast({
@@ -58,57 +83,71 @@ const LoginForm = ({ setError }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-white">Email</Label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
-            <Mail size={18} />
-          </div>
-          <Input 
-            id="email"
-            type="email" 
-            placeholder="name@example.com" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="pl-10 bg-white/5 border-white/10 text-white"
-            required
-          />
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password" className="text-white">Password</Label>
-          <a href="#" className="text-xs text-primary hover:underline">
-            Forgot password?
-          </a>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
-            <Lock size={18} />
-          </div>
-          <Input 
-            id="password"
-            type="password" 
-            placeholder="••••••••" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="pl-10 bg-white/5 border-white/10 text-white"
-            required
-          />
-        </div>
-      </div>
-      
-      <Button 
-        type="submit" 
-        className="w-full mt-6 bg-primary hover:bg-primary/90"
-        disabled={isLoading}
-      >
-        {isLoading ? "Signing in..." : "Sign In"}
-        <ArrowRight size={16} className="ml-2" />
-      </Button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel className="text-white">Email</FormLabel>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
+                  <Mail size={18} />
+                </div>
+                <FormControl>
+                  <Input 
+                    type="email" 
+                    placeholder="name@example.com" 
+                    className="pl-10 bg-white/5 border-white/10 text-white"
+                    {...field}
+                  />
+                </FormControl>
+              </div>
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-white">Password</FormLabel>
+                <a href="#" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </a>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
+                  <Lock size={18} />
+                </div>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="pl-10 bg-white/5 border-white/10 text-white"
+                    {...field}
+                  />
+                </FormControl>
+              </div>
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+        
+        <Button 
+          type="submit" 
+          className="w-full mt-6 bg-primary hover:bg-primary/90"
+          disabled={isLoading}
+        >
+          {isLoading ? "Signing in..." : "Sign In"}
+          <ArrowRight size={16} className="ml-2" />
+        </Button>
+      </form>
+    </Form>
   );
 };
 
