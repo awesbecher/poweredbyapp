@@ -18,37 +18,82 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
   const { toast } = useToast();
   const { login } = useAuth();
 
+  // Google OAuth configuration
+  const googleOAuthConfig = {
+    client_id: '707588075803-0p7hpi6j3qri3vtu1u4a8l7qhhl7nbbf.apps.googleusercontent.com',
+    redirect_uri: window.location.origin + '/login',
+    scope: 'email profile',
+    response_type: 'token',
+    prompt: 'select_account',
+  };
+
+  // Function to handle the OAuth redirect response
+  React.useEffect(() => {
+    // Check if we have a hash in the URL (indicates OAuth callback)
+    if (window.location.hash) {
+      setIsLoading(true);
+      
+      // Extract the access token from the URL hash
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = params.get('access_token');
+      
+      if (accessToken) {
+        // Get user info from Google using the access token
+        fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then(response => response.json())
+          .then(data => {
+            const email = data.email;
+            
+            // Check if the user's email is in the whitelist
+            if (isAuthorizedUser(email)) {
+              login();
+              navigate('/');
+              toast({
+                title: 'Login successful',
+                description: `Logged in as ${email}`,
+              });
+            } else {
+              setError('Your Google account is not authorized to access this application. Please contact the administrator for access.');
+              toast({
+                title: 'Access denied',
+                description: 'Your Google account is not in our allowed users list',
+                variant: 'destructive',
+              });
+            }
+          })
+          .catch(err => {
+            console.error('Error fetching user info:', err);
+            setError('Failed to get user information from Google');
+            toast({
+              title: 'Authentication error',
+              description: 'Failed to verify Google account',
+              variant: 'destructive',
+            });
+          })
+          .finally(() => {
+            setIsLoading(false);
+            // Clean up the URL to remove the hash
+            window.history.replaceState({}, document.title, window.location.pathname);
+          });
+      }
+    }
+  }, []);
+
   const handleGoogleLogin = () => {
     setIsLoading(true);
     setError(null);
-    toast({
-      title: "Google login",
-      description: "Redirecting to Google authentication...",
-    });
     
-    // Simulate OAuth flow with specific error handling
-    setTimeout(() => {
-      // Simulate a Google user for demo
-      const mockGoogleEmail = "andrew@poweredby.agency"; // Use one of the whitelisted emails for demo
-      
-      // Check if the email is in the whitelist
-      if (isAuthorizedUser(mockGoogleEmail)) {
-        login(); // Set authenticated state
-        navigate('/');
-        toast({
-          title: "Login successful",
-          description: `Logged in as ${mockGoogleEmail}`,
-        });
-      } else {
-        setError("Your Google account is not authorized to access this application. Please contact the administrator for access.");
-        toast({
-          title: "Access denied",
-          description: "Your Google account is not in our allowed users list",
-          variant: "destructive",
-        });
-      }
-      setIsLoading(false);
-    }, 1000);
+    // Build the Google OAuth URL
+    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    const urlParams = new URLSearchParams(googleOAuthConfig);
+    authUrl.search = urlParams.toString();
+    
+    // Redirect to Google's authorization page
+    window.location.href = authUrl.toString();
   };
 
   const handleGithubLogin = () => {

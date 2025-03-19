@@ -23,6 +23,13 @@ const Login = () => {
     }
   }, [location]);
 
+  // Clear any previous errors when the component mounts or when we're handling OAuth
+  useEffect(() => {
+    if (window.location.hash) {
+      setError(null);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-deep-purple flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-fade-in pt-8">
@@ -44,7 +51,7 @@ const Login = () => {
           </CardHeader>
           
           <CardContent>
-            {redirectMessage && (
+            {redirectMessage && !window.location.hash && (
               <Alert className="bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md mb-4">
                 <AlertDescription className="text-sm flex items-start">
                   <Info className="h-4 w-4 mr-2 mt-0.5" />
