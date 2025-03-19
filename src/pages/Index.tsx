@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Headphones, Mail, MessageSquare, GitBranch } from 'lucide-react';
 import Header from '@/components/Header';
 import AgentTypeCard from '@/components/AgentTypeCard';
+import Sidebar from '@/components/Sidebar';
 import { AgentType } from '@/lib/types';
 
 const Index = () => {
@@ -59,33 +60,37 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-deep-purple">
-      <Header />
+    <div className="min-h-screen bg-deep-purple flex">
+      <Sidebar />
       
-      <main className="container-custom py-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-medium mb-3 text-white">Agent Configuration</h1>
-            <p className="text-xl text-accent">
-              Select the type of AI agent you want to build
-            </p>
+      <div className="flex-grow ml-16">
+        <Header />
+        
+        <main className="container-custom py-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-8 text-center">
+              <h1 className="text-4xl font-medium mb-3 text-white">Agent Configuration</h1>
+              <p className="text-xl text-accent">
+                Select the type of AI agent you want to build
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {agentTypes.map((agent) => (
+                <AgentTypeCard
+                  key={agent.type}
+                  type={agent.type}
+                  title={agent.title}
+                  description={agent.description}
+                  icon={agent.icon}
+                  isActive={agent.isActive}
+                  onClick={() => handleAgentTypeClick(agent.type)}
+                />
+              ))}
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {agentTypes.map((agent) => (
-              <AgentTypeCard
-                key={agent.type}
-                type={agent.type}
-                title={agent.title}
-                description={agent.description}
-                icon={agent.icon}
-                isActive={agent.isActive}
-                onClick={() => handleAgentTypeClick(agent.type)}
-              />
-            ))}
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
