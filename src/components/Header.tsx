@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, LogOut } from 'lucide-react';
+import { ArrowLeft, LogOut, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/App';
 
@@ -29,6 +29,11 @@ const Header: React.FC<HeaderProps> = ({
     logout();
   };
 
+  const handleSupportClick = () => {
+    // Open support modal or redirect to support page
+    console.log('Support button clicked');
+  };
+
   return (
     <header className="w-full py-6 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-10">
       <div className="container-custom flex items-center justify-between">
@@ -51,6 +56,15 @@ const Header: React.FC<HeaderProps> = ({
               {rightElement}
             </div>
           )}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex items-center gap-2" 
+            onClick={handleSupportClick}
+          >
+            <LifeBuoy size={16} />
+            <span>Support</span>
+          </Button>
           <Button 
             variant="ghost" 
             size="sm" 
