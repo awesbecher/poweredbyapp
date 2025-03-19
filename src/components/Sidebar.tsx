@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
@@ -18,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from '@/App';
 
 interface SidebarIconProps {
   icon: React.ReactNode;
@@ -88,6 +90,14 @@ const Divider: React.FC = () => {
 };
 
 const Sidebar: React.FC = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="fixed left-0 top-0 h-full w-16 bg-black shadow-md flex flex-col items-center py-4 z-10">
       <TooltipProvider>
@@ -98,7 +108,7 @@ const Sidebar: React.FC = () => {
           <div className="mt-4"></div>
           
           {/* Main navigation icons */}
-          <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/index" />
+          <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/" />
           <SidebarIcon icon={<Plus size={20} />} tooltip="New Agent" linkTo="/voice-agent" />
           <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
           <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
@@ -111,7 +121,11 @@ const Sidebar: React.FC = () => {
         {/* Bottom section */}
         <div className="flex-grow"></div>
         <div className="flex flex-col items-center space-y-3 w-full mb-4">
-          <SidebarIcon icon={<LogOut size={20} />} tooltip="Logout" />
+          <SidebarIcon 
+            icon={<LogOut size={20} />} 
+            tooltip="Logout" 
+            onClick={handleLogout}
+          />
         </div>
       </TooltipProvider>
     </div>

@@ -70,6 +70,7 @@ const App = () => {
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('isAuthenticated');
+    // We don't need to handle redirection here since it will be handled by the components
   };
 
   return (

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, LogOut, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/App';
@@ -17,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({
   rightElement
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout } = useAuth();
   
   const getBackPath = () => {
@@ -27,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleSignOut = () => {
     logout();
+    navigate('/login');
   };
 
   const handleSupportClick = () => {
