@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/App';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -15,11 +17,16 @@ const Header: React.FC<HeaderProps> = ({
   rightElement
 }) => {
   const location = useLocation();
+  const { logout } = useAuth();
   
   const getBackPath = () => {
     if (location.pathname === '/voice-agent') return '/';
     if (location.pathname === '/review-agent') return '/voice-agent';
     return '/';
+  };
+
+  const handleSignOut = () => {
+    logout();
   };
 
   return (
@@ -38,11 +45,22 @@ const Header: React.FC<HeaderProps> = ({
           <h1 className="text-2xl font-medium">{title}</h1>
         </div>
         
-        {rightElement && (
-          <div className="flex items-center gap-2">
-            {rightElement}
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          {rightElement && (
+            <div className="flex items-center gap-2">
+              {rightElement}
+            </div>
+          )}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex items-center gap-2" 
+            onClick={handleSignOut}
+          >
+            <LogOut size={16} />
+            <span>Sign Out</span>
+          </Button>
+        </div>
       </div>
     </header>
   );
