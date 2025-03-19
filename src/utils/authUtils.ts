@@ -5,6 +5,13 @@ type AuthorizedUser = {
   password: string;
 };
 
+// Define the return type for the authentication function
+type AuthResult = {
+  success: boolean;
+  errorType?: 'user_not_found' | 'invalid_password' | 'unknown_error';
+  message?: string;
+};
+
 // List of authorized users with their credentials
 const AUTHORIZED_USERS: AuthorizedUser[] = [
   {
@@ -38,16 +45,36 @@ export const findAuthorizedUser = (email: string): AuthorizedUser | undefined =>
 
 /**
  * Authenticates a user with the provided credentials
- * Checks both email and password
+ * Returns detailed information about authentication success or failure
  */
-export const authenticateUser = (email: string, password: string): Promise<boolean> => {
+export const authenticateUser = (email: string, password: string): Promise<AuthResult> => {
   return new Promise((resolve) => {
     // Simulate network delay
     setTimeout(() => {
       const user = findAuthorizedUser(email);
-      // Verify both email exists and password matches
-      const isAuthenticated = user !== undefined && user.password === password;
-      resolve(isAuthenticated);
+      
+      if (!user) {
+        resolve({
+          success: false,
+          errorType: 'user_not_found',
+          message: 'User with this email was not found'
+        });
+        return;
+      }
+      
+      if (user.password !== password) {
+        resolve({
+          success: false,
+          errorType: 'invalid_password',
+          message: 'Incorrect password'
+        });
+        return;
+      }
+      
+      resolve({
+        success: true,
+        message: 'Authentication successful'
+      });
     }, 800);
   });
 };

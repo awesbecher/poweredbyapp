@@ -52,9 +52,9 @@ const LoginForm = ({ setError }: LoginFormProps) => {
     setError(null);
     
     try {
-      const isAuthenticated = await authenticateUser(values.email, values.password);
+      const result = await authenticateUser(values.email, values.password);
       
-      if (isAuthenticated) {
+      if (result.success) {
         toast({
           title: "Login successful",
           description: "Welcome back!",
@@ -63,20 +63,38 @@ const LoginForm = ({ setError }: LoginFormProps) => {
         login(); // Set authenticated state
         navigate('/');
       } else {
-        setError("Invalid email or password. Please check your credentials.");
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password.",
-          variant: "destructive",
-        });
+        // Handle different error types
+        if (result.errorType === 'user_not_found') {
+          setError("This email is not registered in our system. Please check your email or request access.");
+          toast({
+            title: "Login failed",
+            description: "Email not recognized",
+            variant: "destructive",
+          });
+        } else if (result.errorType === 'invalid_password') {
+          setError("Invalid password. Please check your password and try again.");
+          toast({
+            title: "Login failed",
+            description: "Invalid password",
+            variant: "destructive",
+          });
+        } else {
+          setError("Invalid email or password. Please check your credentials.");
+          toast({
+            title: "Login failed",
+            description: "Authentication failed",
+            variant: "destructive",
+          });
+        }
       }
     } catch (err) {
-      setError("An error occurred during login. Please try again.");
+      setError("An error occurred during login. Please try again later.");
       toast({
         title: "Login error",
-        description: "An error occurred during login.",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }

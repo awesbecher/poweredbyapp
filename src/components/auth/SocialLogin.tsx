@@ -19,24 +19,30 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
 
   const handleGoogleLogin = () => {
     setIsLoading(true);
+    setError(null);
     toast({
       title: "Google login",
       description: "Redirecting to Google authentication...",
     });
-    // Implement Google OAuth with whitelist check
+    
+    // Simulate OAuth flow with specific error handling
     setTimeout(() => {
       // Simulate a whitelisted Google user for demo
       const mockGoogleEmail = "admin@example.com";
-      const isAuthorized = true; // In real implementation, check against whitelist
+      const isAuthorized = false; // Change to false to simulate unauthorized access
       
       if (isAuthorized) {
         login(); // Set authenticated state
         navigate('/');
-      } else {
-        setError("Access denied. Your Google account is not authorized.");
         toast({
-          title: "Login failed",
-          description: "Access denied. Your Google account is not authorized.",
+          title: "Login successful",
+          description: `Logged in as ${mockGoogleEmail}`,
+        });
+      } else {
+        setError("Your Google account is not authorized to access this application. Please contact the administrator for access.");
+        toast({
+          title: "Access denied",
+          description: "Your Google account is not in our allowed users list",
           variant: "destructive",
         });
       }
@@ -46,26 +52,40 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
 
   const handleGithubLogin = () => {
     setIsLoading(true);
+    setError(null);
     toast({
       title: "GitHub login",
       description: "Redirecting to GitHub authentication...",
     });
-    // Implement GitHub OAuth with whitelist check
+    
+    // Simulate OAuth flow with specific error handling
     setTimeout(() => {
-      // Simulate a whitelisted GitHub user for demo
-      const mockGithubEmail = "user1@example.com";
-      const isAuthorized = true; // In real implementation, check against whitelist
+      // Simulate a connection error
+      const hasConnectionError = true; // Change to true to simulate connection error
       
-      if (isAuthorized) {
-        login(); // Set authenticated state
-        navigate('/');
-      } else {
-        setError("Access denied. Your GitHub account is not authorized.");
+      if (hasConnectionError) {
+        setError("Could not connect to GitHub. Please check your internet connection and try again.");
         toast({
-          title: "Login failed",
-          description: "Access denied. Your GitHub account is not authorized.",
+          title: "Connection error",
+          description: "Failed to connect to GitHub authentication servers",
           variant: "destructive",
         });
+      } else {
+        // Normal flow would continue here
+        const mockGithubEmail = "user1@example.com";
+        const isAuthorized = true;
+        
+        if (isAuthorized) {
+          login();
+          navigate('/');
+        } else {
+          setError("Your GitHub account is not authorized to access this application.");
+          toast({
+            title: "Access denied",
+            description: "Your GitHub account is not in our allowed users list",
+            variant: "destructive",
+          });
+        }
       }
       setIsLoading(false);
     }, 1000);
