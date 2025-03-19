@@ -10,7 +10,6 @@ import {
   BookOpen, 
   CreditCard, 
   FileText, 
-  Sun,
   LogOut
 } from 'lucide-react';
 import {
@@ -112,7 +111,6 @@ const Sidebar: React.FC = () => {
         {/* Bottom section */}
         <div className="flex-grow"></div>
         <div className="flex flex-col items-center space-y-3 w-full mb-4">
-          <SidebarIcon icon={<Sun size={20} />} tooltip="Theme" />
           <SidebarIcon icon={<LogOut size={20} />} tooltip="Logout" />
         </div>
       </TooltipProvider>
