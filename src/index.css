@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
@@ -180,5 +179,20 @@
   
   .accent-text {
     @apply text-brand-purple-light;
+  }
+  
+  /* Override styles for inputs within gradient containers */
+  .purple-gradient input,
+  .purple-gradient textarea,
+  .purple-gradient select,
+  [class*="from-brand-purple"] input,
+  [class*="from-brand-purple"] textarea,
+  [class*="from-brand-purple"] select {
+    @apply bg-white/10 border-white/20 text-white placeholder-white/50;
+  }
+  
+  /* Style for labels within gradient containers */
+  [class*="from-brand-purple"] label {
+    @apply text-white/90;
   }
 }
