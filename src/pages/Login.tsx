@@ -8,32 +8,51 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
+import { authenticateUser } from '@/utils/authUtils';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate login - replace with actual authentication
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const isAuthorized = await authenticateUser(email, password);
       
-      // For demo purposes, any input will successfully log in
+      if (isAuthorized) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        
+        login(); // Set authenticated state
+        navigate('/');
+      } else {
+        setError("Access denied. Your email is not authorized to use this application.");
+        toast({
+          title: "Login failed",
+          description: "Access denied. Your email is not authorized.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      setError("An error occurred during login. Please try again.");
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: "Login error",
+        description: "An error occurred during login.",
+        variant: "destructive",
       });
-      
-      login(); // Set authenticated state
-      navigate('/');
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -42,10 +61,23 @@ const Login = () => {
       title: "Google login",
       description: "Redirecting to Google authentication...",
     });
-    // Implement Google OAuth
+    // Implement Google OAuth with whitelist check
     setTimeout(() => {
-      login(); // Set authenticated state
-      navigate('/');
+      // Simulate a whitelisted Google user for demo
+      const mockGoogleEmail = "admin@example.com";
+      const isAuthorized = true; // In real implementation, check against whitelist
+      
+      if (isAuthorized) {
+        login(); // Set authenticated state
+        navigate('/');
+      } else {
+        setError("Access denied. Your Google account is not authorized.");
+        toast({
+          title: "Login failed",
+          description: "Access denied. Your Google account is not authorized.",
+          variant: "destructive",
+        });
+      }
       setIsLoading(false);
     }, 1000);
   };
@@ -56,10 +88,23 @@ const Login = () => {
       title: "GitHub login",
       description: "Redirecting to GitHub authentication...",
     });
-    // Implement GitHub OAuth
+    // Implement GitHub OAuth with whitelist check
     setTimeout(() => {
-      login(); // Set authenticated state
-      navigate('/');
+      // Simulate a whitelisted GitHub user for demo
+      const mockGithubEmail = "user1@example.com";
+      const isAuthorized = true; // In real implementation, check against whitelist
+      
+      if (isAuthorized) {
+        login(); // Set authenticated state
+        navigate('/');
+      } else {
+        setError("Access denied. Your GitHub account is not authorized.");
+        toast({
+          title: "Login failed",
+          description: "Access denied. Your GitHub account is not authorized.",
+          variant: "destructive",
+        });
+      }
       setIsLoading(false);
     }, 1000);
   };
@@ -81,6 +126,12 @@ const Login = () => {
           </CardHeader>
           
           <CardContent>
+            {error && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-md p-3 mb-4 text-sm">
+                {error}
+              </div>
+            )}
+            
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-white">Email</Label>
