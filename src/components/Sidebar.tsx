@@ -62,7 +62,7 @@ const Divider: React.FC = () => {
 
 const Sidebar: React.FC = () => {
   return (
-    <div className="fixed left-0 top-0 h-full w-16 bg-white shadow-md flex flex-col items-center py-4 z-10">
+    <div className="fixed left-0 top-0 h-full w-16 bg-black shadow-md flex flex-col items-center py-4 z-10">
       <div className="flex flex-col items-center space-y-1 w-full">
         {/* Top section - Logo icon */}
         <LogoIcon />
