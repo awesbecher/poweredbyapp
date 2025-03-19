@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -9,7 +8,6 @@ import {
   HelpCircle, 
   Settings, 
   BookOpen, 
-  Box, 
   CreditCard, 
   MessageSquare, 
   FileText, 
@@ -109,7 +107,6 @@ const Sidebar: React.FC = () => {
           <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
           <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
           <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
-          <SidebarIcon icon={<Box size={20} />} tooltip="Products" />
           <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
           <SidebarIcon icon={<MessageSquare size={20} />} tooltip="Messages" />
           <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
