@@ -38,7 +38,7 @@ const Waitlist = () => {
           
           <CardContent className="flex flex-col items-center space-y-6">
             <p className="text-white text-center">
-              The Powered_by Platform is currently in closed beta. Please enter your contact details below to join our waitlist.
+              The <span className="bg-white text-primary font-bold px-3 py-1 rounded-md inline-flex">Powered_by</span> Platform is currently in closed beta. Please enter your contact details below to join our waitlist.
             </p>
             
             <div className="w-full">
