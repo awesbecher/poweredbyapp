@@ -68,10 +68,12 @@ const Index = () => {
         
         <main className="container-custom py-12">
           <div className="max-w-5xl mx-auto">
-            <div className="mb-8 text-center">
-              <h1 className="text-4xl font-medium mb-3 text-white">Agent Configuration</h1>
-              <p className="text-xl text-accent">
-                Select the type of AI agent you want to build
+            <div className="mb-10 space-y-4">
+              <h1 className="text-4xl font-semibold tracking-tight text-white/95 pb-2 border-b border-white/10">
+                Agent Configuration
+              </h1>
+              <p className="text-lg text-white/70 font-normal">
+                Select the type of AI agent you want to build from the options below
               </p>
             </div>
             
