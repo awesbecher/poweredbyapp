@@ -1,6 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import Header from '@/components/Header';
 import ConfigSection from '@/components/ConfigSection';
 import DropdownSelect from '@/components/DropdownSelect';
@@ -111,6 +111,14 @@ const VoiceAgent = () => {
     simulateRendering();
   };
   
+  const handleAIWriteClick = () => {
+    // Generate AI prompt based on previous inputs
+    const aiGeneratedPrompt = `I'm a voice agent that ${voiceAgentConfig.agentFunction || 'helps users'}. I'm designed to be ${voiceAgentConfig.agentTone.join(', ') || 'professional and helpful'}.`;
+    
+    updateVoiceConfig({ promptDetails: aiGeneratedPrompt });
+    toast.success('AI has generated a prompt for you!');
+  };
+  
   const getLLMProviderOptions = () => {
     return Object.keys(modelVersionsByProvider).map(provider => ({
       value: provider,
@@ -199,6 +207,8 @@ const VoiceAgent = () => {
               <ConfigSection
                 title="Model Prompt"
                 description="Define how your voice agent should behave"
+                showAIWriteButton={true}
+                onAIWriteClick={handleAIWriteClick}
               >
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-6">
