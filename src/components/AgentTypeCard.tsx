@@ -39,16 +39,6 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
         )}>
           {icon}
         </div>
-        
-        <div className="ml-auto">
-          <div className={cn(
-            "h-1.5 w-12 rounded-full",
-            type === 'voice' && "bg-emerald-400",
-            type === 'email' && "bg-sky-400",
-            type === 'sms' && "bg-amber-400",
-            type === 'workflow' && "bg-violet-400",
-          )} />
-        </div>
       </div>
       
       <div className="mt-3 space-y-1">
@@ -63,24 +53,12 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
       )}
       
       <div className="flex items-center mt-3 pt-2 border-t border-white/10">
-        <div className={cn(
-          "text-xs font-medium",
-          type === 'voice' && "text-white",
-          type === 'email' && "text-white",
-          type === 'sms' && "text-white",
-          type === 'workflow' && "text-white",
-        )}>
+        <div className="text-xs font-medium text-white">
           Configure Agent
         </div>
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
-          className={cn(
-            "w-3 h-3 ml-1",
-            type === 'voice' && "text-white",
-            type === 'email' && "text-white",
-            type === 'sms' && "text-white",
-            type === 'workflow' && "text-white",
-          )} 
+          className="w-3 h-3 ml-1 text-white" 
           fill="none" 
           viewBox="0 0 24 24" 
           stroke="currentColor"
