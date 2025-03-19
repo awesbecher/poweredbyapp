@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
 import { isAuthorizedUser } from '@/utils/authUtils';
+import { Input } from '@/components/ui/input';
 
 interface SocialLoginProps {
   setError: (error: string | null) => void;
@@ -17,83 +18,40 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [showEmailInput, setShowEmailInput] = useState(false);
 
-  // Google OAuth configuration
-  const googleOAuthConfig = {
-    client_id: '707588075803-0p7hpi6j3qri3vtu1u4a8l7qhhl7nbbf.apps.googleusercontent.com',
-    redirect_uri: window.location.origin + '/login',
-    scope: 'email profile',
-    response_type: 'token',
-    prompt: 'select_account',
-  };
-
-  // Function to handle the OAuth redirect response
-  React.useEffect(() => {
-    // Check if we have a hash in the URL (indicates OAuth callback)
-    if (window.location.hash) {
-      setIsLoading(true);
-      
-      // Extract the access token from the URL hash
-      const params = new URLSearchParams(window.location.hash.substring(1));
-      const accessToken = params.get('access_token');
-      
-      if (accessToken) {
-        // Get user info from Google using the access token
-        fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-          .then(response => response.json())
-          .then(data => {
-            const email = data.email;
-            
-            // Check if the user's email is in the whitelist
-            if (isAuthorizedUser(email)) {
-              login();
-              navigate('/');
-              toast({
-                title: 'Login successful',
-                description: `Logged in as ${email}`,
-              });
-            } else {
-              setError('Your Google account is not authorized to access this application. Please contact the administrator for access.');
-              toast({
-                title: 'Access denied',
-                description: 'Your Google account is not in our allowed users list',
-                variant: 'destructive',
-              });
-            }
-          })
-          .catch(err => {
-            console.error('Error fetching user info:', err);
-            setError('Failed to get user information from Google');
-            toast({
-              title: 'Authentication error',
-              description: 'Failed to verify Google account',
-              variant: 'destructive',
-            });
-          })
-          .finally(() => {
-            setIsLoading(false);
-            // Clean up the URL to remove the hash
-            window.history.replaceState({}, document.title, window.location.pathname);
-          });
-      }
-    }
-  }, []);
-
-  const handleGoogleLogin = () => {
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
     
-    // Build the Google OAuth URL
-    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-    const urlParams = new URLSearchParams(googleOAuthConfig);
-    authUrl.search = urlParams.toString();
-    
-    // Redirect to Google's authorization page
-    window.location.href = authUrl.toString();
+    // Check if the email is in the whitelist
+    if (isAuthorizedUser(email)) {
+      // Simulate successful login
+      setTimeout(() => {
+        login();
+        navigate('/');
+        toast({
+          title: "Login successful",
+          description: `Logged in as ${email}`,
+        });
+        setIsLoading(false);
+      }, 800);
+    } else {
+      setError("This email is not authorized to access this application. Please contact the administrator for access.");
+      toast({
+        title: "Access denied",
+        description: "Your email is not in our allowed users list",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleClick = () => {
+    setShowEmailInput(true);
+    setError(null);
   };
 
   const handleGithubLogin = () => {
@@ -142,26 +100,61 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
         </div>
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
-        <Button 
-          variant="outline" 
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-          className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-        >
-          <Mail size={16} className="mr-2" />
-          Google
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={handleGithubLogin}
-          disabled={isLoading}
-          className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-        >
-          <Github size={16} className="mr-2" />
-          GitHub
-        </Button>
-      </div>
+      {showEmailInput ? (
+        <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
+            />
+            <p className="text-xs text-accent">
+              Enter one of the allowed emails: andrew@poweredby.agency, team@poweredby.agency, andrew@madrone.capital
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              type="submit"
+              disabled={isLoading}
+              className="bg-primary text-white w-full"
+            >
+              {isLoading ? "Verifying..." : "Verify Email"}
+            </Button>
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={() => setShowEmailInput(false)}
+              className="bg-white/5 border-white/10 text-white"
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <Button 
+            variant="outline" 
+            onClick={handleGoogleClick}
+            disabled={isLoading}
+            className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+          >
+            <Mail size={16} className="mr-2" />
+            Google
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleGithubLogin}
+            disabled={isLoading}
+            className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+          >
+            <Github size={16} className="mr-2" />
+            GitHub
+          </Button>
+        </div>
+      )}
     </>
   );
 };
