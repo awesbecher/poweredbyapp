@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
@@ -29,6 +30,7 @@ interface SidebarIconProps {
   onClick?: () => void;
   highlight?: boolean;
   tooltip?: string;
+  linkTo?: string;
 }
 
 const SidebarIcon: React.FC<SidebarIconProps> = ({ 
@@ -36,7 +38,8 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
   isActive = false, 
   onClick,
   highlight = false,
-  tooltip
+  tooltip,
+  linkTo
 }) => {
   const iconElement = (
     <div 
@@ -51,11 +54,17 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
     </div>
   );
 
+  const wrappedIcon = linkTo ? (
+    <Link to={linkTo}>
+      {iconElement}
+    </Link>
+  ) : iconElement;
+
   if (tooltip) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          {iconElement}
+          {wrappedIcon}
         </TooltipTrigger>
         <TooltipContent side="right">
           <p>{tooltip}</p>
@@ -64,7 +73,7 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
     );
   }
 
-  return iconElement;
+  return wrappedIcon;
 };
 
 const LogoIcon: React.FC = () => {
@@ -94,7 +103,7 @@ const Sidebar: React.FC = () => {
           <div className="mt-4"></div>
           
           {/* Main navigation icons */}
-          <SidebarIcon icon={<Home size={20} />} tooltip="Home" />
+          <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/index" />
           <SidebarIcon icon={<Plus size={20} />} tooltip="Add New" />
           <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
           <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
