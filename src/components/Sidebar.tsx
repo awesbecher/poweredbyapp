@@ -2,7 +2,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  Code, 
   Home, 
   Plus, 
   Folder, 
@@ -45,6 +44,18 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
   );
 };
 
+const LogoIcon: React.FC = () => {
+  return (
+    <div className="w-12 h-12 flex items-center justify-center cursor-pointer rounded-lg overflow-hidden bg-blue-500">
+      <img 
+        src="/lovable-uploads/82880f9b-90b3-4305-adc6-58a002e01f94.png"
+        alt="Logo"
+        className="w-full h-full object-cover" 
+      />
+    </div>
+  );
+};
+
 const Divider: React.FC = () => {
   return <div className="w-full h-px bg-gray-700/20 my-2" />;
 };
@@ -53,8 +64,8 @@ const Sidebar: React.FC = () => {
   return (
     <div className="fixed left-0 top-0 h-full w-16 bg-white shadow-md flex flex-col items-center py-4 z-10">
       <div className="flex flex-col items-center space-y-1 w-full">
-        {/* Top section - blue code icon */}
-        <SidebarIcon icon={<Code size={24} />} highlight={true} />
+        {/* Top section - Logo icon */}
+        <LogoIcon />
         
         {/* Removed the Expand/Collapse button with ChevronRight icon */}
         
