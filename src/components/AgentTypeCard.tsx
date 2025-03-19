@@ -52,8 +52,8 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
       </div>
       
       <div className="mt-3 space-y-1">
-        <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
-        <p className="text-slate-500 text-xs leading-relaxed">{description}</p>
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <p className="text-white/80 text-xs leading-relaxed">{description}</p>
       </div>
       
       {!isActive && (
@@ -62,13 +62,13 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
         </div>
       )}
       
-      <div className="flex items-center mt-3 pt-2 border-t border-slate-100">
+      <div className="flex items-center mt-3 pt-2 border-t border-white/10">
         <div className={cn(
           "text-xs font-medium",
-          type === 'voice' && "text-emerald-600",
-          type === 'email' && "text-sky-600",
-          type === 'sms' && "text-amber-600",
-          type === 'workflow' && "text-violet-600",
+          type === 'voice' && "text-white",
+          type === 'email' && "text-white",
+          type === 'sms' && "text-white",
+          type === 'workflow' && "text-white",
         )}>
           Configure Agent
         </div>
@@ -76,10 +76,10 @@ const AgentTypeCard: React.FC<AgentTypeCardProps> = ({
           xmlns="http://www.w3.org/2000/svg" 
           className={cn(
             "w-3 h-3 ml-1",
-            type === 'voice' && "text-emerald-600",
-            type === 'email' && "text-sky-600",
-            type === 'sms' && "text-amber-600",
-            type === 'workflow' && "text-violet-600",
+            type === 'voice' && "text-white",
+            type === 'email' && "text-white",
+            type === 'sms' && "text-white",
+            type === 'workflow' && "text-white",
           )} 
           fill="none" 
           viewBox="0 0 24 24" 
