@@ -1,9 +1,9 @@
 
 // List of authorized email addresses
 const AUTHORIZED_EMAILS = [
-  'admin@example.com',
-  'user1@example.com',
-  'user2@example.com',
+  'andrew@poweredby.agency',
+  'team@poweredby.agency',
+  'andrew@madrone.capital',
   // Add more authorized emails as needed
 ];
 
