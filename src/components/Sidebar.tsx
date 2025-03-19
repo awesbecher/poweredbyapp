@@ -74,11 +74,11 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({
 
 const LogoIcon: React.FC = () => {
   return (
-    <div className="w-12 h-12 flex items-center justify-center cursor-pointer rounded-lg overflow-hidden bg-blue-500">
+    <div className="w-12 h-12 flex items-center justify-center cursor-pointer rounded-lg overflow-hidden bg-transparent">
       <img 
-        src="/lovable-uploads/ba850fee-49fa-4eb6-ad49-fa62b5b0e048.png"
+        src="/lovable-uploads/ae8e51ee-1015-4acb-8ff5-4da999c0777d.png"
         alt="Logo"
-        className="w-full h-full object-cover" 
+        className="w-full h-full object-contain" 
       />
     </div>
   );
