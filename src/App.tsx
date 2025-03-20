@@ -31,7 +31,7 @@ export const useAuth = () => {
 };
 
 // Public routes that don't require authentication
-const PUBLIC_ROUTES = ['/login', '/signup', '/waitlist', '/'];
+const PUBLIC_ROUTES = ['/login', '/signup', '/waitlist'];
 
 // Authentication Check Component
 const AuthCheck = ({ children }: { children: JSX.Element }) => {
@@ -89,7 +89,8 @@ const App = () => {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
-                      <Route path="/" element={<Index />} />
+                      <Route path="/" element={<Navigate to="/login" replace />} />
+                      <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
                       <Route path="/review-agent" element={<ReviewAgent />} />
                       <Route path="*" element={<NotFound />} />
