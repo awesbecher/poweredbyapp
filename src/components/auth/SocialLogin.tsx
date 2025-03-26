@@ -31,7 +31,7 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
       // Simulate successful login
       setTimeout(() => {
         login();
-        navigate('/');
+        navigate('/dashboard'); // Change from '/' to '/dashboard'
         toast({
           title: "Login successful",
           description: `Logged in as ${email}`,
@@ -70,7 +70,7 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
       // Check if the email is in the whitelist
       if (isAuthorizedUser(mockGithubEmail)) {
         login();
-        navigate('/');
+        navigate('/dashboard'); // Change from '/' to '/dashboard'
         toast({
           title: "Login successful",
           description: `Logged in as ${mockGithubEmail}`,

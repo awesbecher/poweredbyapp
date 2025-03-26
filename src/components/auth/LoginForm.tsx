@@ -61,7 +61,7 @@ const LoginForm = ({ setError }: LoginFormProps) => {
         });
         
         login(); // Set authenticated state
-        navigate('/');
+        navigate('/dashboard'); // Change from '/' to '/dashboard'
       } else {
         // Handle different error types
         if (result.errorType === 'user_not_found') {

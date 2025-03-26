@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,7 +49,7 @@ const AuthCheck = ({ children }: { children: JSX.Element }) => {
   
   // If the user is authenticated and trying to access login/signup, redirect to home
   if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/signup')) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return children;
@@ -90,7 +91,7 @@ const App = () => {
                       <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
                       <Route path="/subdomain" element={<Subdomain />} />
-                      <Route path="/" element={<Navigate to="/login" replace />} />
+                      <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
                       <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
                       <Route path="/review-agent" element={<ReviewAgent />} />
