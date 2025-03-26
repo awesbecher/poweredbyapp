@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Subdomain = () => {
+const ProjectText = () => {
   const navigate = useNavigate();
   const targetIp = "192.81.217.151";
   const [countdown, setCountdown] = useState(30);
@@ -48,4 +48,4 @@ const Subdomain = () => {
   );
 };
 
-export default Subdomain;
+export default ProjectText;

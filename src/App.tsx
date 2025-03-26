@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +11,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import Waitlist from "./pages/Waitlist";
-import Subdomain from "./pages/Subdomain";
+import ProjectText from "./pages/ProjectText";
 import { useState, createContext, useContext, useEffect } from "react";
 
 // Create Authentication Context
@@ -89,7 +90,7 @@ const App = () => {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
-                      <Route path="/project-text" element={<Subdomain />} />
+                      <Route path="/project-text" element={<ProjectText />} />
                       <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
                       <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
