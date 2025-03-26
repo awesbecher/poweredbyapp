@@ -26,6 +26,14 @@ const AUTHORIZED_USERS: AuthorizedUser[] = [
     email: 'andrew@madrone.capital',
     password: 'securepass'  // You should use a stronger password in production
   },
+  {
+    email: 'sharjeel@madrone.capital',
+    password: 'securepass'  // You should use a stronger password in production
+  },
+  {
+    email: 'manshasharjeel@gmail.com',
+    password: 'securepass'  // You should use a stronger password in production
+  }
   // Add more authorized users as needed
 ];
 
