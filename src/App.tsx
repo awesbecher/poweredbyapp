@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import Waitlist from "./pages/Waitlist";
+import Subdomain from "./pages/Subdomain";
 import { useState, createContext, useContext, useEffect } from "react";
 
 // Create Authentication Context
@@ -31,7 +31,7 @@ export const useAuth = () => {
 };
 
 // Public routes that don't require authentication
-const PUBLIC_ROUTES = ['/login', '/signup', '/waitlist'];
+const PUBLIC_ROUTES = ['/login', '/signup', '/waitlist', '/subdomain'];
 
 // Authentication Check Component
 const AuthCheck = ({ children }: { children: JSX.Element }) => {
@@ -89,6 +89,7 @@ const App = () => {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
+                      <Route path="/subdomain" element={<Subdomain />} />
                       <Route path="/" element={<Navigate to="/login" replace />} />
                       <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
