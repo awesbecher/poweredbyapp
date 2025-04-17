@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import {
   Mail, 
   MessageSquare, 
   GitBranch,
-  Info,
   ChevronRight
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
@@ -71,11 +69,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
   onConfigure,
 }) => {
   const navigate = useNavigate();
-  
-  const handleLearnMore = () => {
-    // This would navigate to a details page in the future
-    console.log(`Learn more about ${name}`);
-  };
 
   return (
     <Card className={`overflow-hidden transition-all duration-200 hover:translate-y-[-4px] hover:scale-[1.02] hover:shadow-2xl ${!isActive ? 'opacity-70' : ''}`}>
@@ -129,15 +122,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
         >
           Configure
           <ChevronRight size={16} />
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleLearnMore}
-          disabled={!isActive}
-        >
-          <Info size={16} />
         </Button>
       </CardFooter>
     </Card>
