@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Headphones, 
   Mail, 
-  MessageSquare, 
-  GitBranch,
-  SearchCode 
+  MessageSquare
 } from 'lucide-react';
 import { AgentTag } from '@/components/dashboard/AgentCard';
 import { AgentType } from '@/lib/types';
@@ -66,25 +64,7 @@ const agentData: AgentCardData[] = [
     tags: ['Voice'],
     icon: <Headphones size={24} />,
     isActive: true
-  },
-  {
-    id: 'workflow-agent',
-    name: 'Workflow Agent',
-    description: 'Automate complex business processes',
-    agentType: 'workflow',
-    tags: ['Workflow'],
-    icon: <GitBranch size={24} />,
-    isActive: true
-  },
-  {
-    id: 'research-agent',
-    name: 'Research Agent',
-    description: 'AI-powered data analysis and research',
-    agentType: 'workflow',
-    tags: ['Web'],
-    icon: <SearchCode size={24} />,
-    isActive: false
-  },
+  }
 ];
 
 const Index = () => {
@@ -101,8 +81,6 @@ const Index = () => {
     } else if (agentType === 'email') {
       navigate('/email-agent');
     } else if (agentType === 'sms') {
-      navigate('/voice-agent');
-    } else if (agentType === 'workflow') {
       navigate('/voice-agent');
     }
   };
