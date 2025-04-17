@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Pencil } from 'lucide-react';
+import { CheckCircle, XCircle, Pencil, AlertCircle } from 'lucide-react';
 import { EmailLog } from "@/lib/types";
 import FeedbackForm from './FeedbackForm';
 
@@ -36,6 +36,9 @@ const EmailDetailsDialog: React.FC<EmailDetailsDialogProps> = ({
   if (!email) return null;
 
   const shouldShowFeedback = email.status === 'replied' && !feedbackSubmitted;
+  
+  // Extract auto reply analysis if available
+  const autoReplyAnalysis = email.auto_reply_analysis || null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -63,6 +66,36 @@ const EmailDetailsDialog: React.FC<EmailDetailsDialogProps> = ({
             <h4 className="font-medium mt-4 mb-2">Original Message:</h4>
             <p className="text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded border">{email.raw_body}</p>
           </div>
+          
+          {/* Auto-reply analysis section */}
+          {autoReplyAnalysis && (
+            <div className="border-b pb-4">
+              <h4 className="font-medium mb-2 flex items-center gap-1">
+                <AlertCircle size={16} />
+                AI Analysis
+              </h4>
+              <div className="bg-gray-50 p-3 rounded border text-sm">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                  <div>
+                    <span className="font-medium">Intent:</span> {autoReplyAnalysis.intent.replace('_', ' ')}
+                  </div>
+                  <div>
+                    <span className="font-medium">Complexity:</span> {autoReplyAnalysis.complexity}/10
+                  </div>
+                  <div>
+                    <span className="font-medium">Confidence:</span> {autoReplyAnalysis.confidence}%
+                  </div>
+                  <div>
+                    <span className="font-medium">Auto-reply recommended:</span>{' '}
+                    {autoReplyAnalysis.autoReplyRecommended ? 'Yes' : 'No'}
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <span className="font-medium">Reasoning:</span> {autoReplyAnalysis.reasoning}
+                </div>
+              </div>
+            </div>
+          )}
           
           <div className="border-b pb-4">
             <h4 className="font-medium mb-2">AI Generated Reply:</h4>

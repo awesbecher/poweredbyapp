@@ -39,6 +39,14 @@ export interface AgentRenderingState {
   error: string | null;
 }
 
+export interface AutoReplyAnalysis {
+  intent: string;
+  complexity: number;
+  confidence: number;
+  autoReplyRecommended: boolean;
+  reasoning: string;
+}
+
 export interface EmailLog {
   id: string;
   agent_id: string;
@@ -51,4 +59,5 @@ export interface EmailLog {
   created_at: string;
   user_rating?: number;
   user_feedback?: string;
+  auto_reply_analysis?: AutoReplyAnalysis;
 }

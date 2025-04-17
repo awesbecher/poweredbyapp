@@ -134,6 +134,55 @@ Sign the email as "${agent.company_name} Team".
     
     console.log('Built system prompt with template');
     
+    // First, analyze the message to determine if it's suitable for auto-reply
+    const autoReplyCheck = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "Analyze the following email and determine if an auto-reply is appropriate." },
+        { role: "user", content: email.raw_body }
+      ],
+      functions: [
+        {
+          name: "checkAutoReplyEligibility",
+          parameters: {
+            type: "object",
+            properties: {
+              intent: { 
+                type: "string", 
+                description: "The primary intent of the email (inquiry, complaint, request, etc.)",
+                enum: ["simple_inquiry", "complex_inquiry", "complaint", "urgent_request", "general_request", "feedback", "other"]
+              },
+              complexity: { 
+                type: "number", 
+                description: "A measure of how complex the email is (1-10 scale, where 1 is very simple and 10 is very complex)"
+              },
+              confidence: { 
+                type: "number", 
+                description: "Confidence level in being able to generate an appropriate response (0-100)"
+              },
+              autoReplyRecommended: {
+                type: "boolean",
+                description: "Whether auto-reply is recommended based on the email content"
+              },
+              reasoning: {
+                type: "string",
+                description: "Brief explanation for the recommendation"
+              }
+            },
+            required: ["intent", "complexity", "confidence", "autoReplyRecommended", "reasoning"]
+          }
+        }
+      ],
+      function_call: { name: "checkAutoReplyEligibility" },
+      temperature: 0.3,
+    });
+    
+    const autoReplyAnalysis = JSON.parse(
+      autoReplyCheck.choices[0].message.function_call.arguments
+    );
+    
+    console.log('Auto-reply eligibility check:', autoReplyAnalysis);
+    
     // Generate reply with OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -147,10 +196,39 @@ Sign the email as "${agent.company_name} Team".
     const aiReply = completion.choices[0].message.content;
     console.log('Generated AI reply');
     
-    // Implement the auto/manual reply logic
-    if (agent.auto_reply === true) {
+    // Get agent's average rating from previous replies
+    const { data: agentRatings, error: ratingsError } = await supabase
+      .from('email_logs')
+      .select('user_rating')
+      .eq('agent_id', agentId)
+      .not('user_rating', 'is', null);
+      
+    let avgRating = 0;
+    if (!ratingsError && agentRatings && agentRatings.length > 0) {
+      const totalRating = agentRatings.reduce((sum, item) => sum + item.user_rating, 0);
+      avgRating = totalRating / agentRatings.length;
+      console.log(`Agent average rating: ${avgRating.toFixed(1)} from ${agentRatings.length} ratings`);
+    }
+    
+    // Determine if this should be auto-replied based on:
+    // 1. Agent's configuration (auto_reply setting)
+    // 2. Message intent and complexity analysis
+    // 3. Historical performance (ratings)
+    const isLowRiskMessage = autoReplyAnalysis.intent === 'simple_inquiry' || 
+                             autoReplyAnalysis.complexity < 4;
+    const hasHighConfidence = autoReplyAnalysis.confidence > 85;
+    const hasGoodHistoricalPerformance = avgRating >= 4.0 && agentRatings && agentRatings.length >= 5;
+    
+    // Smart auto-mode logic
+    const shouldAutoReply = agent.auto_reply === true && 
+                          (autoReplyAnalysis.autoReplyRecommended && 
+                           isLowRiskMessage && 
+                           hasHighConfidence && 
+                           (hasGoodHistoricalPerformance || agentRatings?.length < 5));
+    
+    if (shouldAutoReply) {
       // Auto-mode: immediately send email
-      console.log('Auto-reply enabled, sending email automatically');
+      console.log('Smart auto-reply enabled, sending email automatically');
       try {
         await fetch(`${process.env.BASE_URL}/.netlify/functions/send-reply`, {
           method: 'POST',
@@ -170,7 +248,8 @@ Sign the email as "${agent.company_name} Team".
         .update({
           ai_reply: aiReply,
           status: 'replied',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          auto_reply_analysis: autoReplyAnalysis
         })
         .eq('id', email.id);
       
@@ -179,14 +258,15 @@ Sign the email as "${agent.company_name} Team".
         return { statusCode: 500, body: 'Failed to update email with AI reply' };
       }
     } else {
-      // Manual mode: wait for human approval
+      // Manual mode or smart-auto decided human review is needed
       console.log('Manual approval required, setting status to awaiting_approval');
       const { error: updateError } = await supabase
         .from('email_logs')
         .update({
           ai_reply: aiReply,
           status: 'awaiting_approval',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          auto_reply_analysis: autoReplyAnalysis
         })
         .eq('id', email.id);
       
@@ -201,7 +281,8 @@ Sign the email as "${agent.company_name} Team".
       body: JSON.stringify({
         success: true,
         reply: aiReply,
-        status: agent.auto_reply ? 'replied' : 'awaiting_approval'
+        status: shouldAutoReply ? 'replied' : 'awaiting_approval',
+        autoReplyAnalysis: autoReplyAnalysis
       })
     };
   } catch (error) {
