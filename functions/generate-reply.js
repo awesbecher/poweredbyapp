@@ -9,65 +9,11 @@
 const { createClient } = require('@supabase/supabase-js');
 const { OpenAI } = require('openai');
 const { notifyFailure } = require('./utils/errorMonitoring');
-
-/**
- * Get contextual instructions based on email content analysis
- */
-const getContextualInstructions = (emailIntent, agentPurpose) => {
-  // Default instructions
-  let instructions = "Respond professionally and empathetically. Sign the email as the company team.";
-  let tone = "professional";
-  
-  // Determine appropriate context based on email intent
-  switch(emailIntent) {
-    case "complaint":
-      tone = "empathetic";
-      instructions = `
-Tone: Empathetic + Professional
-Instruction: Acknowledge the customer's frustration. Apologize if necessary.
-Explain any policy from the knowledgebase clearly and politely.
-Offer to escalate to a human if the situation is sensitive.`;
-      break;
-      
-    case "simple_inquiry":
-    case "general_request":
-      tone = "friendly";
-      instructions = `
-Tone: Friendly
-Instruction: Always reassure the customer and offer clear steps. If unsure, escalate.`;
-      break;
-      
-    case "feedback":
-      tone = "appreciative";
-      instructions = `
-Tone: Appreciative
-Instruction: Thank the customer sincerely for their feedback. Acknowledge their input's value.
-Explain how feedback helps improve the product/service.`;
-      break;
-      
-    case "urgent_request":
-      tone = "efficient";
-      instructions = `
-Tone: Efficient yet warm
-Instruction: Address the urgency directly. Provide immediate next steps.
-Be clear about timeframes. Offer escalation if needed.`;
-      break;
-  }
-  
-  // If agent has a custom purpose that seems sales-oriented, add sales guidance
-  if (agentPurpose && 
-      (agentPurpose.toLowerCase().includes("sales") || 
-       agentPurpose.toLowerCase().includes("convert") || 
-       agentPurpose.toLowerCase().includes("lead"))) {
-    tone = "persuasive";
-    instructions += `
-Tone: Persuasive
-Instruction: Emphasize product value. Encourage action (signup, upgrade, book a demo).
-Highlight differentiators when asked about competitors.`;
-  }
-  
-  return { instructions, tone };
-};
+const { getContextualInstructions } = require('./utils/contextUtils');
+const { getRelevantKnowledge } = require('./utils/knowledgeUtils');
+const { buildSystemPrompt } = require('./utils/promptUtils');
+const { analyzeEmailForAutoReply, shouldSendAutoReply } = require('./utils/autoReplyUtils');
+const { getThreadHistory, getAgentRatings } = require('./utils/historyUtils');
 
 exports.handler = async function(event, context) {
   // Only allow POST requests
@@ -143,201 +89,44 @@ exports.handler = async function(event, context) {
       return { statusCode: 404, body: 'Agent not found' };
     }
     
-    // Initialize OpenAI client
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    
-    // Generate embedding for the email content to find relevant knowledge
-    let emailEmbedding;
-    try {
-      emailEmbedding = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: email.raw_body,
-      });
-    } catch (embeddingError) {
-      await notifyFailure({
-        functionName: 'generate-reply',
-        error: embeddingError,
-        agentId,
-        metadata: { 
-          messageId,
-          operation: 'generate_embedding'
-        }
-      });
-      // Continue without embeddings
-      console.log('Error generating embeddings, continuing without knowledge context');
-    }
-    
-    // Get relevant knowledge chunks using vector search
-    let relevantKnowledge = [];
-    if (emailEmbedding) {
-      try {
-        const { data: knowledgeData, error: knowledgeError } = await supabase
-          .rpc('match_kb_embeddings', {
-            query_embedding: emailEmbedding.data[0].embedding,
-            match_threshold: 0.5, // Adjust as needed
-            match_count: 5, // Increased from 3 to 5
-            agent_id: agentId
-          });
-          
-        if (knowledgeError) {
-          await notifyFailure({
-            functionName: 'generate-reply',
-            error: knowledgeError,
-            agentId,
-            metadata: { 
-              messageId,
-              operation: 'knowledge_search'
-            }
-          });
-          console.log('Error fetching relevant knowledge, continuing without knowledge base context');
-        } else {
-          relevantKnowledge = knowledgeData || [];
-        }
-      } catch (knowledgeSearchError) {
-        await notifyFailure({
-          functionName: 'generate-reply',
-          error: knowledgeSearchError,
-          agentId,
-          metadata: { 
-            messageId,
-            operation: 'knowledge_search'
-          }
-        });
-        console.log('Error searching knowledge base, continuing without knowledge context');
-      }
-    }
-
-    // Get previous conversation history for this thread
-    const { data: threadHistory, error: threadError } = await supabase
-      .from('email_logs')
-      .select('*')
-      .eq('agent_id', agentId)
-      .eq('from_address', email.from_address)
-      .not('ai_reply', 'is', null)
-      .order('created_at', { ascending: true })
-      .limit(3);
-
-    let pastAgentResponses = '';
-    if (!threadError && threadHistory && threadHistory.length > 0) {
-      pastAgentResponses = threadHistory
-        .map(item => `${agent.company_name}: ${item.ai_reply}`)
-        .join('\n\n');
-      console.log(`Found ${threadHistory.length} past responses for this thread`);
-    } else {
-      console.log('No past responses found for this thread');
-    }
+    // Get relevant knowledge chunks for this email
+    const relevantKnowledge = await getRelevantKnowledge(email.raw_body, agentId);
     
     // Format knowledge base chunks
-    let kbChunks = '';
-    if (relevantKnowledge && relevantKnowledge.length > 0) {
-      kbChunks = relevantKnowledge.map(item => item.content).join('\n\n');
-      console.log(`Found ${relevantKnowledge.length} relevant knowledge chunks`);
-    } else {
-      console.log('No relevant knowledge chunks found');
-      kbChunks = 'No specific information available for this query.';
-    }
+    const kbChunks = relevantKnowledge && relevantKnowledge.length > 0
+      ? relevantKnowledge.map(item => item.content).join('\n\n')
+      : 'No specific information available for this query.';
     
-    // First, analyze the message to determine if it's suitable for auto-reply
-    let autoReplyAnalysis;
-    try {
-      const autoReplyCheck = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: "Analyze the following email and determine if an auto-reply is appropriate." },
-          { role: "user", content: email.raw_body }
-        ],
-        functions: [
-          {
-            name: "checkAutoReplyEligibility",
-            parameters: {
-              type: "object",
-              properties: {
-                intent: { 
-                  type: "string", 
-                  description: "The primary intent of the email (inquiry, complaint, request, etc.)",
-                  enum: ["simple_inquiry", "complex_inquiry", "complaint", "urgent_request", "general_request", "feedback", "other"]
-                },
-                complexity: { 
-                  type: "number", 
-                  description: "A measure of how complex the email is (1-10 scale, where 1 is very simple and 10 is very complex)"
-                },
-                confidence: { 
-                  type: "number", 
-                  description: "Confidence level in being able to generate an appropriate response (0-100)"
-                },
-                autoReplyRecommended: {
-                  type: "boolean",
-                  description: "Whether auto-reply is recommended based on the email content"
-                },
-                reasoning: {
-                  type: "string",
-                  description: "Brief explanation for the recommendation"
-                }
-              },
-              required: ["intent", "complexity", "confidence", "autoReplyRecommended", "reasoning"]
-            }
-          }
-        ],
-        function_call: { name: "checkAutoReplyEligibility" },
-        temperature: 0.3,
-      });
-      
-      autoReplyAnalysis = JSON.parse(
-        autoReplyCheck.choices[0].message.function_call.arguments
-      );
-      
-      console.log('Auto-reply eligibility check:', autoReplyAnalysis);
-    } catch (analysisError) {
-      await notifyFailure({
-        functionName: 'generate-reply',
-        error: analysisError,
-        agentId,
-        metadata: { 
-          messageId,
-          operation: 'auto_reply_analysis',
-          emailSubject: email.subject
-        }
-      });
-      
-      // Default to conservative auto-reply settings if analysis fails
-      autoReplyAnalysis = {
-        intent: "other",
-        complexity: 7,
-        confidence: 50,
-        autoReplyRecommended: false,
-        reasoning: "Analysis failed, defaulting to human review"
-      };
-      
-      console.log('Auto-reply analysis failed, defaulting to human review');
-    }
+    // Get previous conversation history
+    const pastAgentResponses = await getThreadHistory(
+      supabase, 
+      agentId, 
+      email.from_address, 
+      agent.company_name
+    );
+    
+    // Analyze if this email is suitable for auto-reply
+    const autoReplyAnalysis = await analyzeEmailForAutoReply(email, agentId);
+    console.log('Auto-reply eligibility check:', autoReplyAnalysis);
     
     // Get contextual instructions based on intent and agent purpose
     const { instructions: contextualInstructions, tone: recommendedTone } = 
       getContextualInstructions(autoReplyAnalysis.intent, agent.purpose);
     
-    // Build the improved prompt using the template and contextual instructions
-    const systemPrompt = `
-You are an AI email assistant for ${agent.company_name}. 
-You are helpful, knowledgeable, and communicate with a ${agent.tone || recommendedTone} tone.
-Purpose: ${agent.purpose || 'To assist customers with their inquiries'}
-
-${contextualInstructions}
-
-Knowledgebase:
-${kbChunks}
-
-Email Thread:
-Customer: ${email.raw_body}
-${pastAgentResponses ? `Agent History:\n${pastAgentResponses}` : ''}
-
-Generate a reply that is clear, polite, and helpful.
-If you are not confident, defer to a human.
-Sign the email as "${agent.company_name} Team".
-`;
+    // Build the system prompt
+    const systemPrompt = buildSystemPrompt(
+      agent,
+      email,
+      contextualInstructions,
+      recommendedTone,
+      kbChunks,
+      pastAgentResponses
+    );
     
     console.log('Built system prompt with context-aware template');
     
     // Generate reply with OpenAI
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     let aiReply;
     try {
       const completion = await openai.chat.completions.create({
@@ -365,35 +154,16 @@ Sign the email as "${agent.company_name} Team".
       return { statusCode: 500, body: 'Failed to generate AI reply' };
     }
     
-    // Get agent's average rating from previous replies
-    const { data: agentRatings, error: ratingsError } = await supabase
-      .from('email_logs')
-      .select('user_rating')
-      .eq('agent_id', agentId)
-      .not('user_rating', 'is', null);
-      
-    let avgRating = 0;
-    if (!ratingsError && agentRatings && agentRatings.length > 0) {
-      const totalRating = agentRatings.reduce((sum, item) => sum + item.user_rating, 0);
-      avgRating = totalRating / agentRatings.length;
-      console.log(`Agent average rating: ${avgRating.toFixed(1)} from ${agentRatings.length} ratings`);
-    }
+    // Get agent's performance ratings
+    const { avgRating, count: ratingCount } = await getAgentRatings(supabase, agentId);
     
-    // Determine if this should be auto-replied based on:
-    // 1. Agent's configuration (auto_reply setting)
-    // 2. Message intent and complexity analysis
-    // 3. Historical performance (ratings)
-    const isLowRiskMessage = autoReplyAnalysis.intent === 'simple_inquiry' || 
-                             autoReplyAnalysis.complexity < 4;
-    const hasHighConfidence = autoReplyAnalysis.confidence > 85;
-    const hasGoodHistoricalPerformance = avgRating >= 4.0 && agentRatings && agentRatings.length >= 5;
-    
-    // Smart auto-mode logic
-    const shouldAutoReply = agent.auto_reply === true && 
-                          (autoReplyAnalysis.autoReplyRecommended && 
-                           isLowRiskMessage && 
-                           hasHighConfidence && 
-                           (hasGoodHistoricalPerformance || agentRatings?.length < 5));
+    // Determine if this should be auto-replied
+    const shouldAutoReply = shouldSendAutoReply(
+      agent, 
+      autoReplyAnalysis, 
+      avgRating, 
+      ratingCount
+    );
     
     if (shouldAutoReply) {
       // Auto-mode: immediately send email
@@ -479,7 +249,7 @@ Sign the email as "${agent.company_name} Team".
         reply: aiReply,
         status: shouldAutoReply ? 'replied' : 'awaiting_approval',
         autoReplyAnalysis: autoReplyAnalysis,
-        contextUsed: recommendedTone // Added to show what context was used
+        contextUsed: recommendedTone
       })
     };
   } catch (error) {
