@@ -32,6 +32,16 @@
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
+# Custom domain configuration
+[[headers]]
+  for = "/*"
+    [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co https://api.openai.com;"
+
 # Define scheduled functions
 [functions.poll-inbox]
   schedule = "*/5 * * * *"
@@ -44,3 +54,4 @@
     "node_modules/mammoth/node_modules/**"
   ]
   external_node_modules = ["mammoth", "pdf-parse"]
+

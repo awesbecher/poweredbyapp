@@ -14,7 +14,7 @@ const SuccessHeader: React.FC<SuccessHeaderProps> = ({ companyName }) => {
       </div>
       <h2 className="text-2xl font-bold mb-2">Your Email Agent is Ready!</h2>
       <p className="text-muted-foreground max-w-md">
-        The AI email agent for {companyName} has been successfully created. 
+        The AI email agent for {companyName} has been successfully created at <span className="font-semibold">poweredby.app</span>. 
         Next steps: Connect your Gmail and train it with your files.
       </p>
     </div>

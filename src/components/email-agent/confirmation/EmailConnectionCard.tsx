@@ -13,7 +13,7 @@ const EmailConnectionCard = () => {
           Connect Email
         </CardTitle>
         <CardDescription>
-          Connect your business Gmail account to start receiving emails
+          Connect your business Gmail account to poweredby.app to start receiving emails
         </CardDescription>
       </CardHeader>
       <CardContent>
