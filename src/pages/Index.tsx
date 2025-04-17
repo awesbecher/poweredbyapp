@@ -14,7 +14,6 @@ import HeroHeader from '@/components/dashboard/HeroHeader';
 import AgentCard from '@/components/dashboard/AgentCard';
 import EmptyState from '@/components/dashboard/EmptyState';
 import DashboardSidebar from '@/components/dashboard/Sidebar';
-import UsageRing from '@/components/dashboard/UsageRing';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 
 type AgentCardData = {
@@ -145,8 +144,6 @@ const Index = () => {
             </div>
           </main>
         </div>
-        
-        <UsageRing used={3} total={5} />
       </div>
     </ThemeProvider>
   );
