@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import VoiceAgent from "./pages/VoiceAgent";
-import ReviewAgent from "./pages/ReviewAgent";
 import EmailAgent from "./pages/EmailAgent";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -69,7 +68,6 @@ const App = () => {
                         <Route path="/project-text" element={<ProjectText />} />
                         <Route path="/" element={<EmailAgent />} />
                         <Route path="/voice-agent" element={<VoiceAgent />} />
-                        <Route path="/review-agent" element={<ReviewAgent />} />
                         <Route path="/email-agent" element={<EmailAgent />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
