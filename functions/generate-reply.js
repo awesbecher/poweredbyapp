@@ -70,12 +70,12 @@ exports.handler = async function(event, context) {
       input: email.raw_body,
     });
     
-    // Get top 3 relevant knowledge chunks using vector search
+    // Get relevant knowledge chunks using vector search
     const { data: relevantKnowledge, error: knowledgeError } = await supabase
       .rpc('match_kb_embeddings', {
         query_embedding: emailEmbedding.data[0].embedding,
         match_threshold: 0.5, // Adjust as needed
-        match_count: 3,
+        match_count: 5, // Increased from 3 to 5
         agent_id: agentId
       });
     
@@ -83,29 +83,63 @@ exports.handler = async function(event, context) {
       console.error('Error fetching relevant knowledge:', knowledgeError);
       console.log('Continuing without knowledge base context');
     }
+
+    // Get previous conversation history for this thread
+    const { data: threadHistory, error: threadError } = await supabase
+      .from('email_logs')
+      .select('*')
+      .eq('agent_id', agentId)
+      .eq('from_address', email.from_address)
+      .not('ai_reply', 'is', null)
+      .order('created_at', { ascending: true })
+      .limit(3);
+
+    let pastAgentResponses = '';
+    if (!threadError && threadHistory && threadHistory.length > 0) {
+      pastAgentResponses = threadHistory
+        .map(item => `${agent.company_name}: ${item.ai_reply}`)
+        .join('\n\n');
+      console.log(`Found ${threadHistory.length} past responses for this thread`);
+    } else {
+      console.log('No past responses found for this thread');
+    }
     
-    // Build the prompt
-    let systemPrompt = `You are an AI email assistant for ${agent.company_name}. 
-    Your purpose is: ${agent.purpose}
-    Your tone should be: ${agent.tone}
-    
-    Respond to the email in a helpful, concise manner. Sign the email as "${agent.company_name} Team".`;
-    
-    // Add knowledge base context if available
+    // Format knowledge base chunks
+    let kbChunks = '';
     if (relevantKnowledge && relevantKnowledge.length > 0) {
-      const context = relevantKnowledge.map(item => item.content).join('\n\n');
-      systemPrompt += `\n\nRelevant information from the knowledge base:\n${context}`;
+      kbChunks = relevantKnowledge.map(item => item.content).join('\n\n');
       console.log(`Found ${relevantKnowledge.length} relevant knowledge chunks`);
     } else {
       console.log('No relevant knowledge chunks found');
+      kbChunks = 'No specific information available for this query.';
     }
+    
+    // Build the improved prompt using the template
+    const systemPrompt = `
+You are an AI email assistant for ${agent.company_name}. 
+You are helpful, knowledgeable, and communicate with a ${agent.tone} tone.
+Use the knowledgebase provided to assist with the inquiry.
+
+Knowledgebase:
+${kbChunks}
+
+Email Thread:
+Customer: ${email.raw_body}
+${pastAgentResponses ? `Agent History:\n${pastAgentResponses}` : ''}
+
+Generate a reply that is clear, polite, and helpful.
+If you are not confident, defer to a human.
+Sign the email as "${agent.company_name} Team".
+`;
+    
+    console.log('Built system prompt with template');
     
     // Generate reply with OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Please respond to this email:\n\nFrom: ${email.from_address}\nSubject: ${email.subject}\n\n${email.raw_body}` }
+        { role: "user", content: email.raw_body }
       ],
       temperature: 0.7,
     });
