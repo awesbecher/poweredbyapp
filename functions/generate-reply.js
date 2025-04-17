@@ -147,26 +147,9 @@ Sign the email as "${agent.company_name} Team".
     const aiReply = completion.choices[0].message.content;
     console.log('Generated AI reply');
     
-    // Update the email record with the AI reply
-    const status = agent.auto_reply ? 'replied' : 'awaiting_approval';
-    const { error: updateError } = await supabase
-      .from('email_logs')
-      .update({
-        ai_reply: aiReply,
-        status: status,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', email.id);
-    
-    if (updateError) {
-      console.error('Error updating email with AI reply:', updateError);
-      return { statusCode: 500, body: 'Failed to update email with AI reply' };
-    }
-    
-    console.log(`Updated email status to ${status}`);
-    
-    // If auto-reply is enabled, send the email immediately
-    if (agent.auto_reply) {
+    // Implement the auto/manual reply logic
+    if (agent.auto_reply === true) {
+      // Auto-mode: immediately send email
       console.log('Auto-reply enabled, sending email automatically');
       try {
         await fetch(`${process.env.BASE_URL}/.netlify/functions/send-reply`, {
@@ -181,6 +164,36 @@ Sign the email as "${agent.company_name} Team".
       } catch (sendError) {
         console.error('Error triggering send-reply:', sendError);
       }
+      
+      const { error: updateError } = await supabase
+        .from('email_logs')
+        .update({
+          ai_reply: aiReply,
+          status: 'replied',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', email.id);
+      
+      if (updateError) {
+        console.error('Error updating email with AI reply:', updateError);
+        return { statusCode: 500, body: 'Failed to update email with AI reply' };
+      }
+    } else {
+      // Manual mode: wait for human approval
+      console.log('Manual approval required, setting status to awaiting_approval');
+      const { error: updateError } = await supabase
+        .from('email_logs')
+        .update({
+          ai_reply: aiReply,
+          status: 'awaiting_approval',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', email.id);
+      
+      if (updateError) {
+        console.error('Error updating email with AI reply:', updateError);
+        return { statusCode: 500, body: 'Failed to update email with AI reply' };
+      }
     }
     
     return {
@@ -188,7 +201,7 @@ Sign the email as "${agent.company_name} Team".
       body: JSON.stringify({
         success: true,
         reply: aiReply,
-        status
+        status: agent.auto_reply ? 'replied' : 'awaiting_approval'
       })
     };
   } catch (error) {
