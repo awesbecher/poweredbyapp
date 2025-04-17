@@ -94,8 +94,8 @@ const Sidebar: React.FC = () => {
   const { logout } = useAuth();
   const location = useLocation();
   
-  // Check if we're on the index page
-  const isIndexPage = location.pathname === '/';
+  // Check if we're on the home page
+  const isHomePage = location.pathname === '/';
 
   const handleLogout = () => {
     logout();
@@ -112,33 +112,16 @@ const Sidebar: React.FC = () => {
           
           <div className="mt-4"></div>
           
-          {/* Main navigation icons - conditional based on page */}
-          {isIndexPage ? (
-            <>
-              <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/" />
-              <SidebarIcon icon={<Plus size={20} />} tooltip="New Agent" linkTo="/voice-agent" />
-              <SidebarIcon icon={<Mail size={20} />} tooltip="Email Agent" linkTo="/email-agent" />
-              <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
-              <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
-              <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
-              <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
-              <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
-              <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
-            </>
-          ) : (
-            <>
-              <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/" />
-              <Divider />
-              <SidebarIcon icon={<Plus size={20} />} tooltip="New Agent" linkTo="/voice-agent" />
-              <SidebarIcon icon={<Mail size={20} />} tooltip="Email Agent" linkTo="/email-agent" />
-              <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
-              <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
-              <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
-              <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
-              <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
-              <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
-            </>
-          )}
+          {/* Main navigation icons */}
+          <SidebarIcon icon={<Home size={20} />} tooltip="Home" linkTo="/" />
+          <SidebarIcon icon={<Plus size={20} />} tooltip="New Agent" linkTo="/voice-agent" />
+          <SidebarIcon icon={<Mail size={20} />} tooltip="Email Agent" linkTo="/email-agent" />
+          <SidebarIcon icon={<Folder size={20} />} tooltip="Projects" />
+          <SidebarIcon icon={<HelpCircle size={20} />} tooltip="Help" />
+          <SidebarIcon icon={<Settings size={20} />} tooltip="Settings" />
+          <SidebarIcon icon={<BookOpen size={20} />} tooltip="Documentation" />
+          <SidebarIcon icon={<CreditCard size={20} />} tooltip="Billing" />
+          <SidebarIcon icon={<FileText size={20} />} tooltip="Documents" />
         </div>
         
         {/* Bottom section */}

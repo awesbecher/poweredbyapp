@@ -86,7 +86,7 @@ const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link to="/dashboard" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <img 
                 src="/lovable-uploads/ba850fee-49fa-4eb6-ad49-fa62b5b0e048.png" 
                 alt="Logo" 
@@ -96,7 +96,7 @@ const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
             
             <nav className="hidden md:flex items-center gap-4">
               <Link 
-                to="/dashboard" 
+                to="/" 
                 className="text-sm font-medium flex items-center gap-1 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800"
               >
                 <Bot size={18} />

@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import EmailAgentWizard from '@/components/email-agent/EmailAgentWizard';
 import EmailDashboardTabs from '@/components/email-agent/EmailDashboardTabs';
 import { useAgentData } from '@/components/email-agent/hooks/useAgentData';
+import Sidebar from '@/components/Sidebar';
 
 const EmailAgent: React.FC = () => {
   const [urlAgentId, setUrlAgentId] = useState<string | null>(null);
@@ -26,8 +27,8 @@ const EmailAgent: React.FC = () => {
   // Fetch agent data if we have an ID from the URL
   const { agentData, isLoading, error } = useAgentData(urlAgentId);
   
-  const handleBackToDashboard = () => {
-    navigate('/dashboard');
+  const handleBackToHome = () => {
+    navigate('/');
   };
   
   // If there's an error or loading, show appropriate UI
@@ -58,10 +59,11 @@ const EmailAgent: React.FC = () => {
   // Otherwise show the wizard to create a new agent
   return (
     <div className="bg-background">
+      <Sidebar />
       {urlAgentId && agentData ? (
         <EmailDashboardTabs 
           agentId={agentData?.id} 
-          onBack={handleBackToDashboard} 
+          onBack={handleBackToHome} 
         />
       ) : (
         <EmailAgentWizard />
