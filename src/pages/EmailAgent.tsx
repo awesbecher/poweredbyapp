@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -24,6 +25,10 @@ const EmailAgent: React.FC = () => {
   
   // Fetch agent data if we have an ID from the URL
   const { agentData, isLoading, error } = useAgentData(urlAgentId);
+  
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
+  };
   
   // If there's an error or loading, show appropriate UI
   if (isLoading) {
@@ -54,7 +59,10 @@ const EmailAgent: React.FC = () => {
   return (
     <div className="bg-background">
       {urlAgentId && agentData ? (
-        <EmailDashboardTabs agentId={agentData?.id} />
+        <EmailDashboardTabs 
+          agentId={agentData?.id} 
+          onBack={handleBackToDashboard} 
+        />
       ) : (
         <EmailAgentWizard />
       )}

@@ -11,10 +11,10 @@ import PromptSettings from './PromptSettings';
 
 interface EmailDashboardTabsProps {
   agentId?: string;
-  onBack: () => void;
+  onBack?: () => void; // Made optional with default implementation
 }
 
-const EmailDashboardTabs: React.FC<EmailDashboardTabsProps> = ({ agentId, onBack }) => {
+const EmailDashboardTabs: React.FC<EmailDashboardTabsProps> = ({ agentId, onBack = () => window.history.back() }) => {
   const [activeTab, setActiveTab] = useState<string>("inbox");
 
   return (

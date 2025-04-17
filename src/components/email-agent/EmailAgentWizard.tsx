@@ -138,7 +138,6 @@ const EmailAgentWizard: React.FC = () => {
           <Header 
             showBackButton={true}
             title="AI Email Agent"
-            subtitle="Create your automated email assistant in minutes"
           />
           
           <TopNavController 
