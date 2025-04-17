@@ -9,11 +9,19 @@ import ConfirmationScreen from '@/components/email-agent/ConfirmationScreen';
 import EmailDashboardTabs from '@/components/email-agent/EmailDashboardTabs';
 import { toast } from '@/hooks/use-toast';
 
-// Initialize Supabase client
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
+// Initialize Supabase client with proper error handling
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Check if environment variables are defined
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase environment variables are not defined!');
+}
+
+// Initialize client only if variables are available
+const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 const EmailAgent: React.FC = () => {
   const [step, setStep] = useState<'setup' | 'confirmation' | 'monitoring'>('setup');
@@ -34,6 +42,11 @@ const EmailAgent: React.FC = () => {
   const fetchAgentById = async (id: string) => {
     setIsLoading(true);
     try {
+      // Check if Supabase is initialized
+      if (!supabase) {
+        throw new Error('Supabase client is not initialized. Please check your environment configuration.');
+      }
+      
       // Get agent data
       const { data: agent, error } = await supabase
         .from('agents')

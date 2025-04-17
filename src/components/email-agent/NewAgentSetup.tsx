@@ -28,11 +28,19 @@ import {
 import FileUpload from '@/components/FileUpload';
 import { toast } from '@/hooks/use-toast';
 
-// Initialize Supabase client
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
+// Initialize Supabase client with proper error handling
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Check if environment variables are defined
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase environment variables are not defined!');
+}
+
+// Initialize client only if variables are available
+const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Define tone options
 const toneOptions = [
@@ -83,6 +91,11 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+      // Check if Supabase is initialized
+      if (!supabase) {
+        throw new Error('Supabase client is not initialized. Please check your environment configuration.');
+      }
+
       // Insert new agent into the database
       const { data: agentData, error: agentError } = await supabase
         .from('agents')

@@ -25,13 +25,23 @@ const ErrorMonitoring: React.FC<ErrorMonitoringProps> = ({ agentId }) => {
   const [error, setError] = useState<string | null>(null);
   const [expandedErrors, setExpandedErrors] = useState<string[]>([]);
 
-  // Initialize Supabase client
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  // Initialize Supabase client with proper error handling
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  
+  // Initialize client only if variables are available
+  const supabase = supabaseUrl && supabaseAnonKey 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
   useEffect(() => {
-    if (!agentId) return;
+    if (!agentId || !supabase) {
+      setIsLoading(false);
+      if (!supabase) {
+        setError("Supabase client not initialized. Check your environment variables.");
+      }
+      return;
+    }
     
     const fetchErrorLogs = async () => {
       setIsLoading(true);
