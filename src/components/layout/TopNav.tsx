@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -7,7 +8,8 @@ import {
   BarChart3, 
   CreditCard, 
   Bot,
-  UserRound 
+  UserRound,
+  Search 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,11 +21,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/App';
 
-const TopNav: React.FC = () => {
+interface TopNavProps {
+  onSearchClick?: () => void;
+  onWhatsNewClick?: () => void;
+}
+
+const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
   const { logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(2); // Example unread count
   
   useEffect(() => {
     const handleScroll = () => {
@@ -82,8 +91,32 @@ const TopNav: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onSearchClick}
+              className="relative"
+            >
+              <Search size={20} />
+              <kbd className="pointer-events-none absolute right-1.5 top-5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onWhatsNewClick}
+              className="relative"
+            >
               <Bell size={20} />
+              {unreadNotifications > 0 && (
+                <Badge 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500"
+                >
+                  {unreadNotifications}
+                </Badge>
+              )}
             </Button>
             
             <Button variant="ghost" size="icon">

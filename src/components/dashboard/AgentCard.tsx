@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,11 @@ import {
   Mail, 
   MessageSquare, 
   GitBranch,
-  ChevronRight
+  ChevronRight,
+  Heart
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import AgentStatusDot, { AgentStatus } from './AgentStatusDot';
 
 export type AgentTag = 'Voice' | 'Email' | 'SMS' | 'Web' | 'Workflow';
 
@@ -23,7 +26,10 @@ interface AgentCardProps {
   progress?: number;
   icon?: React.ReactNode;
   isActive: boolean;
+  isFavorite?: boolean;
+  status?: AgentStatus;
   onConfigure: () => void;
+  onToggleFavorite?: () => void;
 }
 
 const getAgentIcon = (type: AgentType) => {
@@ -66,7 +72,10 @@ const AgentCard: React.FC<AgentCardProps> = ({
   progress,
   icon,
   isActive,
+  isFavorite = false,
+  status = 'idle',
   onConfigure,
+  onToggleFavorite,
 }) => {
   const navigate = useNavigate();
 
@@ -79,6 +88,12 @@ const AgentCard: React.FC<AgentCardProps> = ({
               <div className="absolute inset-0.5 rounded-full bg-white flex items-center justify-center">
                 {icon || getAgentIcon(agentType)}
               </div>
+              
+              {status && (
+                <div className="absolute -bottom-0.5 -right-0.5">
+                  <AgentStatusDot status={status} />
+                </div>
+              )}
             </div>
             <h3 className="text-xl font-semibold">{name}</h3>
           </div>
@@ -87,6 +102,24 @@ const AgentCard: React.FC<AgentCardProps> = ({
             <Badge variant="outline" className="bg-gray-100 text-gray-800">
               Coming Soon
             </Badge>
+          )}
+          
+          {isActive && onToggleFavorite && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite();
+              }}
+              className="text-gray-400 hover:text-gray-700"
+            >
+              <Heart 
+                size={18} 
+                className={isFavorite ? "fill-red-500 text-red-500" : ""} 
+              />
+              <span className="sr-only">{isFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+            </Button>
           )}
         </div>
       </CardHeader>
