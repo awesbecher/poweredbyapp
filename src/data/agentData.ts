@@ -1,6 +1,5 @@
 
 import { Headphones, Mail, MessageSquare } from 'lucide-react';
-import React from 'react';
 import { AgentStatus } from '@/components/dashboard/AgentStatusDot';
 import { AgentTag } from '@/components/dashboard/AgentCard';
 import { AgentType } from '@/lib/types';
@@ -12,12 +11,13 @@ export interface AgentCardData {
   agentType: AgentType;
   tags: AgentTag[];
   progress?: number;
-  icon: React.ReactNode;
+  icon: string; // Changed from React.ReactNode to string to avoid JSX
   isActive: boolean;
   isFavorite?: boolean;
   status?: AgentStatus;
 }
 
+// Using string identifiers for icons instead of JSX
 export const agentData: AgentCardData[] = [
   {
     id: 'voice-agent',
@@ -26,7 +26,7 @@ export const agentData: AgentCardData[] = [
     agentType: 'voice',
     tags: ['Voice'],
     progress: undefined,
-    icon: <Headphones size={24} />,
+    icon: 'headphones',
     isActive: true,
     status: 'running'
   },
@@ -37,7 +37,7 @@ export const agentData: AgentCardData[] = [
     agentType: 'email',
     tags: ['Email'],
     progress: 60,
-    icon: <Mail size={24} />,
+    icon: 'mail',
     isActive: true,
     status: 'warning'
   },
@@ -48,7 +48,7 @@ export const agentData: AgentCardData[] = [
     agentType: 'sms',
     tags: ['SMS'],
     progress: 25,
-    icon: <MessageSquare size={24} />,
+    icon: 'message-square',
     isActive: true,
     status: 'idle'
   },
@@ -58,7 +58,7 @@ export const agentData: AgentCardData[] = [
     description: 'Never miss a call again',
     agentType: 'voice',
     tags: ['Voice'],
-    icon: <Headphones size={24} />,
+    icon: 'headphones',
     isActive: true,
     status: 'running'
   }

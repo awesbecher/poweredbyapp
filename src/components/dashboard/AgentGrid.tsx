@@ -3,6 +3,7 @@ import React from 'react';
 import { AgentType } from '@/lib/types';
 import { AgentStatus } from '@/components/dashboard/AgentStatusDot';
 import AgentCard, { AgentTag } from '@/components/dashboard/AgentCard';
+import { Headphones, Mail, MessageSquare, GitBranch } from 'lucide-react';
 
 interface AgentCardData {
   id: string;
@@ -11,7 +12,7 @@ interface AgentCardData {
   agentType: AgentType;
   tags: AgentTag[];
   progress?: number;
-  icon: React.ReactNode;
+  icon: string;  // Changed from React.ReactNode to string
   isActive: boolean;
   isFavorite?: boolean;
   status?: AgentStatus;
@@ -22,6 +23,22 @@ interface AgentGridProps {
   onConfigure: (agentType: AgentType) => void;
   onToggleFavorite: (agentId: string) => void;
 }
+
+// Helper function to get the icon component based on string identifier
+const getIconComponent = (iconName: string) => {
+  switch (iconName) {
+    case 'headphones':
+      return <Headphones size={24} />;
+    case 'mail':
+      return <Mail size={24} />;
+    case 'message-square':
+      return <MessageSquare size={24} />;
+    case 'git-branch':
+      return <GitBranch size={24} />;
+    default:
+      return <span className="text-2xl">😎</span>;
+  }
+};
 
 const AgentGrid: React.FC<AgentGridProps> = ({ 
   agents,
@@ -38,7 +55,7 @@ const AgentGrid: React.FC<AgentGridProps> = ({
           agentType={agent.agentType}
           tags={agent.tags}
           progress={agent.progress}
-          icon={agent.icon}
+          icon={getIconComponent(agent.icon)}
           isActive={agent.isActive}
           isFavorite={agent.isFavorite}
           status={agent.status}
