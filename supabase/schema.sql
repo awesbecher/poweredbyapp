@@ -1,84 +1,79 @@
 
--- Schema for AI Email Agent system
+-- Enable the pgvector extension for embeddings
+CREATE EXTENSION IF NOT EXISTS vector;
 
--- Gmail authentication tokens
-CREATE TABLE gmail_auth (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT UNIQUE NOT NULL,
-  access_token TEXT NOT NULL,
-  refresh_token TEXT NOT NULL,
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- Generate UUIDs
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- agents table
+create table if not exists agents (
+  id uuid primary key default gen_random_uuid(),
+  company_name text,
+  agent_email text,
+  purpose text,
+  tone text,
+  auto_reply boolean default true,
+  gmail_access_token text,
+  gmail_refresh_token text,
+  gmail_token_expires_at timestamp,
+  created_at timestamp default now()
 );
 
--- Email agents configuration
-CREATE TABLE email_agents (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  company_name TEXT NOT NULL,
-  agent_email TEXT UNIQUE NOT NULL,
-  purpose TEXT NOT NULL,
-  tone TEXT NOT NULL,
-  auto_reply BOOLEAN DEFAULT FALSE,
-  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'paused', 'archived')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- knowledgebase_files table
+create table if not exists knowledgebase_files (
+  id uuid primary key default gen_random_uuid(),
+  agent_id uuid references agents(id),
+  file_name text,
+  file_url text,
+  uploaded_at timestamp default now()
 );
 
--- Email logs
-CREATE TABLE email_logs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agent_id UUID NOT NULL REFERENCES email_agents(id) ON DELETE CASCADE,
-  gmail_message_id TEXT NOT NULL,
-  from_address TEXT NOT NULL,
-  subject TEXT NOT NULL,
-  raw_body TEXT NOT NULL,
-  ai_reply TEXT,
-  status TEXT NOT NULL CHECK (status IN ('received', 'awaiting_approval', 'replied', 'rejected')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
-  user_feedback TEXT
+-- kb_embeddings table
+create table if not exists kb_embeddings (
+  id uuid primary key default gen_random_uuid(),
+  agent_id uuid references agents(id),
+  chunk_text text,
+  embedding vector(1536),
+  source_file text,
+  created_at timestamp default now()
 );
 
--- Knowledge base embeddings
-CREATE TABLE kb_embeddings (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  agent_id UUID NOT NULL REFERENCES email_agents(id) ON DELETE CASCADE,
-  file_name TEXT NOT NULL,
-  chunk_index INTEGER NOT NULL,
-  content TEXT NOT NULL,
-  embedding VECTOR(1536) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- email_logs table
+create table if not exists email_logs (
+  id uuid primary key default gen_random_uuid(),
+  agent_id uuid references agents(id),
+  gmail_message_id text,
+  from_address text,
+  subject text,
+  raw_body text,
+  ai_reply text,
+  status text default 'received', -- received | replied | awaiting_approval | rejected
+  user_rating int,
+  user_feedback text,
+  created_at timestamp default now()
 );
 
--- Create index for vector similarity search
-CREATE INDEX kb_embeddings_agent_id_idx ON kb_embeddings USING btree (agent_id);
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS agents_email_idx ON agents(agent_email);
+CREATE INDEX IF NOT EXISTS kb_embeddings_agent_id_idx ON kb_embeddings(agent_id);
+CREATE INDEX IF NOT EXISTS email_logs_agent_id_idx ON email_logs(agent_id);
+CREATE INDEX IF NOT EXISTS email_logs_status_idx ON email_logs(status);
 
--- Add RLS policies
--- Disable RLS by default - you'll want to customize these based on your auth setup
-ALTER TABLE gmail_auth ENABLE ROW LEVEL SECURITY;
-ALTER TABLE email_agents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
+-- Enable Row Level Security
+ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE knowledgebase_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE kb_embeddings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow authenticated users to access their data
-CREATE POLICY "Users can access their own data" ON email_agents
-  FOR ALL
-  TO authenticated
-  USING (true);
+-- Create policies for authenticated access
+CREATE POLICY "Users can access their own data" ON agents
+  FOR ALL USING (auth.uid() = id);
+
+CREATE POLICY "Users can access their own knowledge files" ON knowledgebase_files
+  FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
+
+CREATE POLICY "Users can access their own embeddings" ON kb_embeddings
+  FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
 
 CREATE POLICY "Users can access their own email logs" ON email_logs
-  FOR ALL
-  TO authenticated
-  USING (true);
-
-CREATE POLICY "Users can access their own auth data" ON gmail_auth
-  FOR ALL
-  TO authenticated
-  USING (true);
-
-CREATE POLICY "Users can access their own KB embeddings" ON kb_embeddings
-  FOR ALL
-  TO authenticated
-  USING (true);
+  FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
