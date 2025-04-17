@@ -7,6 +7,7 @@
 [functions]
   directory = "functions"
   node_bundler = "esbuild"
+  external_node_modules = ["mammoth", "pdf-parse"]
 
 # Environmental variables that should be accessible to functions
 # (Don't put actual values here - use Netlify's UI to set them)
@@ -42,3 +43,4 @@
     "node_modules/mammoth/**",
     "node_modules/mammoth/node_modules/**"
   ]
+  external_node_modules = ["mammoth", "pdf-parse"]

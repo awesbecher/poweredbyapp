@@ -9,8 +9,9 @@
 const { createClient } = require('@supabase/supabase-js');
 const { OpenAI } = require('openai');
 const fetch = require('node-fetch');
-const pdfParse = require('pdf-parse');
-const mammoth = require('mammoth');
+// Explicitly require pdf-parse and mammoth as CommonJS modules
+const pdfParse = require('pdf-parse/index.js');
+const mammoth = require('mammoth/index.js');
 
 exports.handler = async function(event, context) {
   // Only allow POST requests
