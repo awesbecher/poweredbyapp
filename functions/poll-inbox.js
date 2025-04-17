@@ -22,9 +22,8 @@ exports.handler = async function(event, context) {
   try {
     // Get all active email agents
     const { data: agents, error: agentError } = await supabase
-      .from('email_agents')
-      .select('*')
-      .eq('status', 'active');
+      .from('agents')
+      .select('*');
     
     if (agentError) {
       console.error('Error fetching agents:', agentError);
@@ -32,21 +31,14 @@ exports.handler = async function(event, context) {
     }
     
     for (const agent of agents) {
-      // Get Gmail auth tokens for this agent's email
-      const { data: auth, error: authError } = await supabase
-        .from('gmail_auth')
-        .select('*')
-        .eq('email', agent.agent_email)
-        .single();
-      
-      if (authError || !auth) {
-        console.error(`No auth found for agent ${agent.id}:`, authError);
+      // Skip agents without tokens
+      if (!agent.gmail_access_token || !agent.gmail_refresh_token) {
         continue;
       }
       
       // Check if token needs refresh
-      let accessToken = auth.access_token;
-      if (new Date(auth.expires_at) <= new Date()) {
+      let accessToken = agent.gmail_access_token;
+      if (new Date(agent.gmail_token_expires_at) <= new Date()) {
         // Token expired, refresh it
         const oauth2Client = new google.auth.OAuth2(
           process.env.GMAIL_CLIENT_ID,
@@ -55,7 +47,7 @@ exports.handler = async function(event, context) {
         );
         
         oauth2Client.setCredentials({
-          refresh_token: auth.refresh_token
+          refresh_token: agent.gmail_refresh_token
         });
         
         try {
@@ -64,13 +56,12 @@ exports.handler = async function(event, context) {
           
           // Update the token in database
           await supabase
-            .from('gmail_auth')
+            .from('agents')
             .update({
-              access_token: token,
-              expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-              updated_at: new Date().toISOString()
+              gmail_access_token: token,
+              gmail_token_expires_at: new Date(Date.now() + 3600 * 1000).toISOString()
             })
-            .eq('email', agent.agent_email);
+            .eq('id', agent.id);
         } catch (refreshError) {
           console.error(`Failed to refresh token for ${agent.id}:`, refreshError);
           continue;

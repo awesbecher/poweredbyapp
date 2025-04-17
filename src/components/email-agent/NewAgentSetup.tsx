@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Mail, Building, MessageSquare, Save } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +28,12 @@ import {
 import FileUpload from '@/components/FileUpload';
 import { toast } from '@/hooks/use-toast';
 
+// Initialize Supabase client
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL || '',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+);
+
 // Define tone options
 const toneOptions = [
   { value: 'friendly', label: 'Friendly' },
@@ -36,11 +44,11 @@ const toneOptions = [
 
 // Define form schema
 const formSchema = z.object({
-  companyName: z.string().min(2, { message: 'Company name is required' }),
-  agentEmail: z.string().email({ message: 'Valid email address is required' }),
+  company_name: z.string().min(2, { message: 'Company name is required' }),
+  agent_email: z.string().email({ message: 'Valid email address is required' }),
   purpose: z.string().min(10, { message: 'Purpose must be at least 10 characters' }),
   tone: z.string({ required_error: 'Please select a tone' }),
-  autoReply: z.boolean().default(false),
+  auto_reply: z.boolean().default(false),
   files: z.any().optional(),
 });
 
@@ -53,15 +61,16 @@ interface NewAgentSetupProps {
 const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[] | null>(null);
+  const navigate = useNavigate();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      companyName: '',
-      agentEmail: '',
+      company_name: '',
+      agent_email: '',
       purpose: '',
       tone: 'professional',
-      autoReply: false,
+      auto_reply: false,
       files: null,
     },
   });
@@ -74,16 +83,71 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      // This is where we would connect to Supabase later
-      // For now, we'll simulate the API call with a timeout
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Insert new agent into the database
+      const { data: agentData, error: agentError } = await supabase
+        .from('agents')
+        .insert({
+          company_name: values.company_name,
+          agent_email: values.agent_email,
+          purpose: values.purpose,
+          tone: values.tone,
+          auto_reply: values.auto_reply,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
 
-      // Create agent with uploaded files
-      const submissionData = {
-        ...values,
+      if (agentError) {
+        throw new Error(`Failed to create agent: ${agentError.message}`);
+      }
+
+      // Upload knowledge base files if provided
+      const uploadedFileData = [];
+      if (uploadedFiles && uploadedFiles.length > 0 && agentData) {
+        for (const file of uploadedFiles) {
+          // Upload file to Supabase storage
+          const fileName = `${Date.now()}-${file.name}`;
+          const { data: fileData, error: fileError } = await supabase
+            .storage
+            .from('knowledge-base')
+            .upload(fileName, file);
+
+          if (fileError) {
+            console.error("Error uploading file:", fileError);
+            continue;
+          }
+
+          // Get the public URL
+          const { data: publicUrlData } = supabase
+            .storage
+            .from('knowledge-base')
+            .getPublicUrl(fileName);
+
+          // Insert reference to knowledgebase_files table
+          const { data: knowledgeFile, error: knowledgeError } = await supabase
+            .from('knowledgebase_files')
+            .insert({
+              agent_id: agentData.id,
+              file_name: file.name,
+              file_url: publicUrlData?.publicUrl || '',
+            })
+            .select()
+            .single();
+
+          if (knowledgeError) {
+            console.error("Error storing file reference:", knowledgeError);
+          } else {
+            uploadedFileData.push(knowledgeFile);
+          }
+        }
+      }
+
+      // Prepare complete agent info for next step
+      const completeAgentData = {
+        ...agentData,
         fileCount: uploadedFiles?.length || 0,
         fileNames: uploadedFiles?.map(file => file.name) || [],
-        createdAt: new Date().toISOString(),
+        knowledgeFiles: uploadedFileData,
       };
 
       toast({
@@ -91,12 +155,12 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
         description: "Your email agent has been set up",
       });
 
-      onComplete(submissionData);
-    } catch (error) {
+      onComplete(completeAgentData);
+    } catch (error: any) {
       console.error("Error creating agent:", error);
       toast({
         title: "Error",
-        description: "Failed to create email agent",
+        description: error.message || "Failed to create email agent",
         variant: "destructive",
       });
     } finally {
@@ -119,7 +183,7 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
             {/* Company Name */}
             <FormField
               control={form.control}
-              name="companyName"
+              name="company_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
@@ -141,7 +205,7 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
             {/* Agent Email */}
             <FormField
               control={form.control}
-              name="agentEmail"
+              name="agent_email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Agent Email Address</FormLabel>
@@ -214,7 +278,7 @@ const NewAgentSetup: React.FC<NewAgentSetupProps> = ({ onComplete }) => {
             {/* Auto Reply Toggle */}
             <FormField
               control={form.control}
-              name="autoReply"
+              name="auto_reply"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">

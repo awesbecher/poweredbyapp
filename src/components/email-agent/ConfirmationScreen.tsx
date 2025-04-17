@@ -5,9 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ConfirmationScreenProps {
-  agentData: any;
+  agentData: {
+    id: string;
+    company_name: string;
+    agent_email: string;
+    purpose: string;
+    tone: string;
+    auto_reply: boolean;
+    fileCount?: number;
+    fileNames?: string[];
+    knowledgeFiles?: any[];
+  };
   onStartOver: () => void;
-  onActivate: () => void; // Added this prop to fix the error
+  onActivate: () => void;
 }
 
 const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onStartOver, onActivate }) => {
@@ -19,7 +29,7 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onSt
         </div>
         <h2 className="text-2xl font-bold mb-2">Your Email Agent is Ready!</h2>
         <p className="text-muted-foreground max-w-md">
-          The AI email agent for {agentData.companyName} has been successfully created. 
+          The AI email agent for {agentData.company_name} has been successfully created. 
           Next steps: Connect your Gmail and train it with your files.
         </p>
       </div>
@@ -50,7 +60,7 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onSt
               Knowledge Base
             </CardTitle>
             <CardDescription>
-              {agentData.fileCount} files uploaded to train your agent
+              {agentData.fileCount || 0} files uploaded to train your agent
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -75,10 +85,10 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onSt
       <div className="border rounded-md p-4 bg-muted/30 mt-8">
         <h3 className="text-sm font-medium mb-2">Agent Summary</h3>
         <ul className="space-y-2 text-sm">
-          <li><span className="font-medium">Company:</span> {agentData.companyName}</li>
-          <li><span className="font-medium">Email:</span> {agentData.agentEmail}</li>
+          <li><span className="font-medium">Company:</span> {agentData.company_name}</li>
+          <li><span className="font-medium">Email:</span> {agentData.agent_email}</li>
           <li><span className="font-medium">Tone:</span> {agentData.tone}</li>
-          <li><span className="font-medium">Auto-reply:</span> {agentData.autoReply ? 'Enabled' : 'Requires Approval'}</li>
+          <li><span className="font-medium">Auto-reply:</span> {agentData.auto_reply ? 'Enabled' : 'Requires Approval'}</li>
         </ul>
       </div>
 
