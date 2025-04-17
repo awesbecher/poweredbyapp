@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,12 +26,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#00A1FF',
+					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#0F172A',
+					foreground: '#FFFFFF'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -63,11 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				brand: {
-					blue: '#007AFF',
-					'blue-dark': '#0056B3',
+					blue: '#00A1FF',
+					'blue-dark': '#0081D1',
 					gray: '#F5F5F7',
 					'gray-dark': '#86868B',
-					black: '#1D1D1F',
+					black: '#0F172A',
 					purple: {
 						light: '#9b87f5',
 						DEFAULT: '#7E57C2',
@@ -146,6 +147,32 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'pulse-ring': {
+					'0%': {
+						transform: 'scale(0.8)',
+						opacity: '0'
+					},
+					'50%': {
+						opacity: '0.5'
+					},
+					'100%': {
+						transform: 'scale(1.2)',
+						opacity: '0'
+					}
+				},
+				'confetti-drop': {
+					'0%': {
+						transform: 'translateY(-100px) rotate(0deg)',
+						opacity: '0'
+					},
+					'50%': {
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'translateY(100vh) rotate(720deg)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
@@ -155,11 +182,13 @@ export default {
 				'fade-out': 'fade-out 0.3s ease-out',
 				'slide-up': 'slide-up 0.4s ease-out',
 				'slide-down': 'slide-down 0.4s ease-out',
-				'scale-in': 'scale-in 0.4s ease-out'
+				'scale-in': 'scale-in 0.4s ease-out',
+				'pulse-ring': 'pulse-ring 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite',
+				'confetti-drop': 'confetti-drop 5s cubic-bezier(0.24, 0, 0.38, 1)'
 			},
 			backdropFilter: {
 				'none': 'none',
-				'blur': 'blur(20px)'
+				'blur': 'blur(10px)'
 			}
 		}
 	},

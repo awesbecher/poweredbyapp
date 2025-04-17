@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ProjectText from "./pages/ProjectText";
 import { useState, createContext, useContext } from "react";
+import { ThemeProvider } from "./providers/ThemeProvider";
 
 // Create Authentication Context
 type AuthContextType = {
@@ -54,33 +56,35 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Routes>
-              <Route 
-                path="*" 
-                element={
-                  <AuthCheck>
-                    <Routes>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/project-text" element={<ProjectText />} />
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                      <Route path="/dashboard" element={<Index />} />
-                      <Route path="/voice-agent" element={<VoiceAgent />} />
-                      <Route path="/review-agent" element={<ReviewAgent />} />
-                      <Route path="/email-agent" element={<EmailAgent />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </AuthCheck>
-                } 
-              />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </TooltipProvider>
-        </BrowserRouter>
-      </AuthContext.Provider>
+      <ThemeProvider>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+          <BrowserRouter>
+            <TooltipProvider>
+              <Routes>
+                <Route 
+                  path="*" 
+                  element={
+                    <AuthCheck>
+                      <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/project-text" element={<ProjectText />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="/dashboard" element={<Index />} />
+                        <Route path="/voice-agent" element={<VoiceAgent />} />
+                        <Route path="/review-agent" element={<ReviewAgent />} />
+                        <Route path="/email-agent" element={<EmailAgent />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </AuthCheck>
+                  } 
+                />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </TooltipProvider>
+          </BrowserRouter>
+        </AuthContext.Provider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

@@ -1,99 +1,154 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, Mail, MessageSquare, GitBranch } from 'lucide-react';
-import Header from '@/components/Header';
-import AgentTypeCard from '@/components/AgentTypeCard';
-import Sidebar from '@/components/Sidebar';
+import { 
+  Headphones, 
+  Mail, 
+  MessageSquare, 
+  GitBranch,
+  SearchCode 
+} from 'lucide-react';
+import { AgentTag } from '@/components/dashboard/AgentCard';
 import { AgentType } from '@/lib/types';
+import TopNav from '@/components/layout/TopNav';
+import HeroHeader from '@/components/dashboard/HeroHeader';
+import AgentCard from '@/components/dashboard/AgentCard';
+import EmptyState from '@/components/dashboard/EmptyState';
+import DashboardSidebar from '@/components/dashboard/Sidebar';
+import UsageRing from '@/components/dashboard/UsageRing';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+
+type AgentCardData = {
+  id: string;
+  name: string;
+  description: string;
+  agentType: AgentType;
+  tags: AgentTag[];
+  progress?: number;
+  icon: React.ReactNode;
+  isActive: boolean;
+};
+
+const agentData: AgentCardData[] = [
+  {
+    id: 'voice-agent',
+    name: 'Voice Agent',
+    description: '24/7 human-sounding calls',
+    agentType: 'voice',
+    tags: ['Voice'],
+    progress: undefined,
+    icon: <Headphones size={24} />,
+    isActive: true
+  },
+  {
+    id: 'email-agent',
+    name: 'Email Agent',
+    description: 'Inbox zero, on autopilot',
+    agentType: 'email',
+    tags: ['Email'],
+    progress: 60,
+    icon: <Mail size={24} />,
+    isActive: true
+  },
+  {
+    id: 'sms-agent',
+    name: 'SMS Agent',
+    description: 'Instant text replies that close deals',
+    agentType: 'sms',
+    tags: ['SMS'],
+    progress: 25,
+    icon: <MessageSquare size={24} />,
+    isActive: true
+  },
+  {
+    id: 'receptionist-agent',
+    name: 'Receptionist',
+    description: 'Never miss a call again',
+    agentType: 'voice',
+    tags: ['Voice'],
+    icon: <Headphones size={24} />,
+    isActive: true
+  },
+  {
+    id: 'workflow-agent',
+    name: 'Workflow Agent',
+    description: 'Automate complex business processes',
+    agentType: 'workflow',
+    tags: ['Workflow'],
+    icon: <GitBranch size={24} />,
+    isActive: true
+  },
+  {
+    id: 'research-agent',
+    name: 'Research Agent',
+    description: 'AI-powered data analysis and research',
+    agentType: 'workflow',
+    tags: ['Web'],
+    icon: <SearchCode size={24} />,
+    isActive: false
+  },
+];
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showEmptyState, setShowEmptyState] = useState(false);
   
-  const agentTypes: { 
-    type: AgentType; 
-    title: string; 
-    description: string; 
-    icon: React.ReactNode;
-    isActive: boolean;
-  }[] = [
-    {
-      type: 'voice',
-      title: 'Voice Agent',
-      description: 'Create AI agents that can speak and listen to users in natural conversations.',
-      icon: <Headphones size={18} />,
-      isActive: true
-    },
-    {
-      type: 'email',
-      title: 'Email Agent',
-      description: 'Build AI agents that can process, understand, and respond to emails.',
-      icon: <Mail size={18} />,
-      isActive: true
-    },
-    {
-      type: 'sms',
-      title: 'SMS-Text Agent',
-      description: 'Develop AI agents that can communicate with users via text messages.',
-      icon: <MessageSquare size={18} />,
-      isActive: true
-    },
-    {
-      type: 'workflow',
-      title: 'Workflow Agent',
-      description: 'Create AI agents that can manage and automate complex business processes.',
-      icon: <GitBranch size={18} />,
-      isActive: true
-    }
-  ];
+  useEffect(() => {
+    setShowEmptyState(false);
+  }, []);
   
-  const handleAgentTypeClick = (type: AgentType) => {
-    if (type === 'voice') {
+  const handleAgentConfigure = (agentType: AgentType) => {
+    if (agentType === 'voice') {
       navigate('/voice-agent');
-    } else if (type === 'email') {
-      navigate('/email-agent'); // Updated to navigate to email-agent route
-    } else if (type === 'sms') {
-      navigate('/voice-agent'); // Temporarily pointing to voice-agent
-    } else if (type === 'workflow') {
-      navigate('/voice-agent'); // Temporarily pointing to voice-agent
+    } else if (agentType === 'email') {
+      navigate('/email-agent');
+    } else if (agentType === 'sms') {
+      navigate('/voice-agent');
+    } else if (agentType === 'workflow') {
+      navigate('/voice-agent');
     }
   };
 
   return (
-    <div className="min-h-screen bg-deep-purple flex">
-      <Sidebar />
-      
-      <div className="flex-grow ml-16">
-        <Header />
+    <ThemeProvider>
+      <div className="min-h-screen bg-white dark:bg-slate-900">
+        <TopNav />
         
-        <main className="container-custom py-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-10 space-y-4">
-              <h1 className="text-4xl font-semibold tracking-tight text-white/95 pb-2 border-b border-white/10">
-                Agent Configuration
-              </h1>
-              <p className="text-lg text-white/70 font-normal">
-                Select the type of AI agent you want to build from the options below
-              </p>
+        <div className="flex">
+          <DashboardSidebar />
+          
+          <main className="flex-grow px-4 pb-24">
+            <div className="max-w-7xl mx-auto">
+              <HeroHeader 
+                title="Pick your AI Agent" 
+                subtitle="Configure once, automate forever."
+              />
+              
+              {showEmptyState ? (
+                <EmptyState />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
+                  {agentData.map((agent) => (
+                    <AgentCard
+                      key={agent.id}
+                      name={agent.name}
+                      description={agent.description}
+                      agentType={agent.agentType}
+                      tags={agent.tags}
+                      progress={agent.progress}
+                      icon={agent.icon}
+                      isActive={agent.isActive}
+                      onConfigure={() => handleAgentConfigure(agent.agentType)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {agentTypes.map((agent) => (
-                <AgentTypeCard
-                  key={agent.type}
-                  type={agent.type}
-                  title={agent.title}
-                  description={agent.description}
-                  icon={agent.icon}
-                  isActive={agent.isActive}
-                  onClick={() => handleAgentTypeClick(agent.type)}
-                />
-              ))}
-            </div>
-          </div>
-        </main>
+          </main>
+        </div>
+        
+        <UsageRing used={3} total={5} />
       </div>
-    </div>
+    </ThemeProvider>
   );
 };
 
