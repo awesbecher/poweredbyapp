@@ -6,7 +6,8 @@ import {
   HelpCircle, 
   BarChart3, 
   CreditCard, 
-  Bot
+  Bot,
+  UserRound 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -92,10 +93,12 @@ const TopNav: React.FC = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
+                  <UserRound 
+                    size={24} 
+                    color="#7E69AB" 
+                    strokeWidth={1.5}
+                    className="rounded-full"
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
