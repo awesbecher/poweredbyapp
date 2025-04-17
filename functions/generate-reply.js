@@ -10,6 +10,65 @@ const { createClient } = require('@supabase/supabase-js');
 const { OpenAI } = require('openai');
 const { notifyFailure } = require('./utils/errorMonitoring');
 
+/**
+ * Get contextual instructions based on email content analysis
+ */
+const getContextualInstructions = (emailIntent, agentPurpose) => {
+  // Default instructions
+  let instructions = "Respond professionally and empathetically. Sign the email as the company team.";
+  let tone = "professional";
+  
+  // Determine appropriate context based on email intent
+  switch(emailIntent) {
+    case "complaint":
+      tone = "empathetic";
+      instructions = `
+Tone: Empathetic + Professional
+Instruction: Acknowledge the customer's frustration. Apologize if necessary.
+Explain any policy from the knowledgebase clearly and politely.
+Offer to escalate to a human if the situation is sensitive.`;
+      break;
+      
+    case "simple_inquiry":
+    case "general_request":
+      tone = "friendly";
+      instructions = `
+Tone: Friendly
+Instruction: Always reassure the customer and offer clear steps. If unsure, escalate.`;
+      break;
+      
+    case "feedback":
+      tone = "appreciative";
+      instructions = `
+Tone: Appreciative
+Instruction: Thank the customer sincerely for their feedback. Acknowledge their input's value.
+Explain how feedback helps improve the product/service.`;
+      break;
+      
+    case "urgent_request":
+      tone = "efficient";
+      instructions = `
+Tone: Efficient yet warm
+Instruction: Address the urgency directly. Provide immediate next steps.
+Be clear about timeframes. Offer escalation if needed.`;
+      break;
+  }
+  
+  // If agent has a custom purpose that seems sales-oriented, add sales guidance
+  if (agentPurpose && 
+      (agentPurpose.toLowerCase().includes("sales") || 
+       agentPurpose.toLowerCase().includes("convert") || 
+       agentPurpose.toLowerCase().includes("lead"))) {
+    tone = "persuasive";
+    instructions += `
+Tone: Persuasive
+Instruction: Emphasize product value. Encourage action (signup, upgrade, book a demo).
+Highlight differentiators when asked about competitors.`;
+  }
+  
+  return { instructions, tone };
+};
+
 exports.handler = async function(event, context) {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
@@ -178,26 +237,6 @@ exports.handler = async function(event, context) {
       kbChunks = 'No specific information available for this query.';
     }
     
-    // Build the improved prompt using the template
-    const systemPrompt = `
-You are an AI email assistant for ${agent.company_name}. 
-You are helpful, knowledgeable, and communicate with a ${agent.tone} tone.
-Use the knowledgebase provided to assist with the inquiry.
-
-Knowledgebase:
-${kbChunks}
-
-Email Thread:
-Customer: ${email.raw_body}
-${pastAgentResponses ? `Agent History:\n${pastAgentResponses}` : ''}
-
-Generate a reply that is clear, polite, and helpful.
-If you are not confident, defer to a human.
-Sign the email as "${agent.company_name} Team".
-`;
-    
-    console.log('Built system prompt with template');
-    
     // First, analyze the message to determine if it's suitable for auto-reply
     let autoReplyAnalysis;
     try {
@@ -271,6 +310,32 @@ Sign the email as "${agent.company_name} Team".
       
       console.log('Auto-reply analysis failed, defaulting to human review');
     }
+    
+    // Get contextual instructions based on intent and agent purpose
+    const { instructions: contextualInstructions, tone: recommendedTone } = 
+      getContextualInstructions(autoReplyAnalysis.intent, agent.purpose);
+    
+    // Build the improved prompt using the template and contextual instructions
+    const systemPrompt = `
+You are an AI email assistant for ${agent.company_name}. 
+You are helpful, knowledgeable, and communicate with a ${agent.tone || recommendedTone} tone.
+Purpose: ${agent.purpose || 'To assist customers with their inquiries'}
+
+${contextualInstructions}
+
+Knowledgebase:
+${kbChunks}
+
+Email Thread:
+Customer: ${email.raw_body}
+${pastAgentResponses ? `Agent History:\n${pastAgentResponses}` : ''}
+
+Generate a reply that is clear, polite, and helpful.
+If you are not confident, defer to a human.
+Sign the email as "${agent.company_name} Team".
+`;
+    
+    console.log('Built system prompt with context-aware template');
     
     // Generate reply with OpenAI
     let aiReply;
@@ -413,7 +478,8 @@ Sign the email as "${agent.company_name} Team".
         success: true,
         reply: aiReply,
         status: shouldAutoReply ? 'replied' : 'awaiting_approval',
-        autoReplyAnalysis: autoReplyAnalysis
+        autoReplyAnalysis: autoReplyAnalysis,
+        contextUsed: recommendedTone // Added to show what context was used
       })
     };
   } catch (error) {

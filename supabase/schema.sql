@@ -16,7 +16,8 @@ create table if not exists agents (
   gmail_access_token text,
   gmail_refresh_token text,
   gmail_token_expires_at timestamp,
-  created_at timestamp default now()
+  created_at timestamp default now(),
+  prompt_variations jsonb
 );
 
 -- knowledgebase_files table
@@ -50,7 +51,8 @@ create table if not exists email_logs (
   status text default 'received', -- received | replied | awaiting_approval | rejected
   user_rating int,
   user_feedback text,
-  created_at timestamp default now()
+  created_at timestamp default now(),
+  auto_reply_analysis jsonb
 );
 
 -- error_logs table for monitoring
@@ -93,4 +95,3 @@ CREATE POLICY "Users can access their own email logs" ON email_logs
 
 CREATE POLICY "Users can access their own error logs" ON error_logs
   FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
-
