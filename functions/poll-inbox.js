@@ -10,6 +10,10 @@ const { createClient } = require('@supabase/supabase-js');
 const { google } = require('googleapis');
 
 exports.handler = async function(event, context) {
+  // Check if this is triggered by a scheduled event
+  const isScheduled = event.headers && event.headers['x-netlify-scheduled-function-name'] === 'poll-inbox';
+  console.log(`Poll inbox triggered. Scheduled: ${isScheduled}`);
+  
   // Initialize Supabase client
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
