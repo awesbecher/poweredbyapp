@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,72 +34,90 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  // This would be replaced with actual Supabase queries once integrated
   useEffect(() => {
-    // Simulate loading emails
     setLoading(true);
     
-    // Mock data for UI demonstration
-    setTimeout(() => {
-      const mockEmails: EmailLog[] = [
-        {
-          id: '1',
-          agent_id: agentId || '',
-          gmail_message_id: 'msg1',
-          from_address: 'client@example.com',
-          subject: 'Question about your services',
-          raw_body: 'Hello, I was wondering if you offer consulting services for small businesses?',
-          ai_reply: 'Thank you for reaching out! Yes, we do offer consulting services tailored specifically for small businesses. Our packages start at $500/month and include weekly strategy calls and monthly reports. Would you like to schedule a discovery call to discuss your specific needs?',
-          status: 'awaiting_approval',
-          created_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          agent_id: agentId || '',
-          gmail_message_id: 'msg2',
-          from_address: 'support@company.com',
-          subject: 'Your recent inquiry',
-          raw_body: 'We received your message and wanted to follow up. Can you provide more details?',
-          ai_reply: "I appreciate your follow-up. I have reviewed our previous communication and would like to provide the additional details you requested. Our company specializes in digital marketing and web development services for small to medium businesses.",
-          status: 'replied',
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-          user_rating: 5,
-          user_feedback: "Perfect response, exactly what I was looking for!"
-        },
-        {
-          id: '3',
-          agent_id: agentId || '',
-          gmail_message_id: 'msg3',
-          from_address: 'potential@client.com',
-          subject: 'Pricing information needed',
-          raw_body: 'Could you send me your pricing sheet for SEO services? I need it for my budget planning.',
-          ai_reply: "Thank you for your interest in our SEO services. I'd be happy to share our pricing information. Our SEO packages range from $800-$2500/month depending on the scope and competitiveness of your industry. I've attached our detailed pricing sheet to this email for your budget planning. Would you like to schedule a call to discuss which package might be best for your specific needs?",
-          status: 'awaiting_approval',
-          created_at: new Date(Date.now() - 1800000).toISOString()
-        },
-        {
-          id: '4',
-          agent_id: agentId || '',
-          gmail_message_id: 'msg4',
-          from_address: 'existing@customer.com',
-          subject: 'Technical support needed',
-          raw_body: 'The website is down again. Can someone look into this ASAP?',
-          ai_reply: "I'm sorry to hear about the website issue. I've immediately notified our technical team, and they'll investigate the problem right away. We understand the urgency of this matter and will prioritize getting your site back online. Could you please provide any error messages you're seeing or the approximate time when you first noticed the site was down? This will help our team diagnose the issue faster.",
-          status: 'replied',
-          created_at: new Date(Date.now() - 7200000).toISOString(),
-          user_rating: 3,
-          user_feedback: "Response was okay but didn't resolve my issue."
+    const mockEmails: EmailLog[] = [
+      {
+        id: '1',
+        agent_id: agentId || '',
+        gmail_message_id: 'msg1',
+        from_address: 'user@example.com',
+        subject: 'Need help logging in',
+        raw_body: "Hi, I'm having trouble accessing my account. Can you help me reset my password?",
+        ai_reply: "I understand you're having trouble accessing your account. I'd be happy to help you reset your password. You can follow these steps:\n\n1. Visit our login page\n2. Click on 'Forgot Password'\n3. Enter your email address\n4. Follow the instructions in the reset email\n\nIf you don't receive the reset email within a few minutes, please check your spam folder. Let me know if you need any additional assistance!",
+        status: 'replied',
+        created_at: new Date().toISOString(),
+        auto_reply_analysis: {
+          intent: 'simple_inquiry',
+          complexity: 2,
+          confidence: 95,
+          autoReplyRecommended: true,
+          reasoning: 'Standard password reset request with clear solution path'
         }
-      ];
-      
-      setEmails(mockEmails);
-      setFilteredEmails(mockEmails);
-      setLoading(false);
-      setPollingStatus('active');
-    }, 1500);
+      },
+      {
+        id: '2',
+        agent_id: agentId || '',
+        gmail_message_id: 'msg2',
+        from_address: 'business@company.com',
+        subject: 'Question about pricing tiers',
+        raw_body: 'Can you explain the difference between the Starter and Pro plans?',
+        ai_reply: "Thank you for your interest in our pricing plans. Let me break down the key differences between our Starter and Pro tiers:\n\nStarter Plan ($29/month):\n- Up to 5 team members\n- Basic analytics\n- Standard support\n- Core features\n\nPro Plan ($79/month):\n- Unlimited team members\n- Advanced analytics\n- Priority support\n- All core features\n- Custom integrations\n- API access\n\nWould you like to schedule a demo to see the Pro features in action? I'd be happy to arrange that for you.",
+        status: 'awaiting_approval',
+        created_at: new Date(Date.now() - 3600000).toISOString(),
+        auto_reply_analysis: {
+          intent: 'general_request',
+          complexity: 5,
+          confidence: 85,
+          autoReplyRecommended: false,
+          reasoning: 'Pricing inquiry may need human verification for accuracy'
+        }
+      },
+      {
+        id: '3',
+        agent_id: agentId || '',
+        gmail_message_id: 'msg3',
+        from_address: 'unhappy@client.com',
+        subject: 'Very disappointed with the service',
+        raw_body: "I was expecting better results. I want a refund or I'm canceling.",
+        ai_reply: "I sincerely apologize for not meeting your expectations. I understand your frustration and would like to help address your concerns. I've flagged this for immediate attention from our customer success team, and they will be reaching out to you personally within the next few hours to discuss your experience and find the best resolution.\n\nIn the meantime, could you please share more specific details about what aspects of our service didn't meet your expectations? This will help us better prepare for our discussion and ensure we can properly address all your concerns.\n\nThank you for bringing this to our attention. We value your feedback and are committed to making this right.",
+        status: 'awaiting_approval',
+        created_at: new Date(Date.now() - 1800000).toISOString(),
+        auto_reply_analysis: {
+          intent: 'complaint',
+          complexity: 8,
+          confidence: 60,
+          autoReplyRecommended: false,
+          reasoning: 'High-stakes situation requiring human review and personalized attention'
+        }
+      },
+      {
+        id: '4',
+        agent_id: agentId || '',
+        gmail_message_id: 'msg4',
+        from_address: 'integration@startup.com',
+        subject: 'Do you offer integrations with Slack?',
+        raw_body: "I'd love to connect your product with our Slack workspace. Is that possible?",
+        ai_reply: "Thanks for your interest in Slack integration! Yes, we do offer Slack integration with our Pro and Enterprise plans. The integration allows you to:\n\n- Receive notifications in your Slack channels\n- Share updates directly from our platform\n- Use Slack commands to interact with our service\n\nWould you like me to send you our integration guide or connect you with our integration team for a detailed walkthrough?",
+        status: 'awaiting_approval',
+        created_at: new Date(Date.now() - 7200000).toISOString(),
+        auto_reply_analysis: {
+          intent: 'general_request',
+          complexity: 4,
+          confidence: 90,
+          autoReplyRecommended: true,
+          reasoning: 'Feature availability confirmation with clear documentation'
+        }
+      }
+    ];
+    
+    setEmails(mockEmails);
+    setFilteredEmails(mockEmails);
+    setLoading(false);
+    setPollingStatus('active');
   }, [agentId]);
 
-  // Apply status filter
   useEffect(() => {
     if (statusFilter === 'all') {
       setFilteredEmails(emails);
@@ -116,7 +133,6 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
       description: "Manually checking for new emails...",
     });
     
-    // This would trigger a manual check with the Gmail API
     setTimeout(() => {
       setLoading(false);
       toast({
@@ -127,14 +143,12 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
   };
 
   const handleApproveReply = (email: EmailLog) => {
-    // In a real implementation, this would call the /send-reply function
     setLoading(true);
     toast({
       title: "Sending approved reply",
       description: "Your approved response is being sent...",
     });
     
-    // Update status locally for demo
     setTimeout(() => {
       setEmails(emails.map(e => 
         e.id === email.id ? {...e, status: 'replied' as const} : e
@@ -151,14 +165,12 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
   const handleRejectReply = () => {
     if (!selectedEmail) return;
     
-    // In a real implementation, this would update the status in Supabase
     setLoading(true);
     toast({
       title: "Rejecting reply",
       description: "Updating status...",
     });
     
-    // Update status locally for demo
     setTimeout(() => {
       setEmails(emails.map(e => 
         e.id === selectedEmail.id ? {...e, status: 'rejected' as const} : e
@@ -182,14 +194,12 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
   const handleSaveEdit = () => {
     if (!selectedEmail) return;
     
-    // In a real implementation, this would call the /send-reply function with edited text
     setLoading(true);
     toast({
       title: "Sending edited reply",
       description: "Your edited response is being sent...",
     });
     
-    // Update locally for demo
     setTimeout(() => {
       setEmails(emails.map(e => 
         e.id === selectedEmail.id ? {...e, ai_reply: editedReply, status: 'replied' as const} : e
@@ -307,7 +317,6 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
         </CardFooter>
       </Card>
 
-      {/* Email Details Dialog */}
       <EmailDetailsDialog
         open={showViewDialog}
         onOpenChange={setShowViewDialog}
@@ -318,7 +327,6 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
         onReject={() => setShowRejectDialog(true)}
       />
 
-      {/* Edit Reply Dialog */}
       <EditReplyDialog
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
@@ -328,7 +336,6 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
         onSave={handleSaveEdit}
       />
 
-      {/* Reject Confirmation Dialog */}
       <RejectConfirmDialog
         open={showRejectDialog}
         onOpenChange={setShowRejectDialog}
