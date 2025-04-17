@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +8,6 @@ import VoiceAgent from "./pages/VoiceAgent";
 import ReviewAgent from "./pages/ReviewAgent";
 import EmailAgent from "./pages/EmailAgent";
 import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import Waitlist from "./pages/Waitlist";
 import ProjectText from "./pages/ProjectText";
@@ -67,7 +65,6 @@ const App = () => {
                   <AuthCheck>
                     <Routes>
                       <Route path="/login" element={<Login />} />
-                      <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
                       <Route path="/project-text" element={<ProjectText />} />
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -18,7 +18,7 @@ const Login = () => {
   // Check if user was redirected from a protected route
   useEffect(() => {
     const from = location.state?.from;
-    if (from && from.pathname !== '/login' && from.pathname !== '/signup') {
+    if (from && from.pathname !== '/login') {
       setRedirectMessage(`Please log in to access ${from.pathname}`);
     }
   }, [location]);
@@ -75,7 +75,7 @@ const Login = () => {
             <p className="text-sm text-accent">
               Don't have an account?{" "}
               <a href="/waitlist" className="text-primary font-medium hover:underline">
-                Sign up here!
+                Join the waitlist!
               </a>
             </p>
           </CardFooter>
