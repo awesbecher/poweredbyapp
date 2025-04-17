@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import EmailLogs from './EmailLogs';
 import EmailAnalytics from './EmailAnalytics';
+import FineTuningExport from './FineTuningExport';
 
 interface EmailDashboardTabsProps {
   agentId?: string;
@@ -24,15 +25,19 @@ const EmailDashboardTabs: React.FC<EmailDashboardTabsProps> = ({ agentId, onBack
       </div>
 
       <Tabs defaultValue="inbox" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="inbox">Inbox Dashboard</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="training">Model Training</TabsTrigger>
         </TabsList>
         <TabsContent value="inbox" className="mt-6">
           <EmailLogs agentId={agentId} onBack={onBack} />
         </TabsContent>
         <TabsContent value="analytics" className="mt-6">
           <EmailAnalytics agentId={agentId} />
+        </TabsContent>
+        <TabsContent value="training" className="mt-6">
+          <FineTuningExport agentId={agentId} />
         </TabsContent>
       </Tabs>
     </div>

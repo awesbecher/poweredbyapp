@@ -1,3 +1,4 @@
+
 export type AgentType = 'voice' | 'email' | 'sms' | 'workflow';
 
 export type VoiceAgentType = 'voiceChat' | 'aiReceptionist' | 'outboundAI' | 'virtualSE';
@@ -39,7 +40,7 @@ export interface AgentRenderingState {
 }
 
 export interface AutoReplyAnalysis {
-  intent: 'simple_inquiry' | 'general_request' | 'complaint' | 'urgent_request' | 'other';
+  intent: 'simple_inquiry' | 'general_request' | 'complaint' | 'urgent_request' | 'complex_inquiry' | 'feedback' | 'other';
   complexity: number;
   confidence: number;
   autoReplyRecommended: boolean;
