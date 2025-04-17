@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 interface ConfirmationScreenProps {
   agentData: any;
   onStartOver: () => void;
+  onActivate: () => void; // Added this prop to fix the error
 }
 
-const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onStartOver }) => {
+const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onStartOver, onActivate }) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center text-center pt-6 pb-8">
@@ -87,8 +88,8 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onSt
           Create Another Agent
         </Button>
         
-        <Button>
-          Go to Dashboard
+        <Button onClick={onActivate}>
+          Activate Agent
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
