@@ -25,7 +25,7 @@ const PromptPreview: React.FC<PromptPreviewProps> = ({ prompt, activeTab, agent 
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert variant="warning" className="mb-4">
+          <Alert className="mb-4 border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Connection Required</AlertTitle>
             <AlertDescription>
