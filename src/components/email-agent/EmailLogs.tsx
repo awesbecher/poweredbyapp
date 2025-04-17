@@ -4,7 +4,7 @@ import { ArrowLeft, RefreshCw, Mail, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast"; // Updated import path
 import { EmailLog } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 

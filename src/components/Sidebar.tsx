@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
@@ -80,7 +80,7 @@ const LogoIcon: React.FC = () => {
       <img 
         src="/lovable-uploads/ae8e51ee-1015-4acb-8ff5-4da999c0777d.png"
         alt="Logo"
-        className="w-6 h-6 object-contain" // Changed from w-full h-full to w-6 h-6 to match other icons
+        className="w-6 h-6 object-contain" 
       />
     </div>
   );
@@ -92,7 +92,6 @@ const Divider: React.FC = () => {
 
 const Sidebar: React.FC = () => {
   const { logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
   
   // Check if we're on the index page
@@ -100,7 +99,8 @@ const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    // Instead of using navigate, we'll use window.location for redirection
+    window.location.href = '/login';
   };
 
   return (
