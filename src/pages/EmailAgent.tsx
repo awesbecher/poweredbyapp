@@ -4,9 +4,10 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import NewAgentSetup from '@/components/email-agent/NewAgentSetup';
 import ConfirmationScreen from '@/components/email-agent/ConfirmationScreen';
+import EmailLogs from '@/components/email-agent/EmailLogs';
 
 const EmailAgent: React.FC = () => {
-  const [step, setStep] = useState<'setup' | 'confirmation'>('setup');
+  const [step, setStep] = useState<'setup' | 'confirmation' | 'monitoring'>('setup');
   const [agentData, setAgentData] = useState<any>(null);
 
   const handleSetupComplete = (data: any) => {
@@ -17,6 +18,10 @@ const EmailAgent: React.FC = () => {
   const handleStartOver = () => {
     setAgentData(null);
     setStep('setup');
+  };
+
+  const handleActivate = () => {
+    setStep('monitoring');
   };
 
   return (
@@ -36,6 +41,14 @@ const EmailAgent: React.FC = () => {
             <ConfirmationScreen 
               agentData={agentData} 
               onStartOver={handleStartOver}
+              onActivate={handleActivate}
+            />
+          )}
+
+          {step === 'monitoring' && (
+            <EmailLogs 
+              agentId={agentData?.id}
+              onBack={() => setStep('confirmation')} 
             />
           )}
         </main>
