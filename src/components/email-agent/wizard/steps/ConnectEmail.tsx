@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, Mail, CheckCircle2 } from 'lucide-react';
@@ -73,9 +72,10 @@ const ConnectEmail: React.FC = () => {
         <CardContent className="pt-6">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h3 className="text-xl font-medium">Connect your email account</h3>
+              <h3 className="text-2xl font-bold">Build your AI Email Agent</h3>
+              <h4 className="text-xl font-medium text-muted-foreground mb-4">Let's give your inbox superpowers.</h4>
               <p className="text-muted-foreground">
-                Your AI agent will monitor this inbox and respond to emails based on your settings.
+                Connect your email account to get started.
               </p>
               
               <div className="space-y-3">
