@@ -43,6 +43,35 @@ const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check if we have global handlers (from the AgentDashboard component)
+  useEffect(() => {
+    if ((window as any).__topNavHandlers) {
+      const handlers = (window as any).__topNavHandlers;
+      if (handlers.onSearchClick && !onSearchClick) {
+        // Use the handler from the global object
+      }
+      if (handlers.onWhatsNewClick && !onWhatsNewClick) {
+        // Use the handler from the global object
+      }
+    }
+  }, [onSearchClick, onWhatsNewClick]);
+
+  const handleSearchClick = () => {
+    if (onSearchClick) {
+      onSearchClick();
+    } else if ((window as any).__topNavHandlers?.onSearchClick) {
+      (window as any).__topNavHandlers.onSearchClick();
+    }
+  };
+
+  const handleWhatsNewClick = () => {
+    if (onWhatsNewClick) {
+      onWhatsNewClick();
+    } else if ((window as any).__topNavHandlers?.onWhatsNewClick) {
+      (window as any).__topNavHandlers.onWhatsNewClick();
+    }
+  };
+
   const handleSignOut = () => {
     logout();
     window.location.href = '/login';
@@ -94,7 +123,7 @@ const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={onSearchClick}
+              onClick={handleSearchClick}
               className="relative"
             >
               <Search size={20} />
@@ -106,7 +135,7 @@ const TopNav: React.FC<TopNavProps> = ({ onSearchClick, onWhatsNewClick }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={onWhatsNewClick}
+              onClick={handleWhatsNewClick}
               className="relative"
             >
               <Bell size={20} />

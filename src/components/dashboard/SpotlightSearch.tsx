@@ -57,54 +57,56 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({ isOpen, onClose }) =>
   };
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={onClose} className="backdrop-blur-md bg-white/90 dark:bg-slate-900/90">
-      <CommandInput placeholder="Search for agents, docs, or help..." />
-      <CommandList>
-        <CommandEmpty>No results found</CommandEmpty>
-        
-        <CommandGroup heading="Agents">
-          {mockAgents.map((agent) => (
-            <CommandItem 
-              key={agent.id} 
-              value={`agent-${agent.id}`}
-              onSelect={() => handleSelect(`agent-${agent.id}`)}
-            >
-              <Bot className="mr-2 h-4 w-4" />
-              <span>{agent.name}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        
-        <CommandSeparator />
-        
-        <CommandGroup heading="Documentation">
-          {mockDocs.map((doc) => (
-            <CommandItem 
-              key={doc.id} 
-              value={`doc-${doc.id}`}
-              onSelect={() => handleSelect(`doc-${doc.id}`)}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              <span>{doc.title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        
-        <CommandSeparator />
-        
-        <CommandGroup heading="Help Articles">
-          {mockHelp.map((help) => (
-            <CommandItem 
-              key={help.id} 
-              value={`help-${help.id}`}
-              onSelect={() => handleSelect(`help-${help.id}`)}
-            >
-              <HelpCircle className="mr-2 h-4 w-4" />
-              <span>{help.title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
+    <CommandDialog open={isOpen} onOpenChange={onClose}>
+      <div className="backdrop-blur-md bg-white/90 dark:bg-slate-900/90">
+        <CommandInput placeholder="Search for agents, docs, or help..." />
+        <CommandList>
+          <CommandEmpty>No results found</CommandEmpty>
+          
+          <CommandGroup heading="Agents">
+            {mockAgents.map((agent) => (
+              <CommandItem 
+                key={agent.id} 
+                value={`agent-${agent.id}`}
+                onSelect={() => handleSelect(`agent-${agent.id}`)}
+              >
+                <Bot className="mr-2 h-4 w-4" />
+                <span>{agent.name}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          
+          <CommandSeparator />
+          
+          <CommandGroup heading="Documentation">
+            {mockDocs.map((doc) => (
+              <CommandItem 
+                key={doc.id} 
+                value={`doc-${doc.id}`}
+                onSelect={() => handleSelect(`doc-${doc.id}`)}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                <span>{doc.title}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          
+          <CommandSeparator />
+          
+          <CommandGroup heading="Help Articles">
+            {mockHelp.map((help) => (
+              <CommandItem 
+                key={help.id} 
+                value={`help-${help.id}`}
+                onSelect={() => handleSelect(`help-${help.id}`)}
+              >
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>{help.title}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </div>
     </CommandDialog>
   );
 };
