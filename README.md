@@ -1,69 +1,95 @@
-# Welcome to your Lovable project
 
-## Project info
+# PoweredBy AI Email Agent
 
-**URL**: https://lovable.dev/projects/34753801-2c46-4614-8bd9-65a046faa856
+This project provides an AI-powered email agent that can automatically read, understand, and reply to emails using advanced natural language processing.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Gmail Integration**: Connect to Gmail accounts and monitor incoming emails
+- **AI-Powered Replies**: Generate context-aware responses to emails
+- **Knowledge Base**: Upload documents to provide reference information to the AI
+- **Approval Workflow**: Review AI-generated replies before sending
+- **Analytics**: Track email agent performance and collect user feedback
 
-**Use Lovable**
+## Project Structure
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/34753801-2c46-4614-8bd9-65a046faa856) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+poweredbyapp/
+├── functions/                 # Netlify serverless functions
+│   ├── auth/
+│   │   └── gmail-callback.js  # OAuth handler
+│   ├── poll-inbox.js          # Gmail polling
+│   ├── generate-reply.js      # OpenAI reply logic
+│   ├── send-reply.js          # Send email replies
+│   ├── process-kb-upload.js   # KB file embedding
+├── supabase/
+│   ├── schema.sql             # Database schema
+├── netlify.toml               # Netlify configuration
+├── .env.example               # Example environment variables
 ```
 
-**Edit a file directly in GitHub**
+## Setup Instructions
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Prerequisites
 
-**Use GitHub Codespaces**
+1. Supabase account and project
+2. OpenAI API key
+3. Gmail API credentials
+4. Netlify account
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Environment Variables
 
-## What technologies are used for this project?
+Copy `.env.example` to `.env` and fill in the required values:
 
-This project is built with .
+```bash
+# Copy example env file
+cp .env.example .env
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Edit with your values
+nano .env
+```
 
-## How can I deploy this project?
+### Supabase Setup
 
-Simply open [Lovable](https://lovable.dev/projects/34753801-2c46-4614-8bd9-65a046faa856) and click on Share -> Publish.
+1. Create a new Supabase project
+2. Run the schema from `supabase/schema.sql`
+3. Enable vector extension if not already enabled:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
 
-## I want to use a custom domain - is that possible?
+### Gmail API Setup
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Create a project in Google Cloud Console
+2. Enable Gmail API
+3. Create OAuth credentials (web application type)
+4. Add authorized redirect URI: `https://your-netlify-site.netlify.app/.netlify/functions/gmail-callback`
+
+### Netlify Deployment
+
+1. Connect your GitHub repository to Netlify
+2. Configure build settings as per `netlify.toml`
+3. Add all environment variables from `.env` to Netlify environment variables
+
+## Required Dependencies
+
+The project requires the following npm packages:
+
+```bash
+npm install @supabase/supabase-js openai googleapis pdf-parse mammoth node-fetch
+```
+
+## Development
+
+For local development, install the Netlify CLI:
+
+```bash
+npm install -g netlify-cli
+netlify login
+netlify link
+netlify dev
+```
+
+## License
+
+This project is licensed under the MIT License.

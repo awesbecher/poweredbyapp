@@ -1,0 +1,40 @@
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Functions directory
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"
+
+# Environmental variables that should be accessible to functions
+# (Don't put actual values here - use Netlify's UI to set them)
+[build.environment]
+  NODE_VERSION = "18"
+
+# Configure functions individually (if needed)
+[functions.gmail-callback]
+  included_files = ["functions/auth/gmail-callback.js"]
+
+# Default redirects for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Allow Cross-Origin Resource Sharing for functions
+[[headers]]
+  for = "/.netlify/functions/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+# Define scheduled functions
+[functions.poll-inbox]
+  schedule = "@hourly"
+
+# Function build dependencies for document processing
+[functions.process-kb-upload]
+  included_files = ["node_modules/pdf-parse/**", "node_modules/mammoth/**"]
