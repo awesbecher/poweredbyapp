@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Bell, 
   Settings, 
   HelpCircle, 
-  Search, 
   BarChart3, 
   CreditCard, 
   Bot
@@ -22,15 +20,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/App';
 
-interface TopNavProps {
-  showSearchBar?: boolean;
-}
-
-const TopNav: React.FC<TopNavProps> = ({ showSearchBar = true }) => {
+const TopNav: React.FC = () => {
   const { logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Handle scroll event to add shadow to navbar when scrolled
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -88,22 +81,6 @@ const TopNav: React.FC<TopNavProps> = ({ showSearchBar = true }) => {
           </div>
           
           <div className="flex items-center gap-3">
-            {showSearchBar && (
-              <div className="relative hidden md:flex items-center">
-                <div className="absolute left-3 text-muted-foreground">
-                  <Search size={16} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search agents... (Ctrl+K)"
-                  className="w-64 h-9 pl-9 pr-4 rounded-md border border-input bg-background"
-                />
-                <div className="absolute right-3 text-muted-foreground text-xs bg-muted px-1.5 py-0.5 rounded">
-                  ⌘K
-                </div>
-              </div>
-            )}
-            
             <Button variant="ghost" size="icon">
               <Bell size={20} />
             </Button>
