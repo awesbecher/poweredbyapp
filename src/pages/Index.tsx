@@ -51,7 +51,7 @@ const Index = () => {
     if (type === 'voice') {
       navigate('/voice-agent');
     } else if (type === 'email') {
-      navigate('/voice-agent'); // Temporarily pointing to voice-agent
+      navigate('/email-agent'); // Updated to navigate to email-agent route
     } else if (type === 'sms') {
       navigate('/voice-agent'); // Temporarily pointing to voice-agent
     } else if (type === 'workflow') {
