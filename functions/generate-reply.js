@@ -8,6 +8,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const { OpenAI } = require('openai');
+const { notifyFailure } = require('./utils/errorMonitoring');
 
 exports.handler = async function(event, context) {
   // Only allow POST requests
@@ -19,12 +20,24 @@ exports.handler = async function(event, context) {
   try {
     body = JSON.parse(event.body);
   } catch (error) {
+    await notifyFailure({
+      functionName: 'generate-reply',
+      error: error,
+      metadata: { rawBody: event.body }
+    });
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
   const { messageId, agentId } = body;
   
   if (!messageId || !agentId) {
+    const error = new Error('Missing required fields');
+    await notifyFailure({
+      functionName: 'generate-reply',
+      error,
+      agentId,
+      metadata: { messageId }
+    });
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
@@ -45,7 +58,12 @@ exports.handler = async function(event, context) {
       .single();
     
     if (emailError || !email) {
-      console.error('Error fetching email:', emailError);
+      await notifyFailure({
+        functionName: 'generate-reply',
+        error: emailError || new Error('Email not found'),
+        agentId,
+        metadata: { messageId }
+      });
       return { statusCode: 404, body: 'Email not found' };
     }
     
@@ -57,7 +75,12 @@ exports.handler = async function(event, context) {
       .single();
     
     if (agentError || !agent) {
-      console.error('Error fetching agent:', agentError);
+      await notifyFailure({
+        functionName: 'generate-reply',
+        error: agentError || new Error('Agent not found'),
+        agentId,
+        metadata: { messageId }
+      });
       return { statusCode: 404, body: 'Agent not found' };
     }
     
@@ -65,23 +88,64 @@ exports.handler = async function(event, context) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
     // Generate embedding for the email content to find relevant knowledge
-    const emailEmbedding = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: email.raw_body,
-    });
+    let emailEmbedding;
+    try {
+      emailEmbedding = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: email.raw_body,
+      });
+    } catch (embeddingError) {
+      await notifyFailure({
+        functionName: 'generate-reply',
+        error: embeddingError,
+        agentId,
+        metadata: { 
+          messageId,
+          operation: 'generate_embedding'
+        }
+      });
+      // Continue without embeddings
+      console.log('Error generating embeddings, continuing without knowledge context');
+    }
     
     // Get relevant knowledge chunks using vector search
-    const { data: relevantKnowledge, error: knowledgeError } = await supabase
-      .rpc('match_kb_embeddings', {
-        query_embedding: emailEmbedding.data[0].embedding,
-        match_threshold: 0.5, // Adjust as needed
-        match_count: 5, // Increased from 3 to 5
-        agent_id: agentId
-      });
-    
-    if (knowledgeError) {
-      console.error('Error fetching relevant knowledge:', knowledgeError);
-      console.log('Continuing without knowledge base context');
+    let relevantKnowledge = [];
+    if (emailEmbedding) {
+      try {
+        const { data: knowledgeData, error: knowledgeError } = await supabase
+          .rpc('match_kb_embeddings', {
+            query_embedding: emailEmbedding.data[0].embedding,
+            match_threshold: 0.5, // Adjust as needed
+            match_count: 5, // Increased from 3 to 5
+            agent_id: agentId
+          });
+          
+        if (knowledgeError) {
+          await notifyFailure({
+            functionName: 'generate-reply',
+            error: knowledgeError,
+            agentId,
+            metadata: { 
+              messageId,
+              operation: 'knowledge_search'
+            }
+          });
+          console.log('Error fetching relevant knowledge, continuing without knowledge base context');
+        } else {
+          relevantKnowledge = knowledgeData || [];
+        }
+      } catch (knowledgeSearchError) {
+        await notifyFailure({
+          functionName: 'generate-reply',
+          error: knowledgeSearchError,
+          agentId,
+          metadata: { 
+            messageId,
+            operation: 'knowledge_search'
+          }
+        });
+        console.log('Error searching knowledge base, continuing without knowledge context');
+      }
     }
 
     // Get previous conversation history for this thread
@@ -135,66 +199,106 @@ Sign the email as "${agent.company_name} Team".
     console.log('Built system prompt with template');
     
     // First, analyze the message to determine if it's suitable for auto-reply
-    const autoReplyCheck = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: "Analyze the following email and determine if an auto-reply is appropriate." },
-        { role: "user", content: email.raw_body }
-      ],
-      functions: [
-        {
-          name: "checkAutoReplyEligibility",
-          parameters: {
-            type: "object",
-            properties: {
-              intent: { 
-                type: "string", 
-                description: "The primary intent of the email (inquiry, complaint, request, etc.)",
-                enum: ["simple_inquiry", "complex_inquiry", "complaint", "urgent_request", "general_request", "feedback", "other"]
+    let autoReplyAnalysis;
+    try {
+      const autoReplyCheck = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: "Analyze the following email and determine if an auto-reply is appropriate." },
+          { role: "user", content: email.raw_body }
+        ],
+        functions: [
+          {
+            name: "checkAutoReplyEligibility",
+            parameters: {
+              type: "object",
+              properties: {
+                intent: { 
+                  type: "string", 
+                  description: "The primary intent of the email (inquiry, complaint, request, etc.)",
+                  enum: ["simple_inquiry", "complex_inquiry", "complaint", "urgent_request", "general_request", "feedback", "other"]
+                },
+                complexity: { 
+                  type: "number", 
+                  description: "A measure of how complex the email is (1-10 scale, where 1 is very simple and 10 is very complex)"
+                },
+                confidence: { 
+                  type: "number", 
+                  description: "Confidence level in being able to generate an appropriate response (0-100)"
+                },
+                autoReplyRecommended: {
+                  type: "boolean",
+                  description: "Whether auto-reply is recommended based on the email content"
+                },
+                reasoning: {
+                  type: "string",
+                  description: "Brief explanation for the recommendation"
+                }
               },
-              complexity: { 
-                type: "number", 
-                description: "A measure of how complex the email is (1-10 scale, where 1 is very simple and 10 is very complex)"
-              },
-              confidence: { 
-                type: "number", 
-                description: "Confidence level in being able to generate an appropriate response (0-100)"
-              },
-              autoReplyRecommended: {
-                type: "boolean",
-                description: "Whether auto-reply is recommended based on the email content"
-              },
-              reasoning: {
-                type: "string",
-                description: "Brief explanation for the recommendation"
-              }
-            },
-            required: ["intent", "complexity", "confidence", "autoReplyRecommended", "reasoning"]
+              required: ["intent", "complexity", "confidence", "autoReplyRecommended", "reasoning"]
+            }
           }
+        ],
+        function_call: { name: "checkAutoReplyEligibility" },
+        temperature: 0.3,
+      });
+      
+      autoReplyAnalysis = JSON.parse(
+        autoReplyCheck.choices[0].message.function_call.arguments
+      );
+      
+      console.log('Auto-reply eligibility check:', autoReplyAnalysis);
+    } catch (analysisError) {
+      await notifyFailure({
+        functionName: 'generate-reply',
+        error: analysisError,
+        agentId,
+        metadata: { 
+          messageId,
+          operation: 'auto_reply_analysis',
+          emailSubject: email.subject
         }
-      ],
-      function_call: { name: "checkAutoReplyEligibility" },
-      temperature: 0.3,
-    });
-    
-    const autoReplyAnalysis = JSON.parse(
-      autoReplyCheck.choices[0].message.function_call.arguments
-    );
-    
-    console.log('Auto-reply eligibility check:', autoReplyAnalysis);
+      });
+      
+      // Default to conservative auto-reply settings if analysis fails
+      autoReplyAnalysis = {
+        intent: "other",
+        complexity: 7,
+        confidence: 50,
+        autoReplyRecommended: false,
+        reasoning: "Analysis failed, defaulting to human review"
+      };
+      
+      console.log('Auto-reply analysis failed, defaulting to human review');
+    }
     
     // Generate reply with OpenAI
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: email.raw_body }
-      ],
-      temperature: 0.7,
-    });
-    
-    const aiReply = completion.choices[0].message.content;
-    console.log('Generated AI reply');
+    let aiReply;
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: email.raw_body }
+        ],
+        temperature: 0.7,
+      });
+      
+      aiReply = completion.choices[0].message.content;
+      console.log('Generated AI reply');
+    } catch (replyError) {
+      await notifyFailure({
+        functionName: 'generate-reply',
+        error: replyError,
+        agentId,
+        metadata: { 
+          messageId,
+          operation: 'generate_completion',
+          emailSubject: email.subject
+        }
+      });
+      return { statusCode: 500, body: 'Failed to generate AI reply' };
+    }
     
     // Get agent's average rating from previous replies
     const { data: agentRatings, error: ratingsError } = await supabase
@@ -240,7 +344,16 @@ Sign the email as "${agent.company_name} Team".
           })
         });
       } catch (sendError) {
-        console.error('Error triggering send-reply:', sendError);
+        await notifyFailure({
+          functionName: 'generate-reply',
+          error: sendError,
+          agentId,
+          metadata: { 
+            messageId,
+            operation: 'trigger_auto_send',
+            emailSubject: email.subject
+          }
+        });
       }
       
       const { error: updateError } = await supabase
@@ -254,7 +367,16 @@ Sign the email as "${agent.company_name} Team".
         .eq('id', email.id);
       
       if (updateError) {
-        console.error('Error updating email with AI reply:', updateError);
+        await notifyFailure({
+          functionName: 'generate-reply',
+          error: updateError,
+          agentId,
+          metadata: { 
+            messageId,
+            operation: 'update_status_replied',
+            emailId: email.id
+          }
+        });
         return { statusCode: 500, body: 'Failed to update email with AI reply' };
       }
     } else {
@@ -271,7 +393,16 @@ Sign the email as "${agent.company_name} Team".
         .eq('id', email.id);
       
       if (updateError) {
-        console.error('Error updating email with AI reply:', updateError);
+        await notifyFailure({
+          functionName: 'generate-reply',
+          error: updateError,
+          agentId,
+          metadata: { 
+            messageId,
+            operation: 'update_status_awaiting',
+            emailId: email.id
+          }
+        });
         return { statusCode: 500, body: 'Failed to update email with AI reply' };
       }
     }
@@ -287,6 +418,12 @@ Sign the email as "${agent.company_name} Team".
     };
   } catch (error) {
     console.error('Generate reply error:', error);
+    await notifyFailure({
+      functionName: 'generate-reply',
+      error,
+      agentId,
+      metadata: { messageId }
+    });
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })

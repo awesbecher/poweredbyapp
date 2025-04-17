@@ -53,17 +53,30 @@ create table if not exists email_logs (
   created_at timestamp default now()
 );
 
+-- error_logs table for monitoring
+create table if not exists error_logs (
+  id uuid primary key default gen_random_uuid(),
+  function_name text,
+  error_message text,
+  agent_id uuid,
+  metadata jsonb,
+  created_at timestamp default now()
+);
+
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS agents_email_idx ON agents(agent_email);
 CREATE INDEX IF NOT EXISTS kb_embeddings_agent_id_idx ON kb_embeddings(agent_id);
 CREATE INDEX IF NOT EXISTS email_logs_agent_id_idx ON email_logs(agent_id);
 CREATE INDEX IF NOT EXISTS email_logs_status_idx ON email_logs(status);
+CREATE INDEX IF NOT EXISTS error_logs_agent_id_idx ON error_logs(agent_id);
+CREATE INDEX IF NOT EXISTS error_logs_function_idx ON error_logs(function_name);
 
 -- Enable Row Level Security
 ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledgebase_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE kb_embeddings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for authenticated access
 CREATE POLICY "Users can access their own data" ON agents
@@ -77,3 +90,7 @@ CREATE POLICY "Users can access their own embeddings" ON kb_embeddings
 
 CREATE POLICY "Users can access their own email logs" ON email_logs
   FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
+
+CREATE POLICY "Users can access their own error logs" ON error_logs
+  FOR ALL USING (agent_id IN (SELECT id FROM agents WHERE auth.uid() = id));
+

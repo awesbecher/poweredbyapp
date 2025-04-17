@@ -8,6 +8,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const { google } = require('googleapis');
+const { notifyFailure } = require('./utils/errorMonitoring');
 
 exports.handler = async function(event, context) {
   // Check if this is triggered by a scheduled event
@@ -27,7 +28,11 @@ exports.handler = async function(event, context) {
       .not('gmail_access_token', 'is', null);
     
     if (agentError) {
-      console.error('Error fetching agents:', agentError);
+      await notifyFailure({
+        functionName: 'poll-inbox',
+        error: agentError,
+        metadata: { operation: 'fetch_agents' }
+      });
       return { statusCode: 500, body: JSON.stringify({ error: 'Failed to fetch agents' }) };
     }
     
@@ -63,7 +68,13 @@ exports.handler = async function(event, context) {
             
           console.log(`Refreshed token for agent ${agent.id}`);
         } catch (refreshError) {
-          console.error(`Failed to refresh token for ${agent.id}:`, refreshError);
+          await notifyFailure({
+            functionName: 'poll-inbox',
+            error: refreshError,
+            agentId: agent.id,
+            metadata: { operation: 'refresh_token' }
+          });
+          console.log(`Skipping agent ${agent.id} due to token refresh failure`);
           continue;
         }
       }
@@ -73,105 +84,157 @@ exports.handler = async function(event, context) {
       oauth2Client.setCredentials({ access_token: accessToken });
       const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
       
-      // Get recent unread emails
-      const messageList = await gmail.users.messages.list({
-        userId: 'me',
-        q: 'is:unread',
-        maxResults: 10
-      });
-      
-      const messages = messageList.data.messages || [];
-      console.log(`Found ${messages.length} unread messages for agent ${agent.id}`);
-      
-      for (const message of messages) {
-        // Check if we've already processed this message
-        const { data: existingEmail } = await supabase
-          .from('email_logs')
-          .select('id')
-          .eq('gmail_message_id', message.id)
-          .eq('agent_id', agent.id)
-          .single();
-        
-        if (existingEmail) {
-          // Skip already processed emails
-          console.log(`Skipping already processed message: ${message.id}`);
-          continue;
-        }
-        
-        // Get full message content
-        const fullMessage = await gmail.users.messages.get({
+      try {
+        // Get recent unread emails
+        const messageList = await gmail.users.messages.list({
           userId: 'me',
-          id: message.id,
-          format: 'full'
+          q: 'is:unread',
+          maxResults: 10
         });
         
-        const headers = fullMessage.data.payload.headers;
-        const fromHeader = headers.find(h => h.name === 'From');
-        const subjectHeader = headers.find(h => h.name === 'Subject');
+        const messages = messageList.data.messages || [];
+        console.log(`Found ${messages.length} unread messages for agent ${agent.id}`);
         
-        let body = '';
-        // Extract message body
-        if (fullMessage.data.payload.parts) {
-          // Multipart message
-          for (const part of fullMessage.data.payload.parts) {
-            if (part.mimeType === 'text/plain' && part.body.data) {
-              body += Buffer.from(part.body.data, 'base64').toString('utf8');
-              break;
-            }
+        for (const message of messages) {
+          // Check if we've already processed this message
+          const { data: existingEmail } = await supabase
+            .from('email_logs')
+            .select('id')
+            .eq('gmail_message_id', message.id)
+            .eq('agent_id', agent.id)
+            .single();
+          
+          if (existingEmail) {
+            // Skip already processed emails
+            console.log(`Skipping already processed message: ${message.id}`);
+            continue;
           }
-        } else if (fullMessage.data.payload.body.data) {
-          // Simple message
-          body = Buffer.from(fullMessage.data.payload.body.data, 'base64').toString('utf8');
-        }
-        
-        // Parse the from address
-        const fromAddress = fromHeader ? fromHeader.value.match(/<(.+)>/) ? 
-          fromHeader.value.match(/<(.+)>/)[1] : fromHeader.value : 'unknown';
-        
-        // Add email to database
-        const { data: newEmail, error: insertError } = await supabase
-          .from('email_logs')
-          .insert({
-            agent_id: agent.id,
-            gmail_message_id: message.id,
-            from_address: fromAddress,
-            subject: subjectHeader ? subjectHeader.value : '(no subject)',
-            raw_body: body,
-            status: 'received',
-            created_at: new Date().toISOString()
-          })
-          .select()
-          .single();
-        
-        if (insertError) {
-          console.error(`Error storing email ${message.id}:`, insertError);
-        } else {
-          console.log(`Stored new email ${message.id} from ${fromAddress}`);
           
-          // Mark message as read in Gmail
-          await gmail.users.messages.modify({
-            userId: 'me',
-            id: message.id,
-            requestBody: {
-              removeLabelIds: ['UNREAD']
-            }
-          });
-          
-          // Trigger generate-reply function
+          // Get full message content
+          let fullMessage;
           try {
-            await fetch(`${process.env.BASE_URL}/.netlify/functions/generate-reply`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                messageId: message.id,
-                agentId: agent.id 
-              })
+            fullMessage = await gmail.users.messages.get({
+              userId: 'me',
+              id: message.id,
+              format: 'full'
             });
-            console.log(`Triggered generate-reply for message ${message.id}`);
-          } catch (triggerError) {
-            console.error(`Failed to trigger generate-reply:`, triggerError);
+          } catch (messageError) {
+            await notifyFailure({
+              functionName: 'poll-inbox',
+              error: messageError,
+              agentId: agent.id,
+              metadata: { 
+                messageId: message.id,
+                operation: 'get_message' 
+              }
+            });
+            continue;
+          }
+          
+          const headers = fullMessage.data.payload.headers;
+          const fromHeader = headers.find(h => h.name === 'From');
+          const subjectHeader = headers.find(h => h.name === 'Subject');
+          
+          let body = '';
+          // Extract message body
+          if (fullMessage.data.payload.parts) {
+            // Multipart message
+            for (const part of fullMessage.data.payload.parts) {
+              if (part.mimeType === 'text/plain' && part.body.data) {
+                body += Buffer.from(part.body.data, 'base64').toString('utf8');
+                break;
+              }
+            }
+          } else if (fullMessage.data.payload.body.data) {
+            // Simple message
+            body = Buffer.from(fullMessage.data.payload.body.data, 'base64').toString('utf8');
+          }
+          
+          // Parse the from address
+          const fromAddress = fromHeader ? fromHeader.value.match(/<(.+)>/) ? 
+            fromHeader.value.match(/<(.+)>/)[1] : fromHeader.value : 'unknown';
+          
+          // Add email to database
+          const { data: newEmail, error: insertError } = await supabase
+            .from('email_logs')
+            .insert({
+              agent_id: agent.id,
+              gmail_message_id: message.id,
+              from_address: fromAddress,
+              subject: subjectHeader ? subjectHeader.value : '(no subject)',
+              raw_body: body,
+              status: 'received',
+              created_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          
+          if (insertError) {
+            await notifyFailure({
+              functionName: 'poll-inbox',
+              error: insertError,
+              agentId: agent.id,
+              metadata: { 
+                messageId: message.id,
+                operation: 'insert_email' 
+              }
+            });
+            console.error(`Error storing email ${message.id}:`, insertError);
+          } else {
+            console.log(`Stored new email ${message.id} from ${fromAddress}`);
+            
+            // Mark message as read in Gmail
+            try {
+              await gmail.users.messages.modify({
+                userId: 'me',
+                id: message.id,
+                requestBody: {
+                  removeLabelIds: ['UNREAD']
+                }
+              });
+            } catch (markReadError) {
+              await notifyFailure({
+                functionName: 'poll-inbox',
+                error: markReadError,
+                agentId: agent.id,
+                metadata: { 
+                  messageId: message.id,
+                  operation: 'mark_read' 
+                }
+              });
+            }
+            
+            // Trigger generate-reply function
+            try {
+              await fetch(`${process.env.BASE_URL}/.netlify/functions/generate-reply`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  messageId: message.id,
+                  agentId: agent.id 
+                })
+              });
+              console.log(`Triggered generate-reply for message ${message.id}`);
+            } catch (triggerError) {
+              await notifyFailure({
+                functionName: 'poll-inbox',
+                error: triggerError,
+                agentId: agent.id,
+                metadata: { 
+                  messageId: message.id,
+                  operation: 'trigger_generate_reply' 
+                }
+              });
+            }
           }
         }
+      } catch (gmailError) {
+        await notifyFailure({
+          functionName: 'poll-inbox',
+          error: gmailError,
+          agentId: agent.id,
+          metadata: { operation: 'gmail_api' }
+        });
       }
     }
     
@@ -181,6 +244,11 @@ exports.handler = async function(event, context) {
     };
   } catch (error) {
     console.error('Poll inbox error:', error);
+    await notifyFailure({
+      functionName: 'poll-inbox',
+      error,
+      metadata: { operation: 'main' }
+    });
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })

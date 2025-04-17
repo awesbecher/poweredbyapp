@@ -7,6 +7,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const { google } = require('googleapis');
+const { notifyFailure } = require('./utils/errorMonitoring');
 
 exports.handler = async function(event, context) {
   // Only allow POST requests
@@ -18,12 +19,24 @@ exports.handler = async function(event, context) {
   try {
     body = JSON.parse(event.body);
   } catch (error) {
+    await notifyFailure({
+      functionName: 'send-reply',
+      error: error,
+      metadata: { rawBody: event.body }
+    });
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
   const { agentId, gmailMessageId, replyText } = body;
   
   if (!agentId || !gmailMessageId || !replyText) {
+    const error = new Error('Missing required fields');
+    await notifyFailure({
+      functionName: 'send-reply',
+      error: error,
+      agentId: agentId,
+      metadata: { gmailMessageId }
+    });
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
@@ -44,7 +57,12 @@ exports.handler = async function(event, context) {
       .single();
     
     if (emailError || !email) {
-      console.error('Error fetching email:', emailError);
+      await notifyFailure({
+        functionName: 'send-reply',
+        error: emailError || new Error('Email not found'),
+        agentId: agentId,
+        metadata: { gmailMessageId }
+      });
       return { statusCode: 404, body: 'Email not found' };
     }
     
@@ -56,7 +74,12 @@ exports.handler = async function(event, context) {
       .single();
     
     if (agentError || !agent) {
-      console.error('Error fetching agent:', agentError);
+      await notifyFailure({
+        functionName: 'send-reply',
+        error: agentError || new Error('Agent not found'),
+        agentId: agentId,
+        metadata: { gmailMessageId }
+      });
       return { statusCode: 404, body: 'Agent not found' };
     }
     
@@ -89,7 +112,12 @@ exports.handler = async function(event, context) {
           
         console.log('Refreshed token for sending reply');
       } catch (refreshError) {
-        console.error('Failed to refresh token:', refreshError);
+        await notifyFailure({
+          functionName: 'send-reply',
+          error: refreshError,
+          agentId: agentId,
+          metadata: { gmailMessageId, operation: 'token_refresh' }
+        });
         return { statusCode: 500, body: 'Failed to refresh token' };
       }
     }
@@ -159,6 +187,16 @@ exports.handler = async function(event, context) {
     
     if (updateError) {
       console.error('Error updating email status:', updateError);
+      await notifyFailure({
+        functionName: 'send-reply',
+        error: updateError,
+        agentId: agentId,
+        metadata: { 
+          gmailMessageId, 
+          operation: 'status_update',
+          emailId: email.id 
+        }
+      });
     }
     
     return {
@@ -170,6 +208,13 @@ exports.handler = async function(event, context) {
     };
   } catch (error) {
     console.error('Send reply error:', error);
+    await notifyFailure({
+      functionName: 'send-reply',
+      error: error,
+      agentId: agentId,
+      metadata: { gmailMessageId }
+    });
+    
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })
