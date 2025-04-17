@@ -1,40 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { toast } from "@/hooks/use-toast";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, 
-  PieChart, Pie, Cell } from 'recharts';
-import { EmailLog } from "@/types";
-
-interface AnalyticsCardProps {
-  title: string;
-  value: string | number;
-  description?: string;
-  color?: string;
-}
-
-const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title, value, description, color }) => {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold" style={color ? { color } : {}}>
-          {value}
-        </div>
-        {description && (
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { EmailLog } from "@/lib/types";
 
 interface EmailAnalyticsProps {
   agentId?: string;
@@ -42,282 +10,286 @@ interface EmailAnalyticsProps {
 
 const EmailAnalytics: React.FC<EmailAnalyticsProps> = ({ agentId }) => {
   const [loading, setLoading] = useState(true);
-  const [emails, setEmails] = useState<EmailLog[]>([]);
-  const [dailyData, setDailyData] = useState<any[]>([]);
+  const [emailMetrics, setEmailMetrics] = useState<any>(null);
+  const [volumeData, setVolumeData] = useState<any[]>([]);
   const [statusData, setStatusData] = useState<any[]>([]);
-  
-  // Metrics states
-  const [totalReceived, setTotalReceived] = useState(0);
-  const [totalReplied, setTotalReplied] = useState(0);
-  const [autoReplyRate, setAutoReplyRate] = useState(0);
-  const [avgResponseTime, setAvgResponseTime] = useState("0h 0m");
-  const [rejectionRate, setRejectionRate] = useState(0);
-
-  const COLORS = ['#4ade80', '#f59e0b', '#ef4444', '#a3a3a3'];
-  const STATUS_COLORS = {
-    replied: '#4ade80',
-    awaiting_approval: '#f59e0b',
-    rejected: '#ef4444',
-    received: '#a3a3a3'
-  };
+  const [ratingData, setRatingData] = useState<any[]>([]);
 
   useEffect(() => {
-    // In a real implementation, this would fetch data from Supabase
-    setLoading(true);
-    
-    // Mock data for demonstration
-    setTimeout(() => {
-      const mockEmails: EmailLog[] = [
-        {
-          id: '1', agent_id: agentId || '', gmail_message_id: 'msg1', 
-          from_address: 'client1@example.com', subject: 'Service inquiry',
-          raw_body: 'Hello, do you offer consulting?',
-          ai_reply: 'Yes, we do offer consulting services starting at $500/month.',
-          status: 'awaiting_approval',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2 hours ago
-        },
-        {
-          id: '2', agent_id: agentId || '', gmail_message_id: 'msg2',
-          from_address: 'client2@example.com', subject: 'Pricing question',
-          raw_body: 'What are your rates?',
-          ai_reply: 'Our rates start at $150/hour for standard consulting.',
-          status: 'replied',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString() // 2 days ago
-        },
-        {
-          id: '3', agent_id: agentId || '', gmail_message_id: 'msg3',
-          from_address: 'client3@example.com', subject: 'Follow-up',
-          raw_body: 'When can we meet?',
-          ai_reply: 'I have availability next Tuesday at 2pm.',
-          status: 'rejected',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString() // 5 days ago
-        },
-        {
-          id: '4', agent_id: agentId || '', gmail_message_id: 'msg4',
-          from_address: 'client4@example.com', subject: 'Urgent request',
-          raw_body: 'Need help ASAP!',
-          ai_reply: 'I can help you immediately. What do you need?',
-          status: 'replied',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString() // 7 days ago
-        },
-        {
-          id: '5', agent_id: agentId || '', gmail_message_id: 'msg5',
-          from_address: 'client5@example.com', subject: 'Partnership opportunity',
-          raw_body: 'Would like to discuss partnership.',
-          ai_reply: 'We would be interested in discussing this partnership.',
-          status: 'replied',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString() // 10 days ago
-        }
-      ];
+    // This would be replaced with actual Supabase queries once integrated
+    const fetchAnalyticsData = () => {
+      setLoading(true);
       
-      setEmails(mockEmails);
-      calculateMetrics(mockEmails);
-      generateChartData(mockEmails);
-      setLoading(false);
-    }, 1500);
-  }, [agentId]);
-
-  const calculateMetrics = (emails: EmailLog[]) => {
-    // Total emails received
-    setTotalReceived(emails.length);
-    
-    // Total replies sent
-    const replied = emails.filter(e => e.status === 'replied').length;
-    setTotalReplied(replied);
-    
-    // Auto-reply rate (for mock, assuming 70% auto-replied)
-    setAutoReplyRate(70);
-    
-    // Average response time (mock for now)
-    setAvgResponseTime('1h 24m');
-    
-    // Rejection rate
-    const rejected = emails.filter(e => e.status === 'rejected').length;
-    setRejectionRate(Math.round((rejected / emails.length) * 100));
-  };
-
-  const generateChartData = (emails: EmailLog[]) => {
-    // Generate last 14 days for x-axis
-    const last14Days = Array.from({length: 14}, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      return d.toISOString().split('T')[0];
-    }).reverse();
-    
-    // Create daily data with random counts for each day
-    const dailyVolumeData = last14Days.map(date => {
-      // Find emails for this date
-      const dayEmails = emails.filter(e => 
-        e.created_at.split('T')[0] === date
-      );
-      
-      return {
-        date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        count: dayEmails.length || Math.floor(Math.random() * 5) // Use actual or random count
-      };
-    });
-    
-    setDailyData(dailyVolumeData);
-    
-    // Create status data for pie chart
-    const statusCounts = {
-      replied: emails.filter(e => e.status === 'replied').length,
-      awaiting: emails.filter(e => e.status === 'awaiting_approval').length,
-      rejected: emails.filter(e => e.status === 'rejected').length,
-      received: emails.filter(e => e.status === 'received').length
+      // Simulate API call delay
+      setTimeout(() => {
+        // Mock email logs for analytics
+        const mockEmailLogs: EmailLog[] = [
+          // ... imagine 30-50 sample email logs with various dates, statuses, and ratings
+        ];
+        
+        // Calculate metrics
+        const metrics = {
+          totalReceived: 48,
+          totalReplied: 32,
+          autoRepliedPercentage: 75, // 75% auto-replied
+          averageResponseTime: '1.2 hours',
+          rejectionRate: 15, // 15%
+          averageSatisfaction: 4.2 // Average rating out of 5
+        };
+        
+        // Generate volume data for the last 14 days
+        const volumeData = [
+          { date: '04/04', received: 2, awaiting: 0, replied: 2, rejected: 0 },
+          { date: '04/05', received: 4, awaiting: 1, replied: 3, rejected: 0 },
+          { date: '04/06', received: 3, awaiting: 0, replied: 2, rejected: 1 },
+          { date: '04/07', received: 1, awaiting: 0, replied: 1, rejected: 0 },
+          { date: '04/08', received: 5, awaiting: 1, replied: 3, rejected: 1 },
+          { date: '04/09', received: 2, awaiting: 0, replied: 2, rejected: 0 },
+          { date: '04/10', received: 4, awaiting: 1, replied: 3, rejected: 0 },
+          { date: '04/11', received: 6, awaiting: 2, replied: 3, rejected: 1 },
+          { date: '04/12', received: 3, awaiting: 0, replied: 3, rejected: 0 },
+          { date: '04/13', received: 5, awaiting: 1, replied: 4, rejected: 0 },
+          { date: '04/14', received: 2, awaiting: 0, replied: 1, rejected: 1 },
+          { date: '04/15', received: 4, awaiting: 1, replied: 2, rejected: 1 },
+          { date: '04/16', received: 3, awaiting: 0, replied: 3, rejected: 0 },
+          { date: '04/17', received: 4, awaiting: 2, replied: 0, rejected: 2 },
+        ];
+        
+        // Status distribution
+        const statusData = [
+          { name: 'Replied', value: 32 },
+          { name: 'Awaiting Approval', value: 9 },
+          { name: 'Rejected', value: 7 }
+        ];
+        
+        // Rating distribution
+        const ratingData = [
+          { name: '5 Stars', value: 18 },
+          { name: '4 Stars', value: 8 },
+          { name: '3 Stars', value: 4 },
+          { name: '2 Stars', value: 1 },
+          { name: '1 Star', value: 1 },
+        ];
+        
+        setEmailMetrics(metrics);
+        setVolumeData(volumeData);
+        setStatusData(statusData);
+        setRatingData(ratingData);
+        setLoading(false);
+      }, 1500);
     };
     
-    const statusChartData = [
-      { name: 'Replied', value: statusCounts.replied },
-      { name: 'Awaiting Approval', value: statusCounts.awaiting },
-      { name: 'Rejected', value: statusCounts.rejected },
-      { name: 'Received', value: statusCounts.received }
-    ];
-    
-    setStatusData(statusChartData);
-  };
+    fetchAnalyticsData();
+  }, [agentId]);
 
-  const refreshData = () => {
-    toast({
-      title: "Refreshing analytics",
-      description: "Fetching latest data..."
-    });
-    setLoading(true);
-    // In a real app, this would fetch from Supabase again
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Analytics refreshed",
-        description: "Data is up to date"
-      });
-    }, 1500);
-  };
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  const STATUS_COLORS = ['#4ade80', '#f97316', '#ef4444'];
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="h-20 bg-gray-100"></CardHeader>
+              <CardContent className="h-10 bg-gray-50"></CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card className="animate-pulse">
+          <CardHeader className="h-10 bg-gray-100"></CardHeader>
+          <CardContent className="h-80 bg-gray-50"></CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
-              <CardTitle className="text-xl">
-                Agent Performance Analytics
-              </CardTitle>
-              <CardDescription>
-                Monitor your email agent's performance and activity over time
-              </CardDescription>
+    <div className="space-y-6">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCard
+          title="Total Emails"
+          value={emailMetrics.totalReceived}
+          description="Total emails received"
+        />
+        <MetricCard
+          title="Replied"
+          value={emailMetrics.totalReplied}
+          description={`${emailMetrics.autoRepliedPercentage}% auto-approved`}
+        />
+        <MetricCard
+          title="Avg. Response Time"
+          value={emailMetrics.averageResponseTime}
+          description="From received to replied"
+        />
+        <MetricCard
+          title="Rejection Rate"
+          value={`${emailMetrics.rejectionRate}%`}
+          description="Drafts rejected"
+        />
+        <MetricCard
+          title="Average Satisfaction"
+          value={emailMetrics.averageSatisfaction}
+          description="Out of 5 stars"
+          showStars={true}
+          rating={emailMetrics.averageSatisfaction}
+        />
+        <MetricCard
+          title="Feedback Received"
+          value={`${ratingData.reduce((sum: number, item: any) => sum + item.value, 0)}`}
+          description="User ratings submitted"
+        />
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        <Card className="col-span-3 lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Email Volume (Last 14 Days)</CardTitle>
+            <CardDescription>
+              Daily count of emails by status
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={volumeData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="received" stackId="a" fill="#8884d8" name="Received" />
+                  <Bar dataKey="awaiting" stackId="b" fill="#f97316" name="Awaiting" />
+                  <Bar dataKey="replied" stackId="b" fill="#4ade80" name="Replied" />
+                  <Bar dataKey="rejected" stackId="b" fill="#ef4444" name="Rejected" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
-              {Array.from({length: 5}).map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 animate-pulse rounded-lg"></div>
-              ))}
+          </CardContent>
+        </Card>
+        
+        <Card className="col-span-3 lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Status Distribution</CardTitle>
+            <CardDescription>
+              Current email status breakdown
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={STATUS_COLORS[index % STATUS_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>User Feedback Ratings</CardTitle>
+            <CardDescription>
+              Distribution of ratings from 1-5 stars
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={ratingData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" name="Number of Ratings">
+                    {ratingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  description: string;
+  showStars?: boolean;
+  rating?: number;
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ 
+  title, 
+  value, 
+  description,
+  showStars = false,
+  rating = 0 
+}) => {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">
+          {showStars ? (
+            <div className="flex items-center">
+              {value}
+              <div className="ml-2 flex">
+                {Array(5).fill(0).map((_, i) => (
+                  <svg 
+                    key={i}
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill={i < Math.floor(Number(rating)) ? "currentColor" : "none"} 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className={i < Math.floor(Number(rating)) ? "text-yellow-400" : "text-gray-300"}
+                  >
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                ))}
+              </div>
             </div>
           ) : (
-            <>
-              {/* Top metrics */}
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-5 mb-8">
-                <AnalyticsCard 
-                  title="Total Emails Received" 
-                  value={totalReceived} 
-                />
-                <AnalyticsCard 
-                  title="Replies Sent" 
-                  value={totalReplied} 
-                  description={`${Math.round((totalReplied / totalReceived) * 100)}% response rate`}
-                />
-                <AnalyticsCard 
-                  title="Auto-Reply Rate" 
-                  value={`${autoReplyRate}%`} 
-                  description="Replies sent without edits"
-                  color="#4ade80"
-                />
-                <AnalyticsCard 
-                  title="Avg. Response Time" 
-                  value={avgResponseTime} 
-                  description="From received to replied"
-                />
-                <AnalyticsCard 
-                  title="Rejection Rate" 
-                  value={`${rejectionRate}%`} 
-                  description="Draft replies rejected"
-                  color={rejectionRate > 25 ? "#ef4444" : "#f59e0b"}
-                />
-              </div>
-              
-              {/* Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Daily Email Volume</CardTitle>
-                    <CardDescription>Last 14 days</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <ChartContainer className="h-80" config={{}}>
-                      <BarChart data={dailyData} margin={{ top: 20, right: 30, left: 0, bottom: 30 }}>
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip content={(props) => (
-                          <div className="bg-background border rounded-md p-2 text-sm shadow-lg">
-                            {props.payload?.[0] && (
-                              <>
-                                <div className="font-medium">{props.payload[0].payload.date}</div>
-                                <div>Emails: {props.payload[0].value}</div>
-                              </>
-                            )}
-                          </div>
-                        )} />
-                        <Bar dataKey="count" fill="#60a5fa" />
-                      </BarChart>
-                    </ChartContainer>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Email Status Distribution</CardTitle>
-                    <CardDescription>All time</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <ChartContainer className="h-80" config={{}}>
-                      <PieChart>
-                        <Pie
-                          data={statusData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={100}
-                          paddingAngle={5}
-                          dataKey="value"
-                          label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        >
-                          {statusData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip content={(props) => (
-                          <div className="bg-background border rounded-md p-2 text-sm shadow-lg">
-                            {props.payload?.[0] && (
-                              <>
-                                <div className="font-medium">{props.payload[0].name}</div>
-                                <div>Count: {props.payload[0].value}</div>
-                              </>
-                            )}
-                          </div>
-                        )} />
-                        <Legend />
-                      </PieChart>
-                    </ChartContainer>
-                  </CardContent>
-                </Card>
-              </div>
-            </>
+            value
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      </CardContent>
+    </Card>
   );
 };
 

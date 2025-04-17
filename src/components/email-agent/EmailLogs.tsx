@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +63,9 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
           raw_body: 'We received your message and wanted to follow up. Can you provide more details?',
           ai_reply: "I appreciate your follow-up. I have reviewed our previous communication and would like to provide the additional details you requested. Our company specializes in digital marketing and web development services for small to medium businesses.",
           status: 'replied',
-          created_at: new Date(Date.now() - 3600000).toISOString()
+          created_at: new Date(Date.now() - 3600000).toISOString(),
+          user_rating: 5,
+          user_feedback: "Perfect response, exactly what I was looking for!"
         },
         {
           id: '3',
@@ -83,8 +86,10 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
           subject: 'Technical support needed',
           raw_body: 'The website is down again. Can someone look into this ASAP?',
           ai_reply: "I'm sorry to hear about the website issue. I've immediately notified our technical team, and they'll investigate the problem right away. We understand the urgency of this matter and will prioritize getting your site back online. Could you please provide any error messages you're seeing or the approximate time when you first noticed the site was down? This will help our team diagnose the issue faster.",
-          status: 'awaiting_approval',
-          created_at: new Date(Date.now() - 7200000).toISOString()
+          status: 'replied',
+          created_at: new Date(Date.now() - 7200000).toISOString(),
+          user_rating: 3,
+          user_feedback: "Response was okay but didn't resolve my issue."
         }
       ];
       

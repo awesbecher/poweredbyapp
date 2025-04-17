@@ -49,4 +49,6 @@ export interface EmailLog {
   ai_reply?: string;
   status: 'received' | 'awaiting_approval' | 'replied' | 'rejected';
   created_at: string;
+  user_rating?: number;
+  user_feedback?: string;
 }

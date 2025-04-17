@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Pencil } from 'lucide-react';
-import { EmailLog } from "@/types";
+import { EmailLog } from "@/lib/types";
+import FeedbackForm from './FeedbackForm';
 
 interface EmailDetailsDialogProps {
   open: boolean;
@@ -30,7 +31,11 @@ const EmailDetailsDialog: React.FC<EmailDetailsDialogProps> = ({
   onEdit,
   onReject
 }) => {
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
   if (!email) return null;
+
+  const shouldShowFeedback = email.status === 'replied' && !feedbackSubmitted;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,6 +69,35 @@ const EmailDetailsDialog: React.FC<EmailDetailsDialogProps> = ({
             <div className="bg-muted p-4 rounded">
               <p className="text-sm whitespace-pre-wrap">{email.ai_reply}</p>
             </div>
+            
+            {shouldShowFeedback && (
+              <FeedbackForm 
+                email={email} 
+                onFeedbackSubmitted={() => setFeedbackSubmitted(true)} 
+              />
+            )}
+            
+            {(email.user_rating !== undefined && !shouldShowFeedback) && (
+              <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-sm font-medium">Rating:</span>
+                  <div className="flex">
+                    {Array(5).fill(0).map((_, i) => (
+                      <Star
+                        key={i}
+                        filled={i < (email.user_rating || 0)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {email.user_feedback && (
+                  <div>
+                    <span className="text-sm font-medium">Feedback:</span>
+                    <p className="text-sm text-gray-600 whitespace-pre-wrap">{email.user_feedback}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           {email.status === 'awaiting_approval' && (
@@ -93,5 +127,22 @@ const EmailDetailsDialog: React.FC<EmailDetailsDialogProps> = ({
     </Dialog>
   );
 };
+
+// Small helper component for star display
+const Star: React.FC<{ filled: boolean }> = ({ filled }) => (
+  <svg 
+    width="16" 
+    height="16" 
+    viewBox="0 0 24 24" 
+    fill={filled ? "currentColor" : "none"} 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+    className={filled ? "text-yellow-400" : "text-gray-300"}
+  >
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
 
 export default EmailDetailsDialog;
