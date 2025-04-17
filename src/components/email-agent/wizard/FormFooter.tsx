@@ -24,7 +24,6 @@ const FormFooter: React.FC<FormFooterProps> = ({
   isLastStep
 }) => {
   const [isSaving, setIsSaving] = useState(false);
-  const [costEstimate, setCostEstimate] = useState("$0.003");
 
   // Simulate autosave behavior
   useEffect(() => {
@@ -55,13 +54,7 @@ const FormFooter: React.FC<FormFooterProps> = ({
             <Save className="h-4 w-4 animate-spin" />
             <span>Saving...</span>
           </>
-        ) : (
-          <>
-            <Clock className="h-4 w-4" />
-            <span>Autosaved</span>
-          </>
-        )}
-        <span className="ml-4">Est. {costEstimate} per email</span>
+        ) : null}
       </div>
       
       <div className="flex items-center space-x-3">
