@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -30,11 +31,6 @@ const EmailAgent: React.FC = () => {
   const fetchAgentById = async (id: string) => {
     setIsLoading(true);
     try {
-      // Check if Supabase is initialized
-      if (!supabase) {
-        throw new Error('Supabase client is not initialized. Please check your environment configuration.');
-      }
-      
       // Get agent data
       const { data: agent, error } = await supabase
         .from('agents')
@@ -86,45 +82,6 @@ const EmailAgent: React.FC = () => {
   const handleActivate = () => {
     setStep('monitoring');
   };
-
-  // Display an error if Supabase is not initialized
-  if (!supabase) {
-    return (
-      <div className="flex min-h-screen bg-white">
-        <Sidebar />
-        <div className="flex-1 ml-16">
-          <Header 
-            showBackButton={true}
-            title="AI Email Agent Builder"
-          />
-          <main className="container-custom py-6 max-w-4xl mx-auto">
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Supabase Connection Error</AlertTitle>
-              <AlertDescription className="space-y-4">
-                <p>
-                  The Supabase client could not be initialized. This app requires environment variables for the Supabase connection.
-                </p>
-                <p>
-                  Please create a .env file in the project root with the following variables:
-                </p>
-                <pre className="bg-gray-100 p-4 rounded text-sm overflow-x-auto">
-                  VITE_SUPABASE_URL=your_supabase_project_url<br/>
-                  VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-                </pre>
-                <p>
-                  You can find these values in your Supabase project settings.
-                </p>
-                <Button onClick={() => window.location.reload()}>
-                  Refresh Page
-                </Button>
-              </AlertDescription>
-            </Alert>
-          </main>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen bg-white">
