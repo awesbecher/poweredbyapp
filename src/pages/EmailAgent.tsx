@@ -1,27 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import NewAgentSetup from '@/components/email-agent/NewAgentSetup';
 import ConfirmationScreen from '@/components/email-agent/ConfirmationScreen';
 import EmailDashboardTabs from '@/components/email-agent/EmailDashboardTabs';
 import { toast } from '@/hooks/use-toast';
-
-// Initialize Supabase client with proper error handling
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Check if environment variables are defined
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase environment variables are not defined!');
-}
-
-// Initialize client only if variables are available
-const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+import { supabase } from '@/utils/supabaseClient';
 
 const EmailAgent: React.FC = () => {
   const [step, setStep] = useState<'setup' | 'confirmation' | 'monitoring'>('setup');

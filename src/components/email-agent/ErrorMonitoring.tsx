@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { supabase } from '@/utils/supabaseClient';
 
 interface ErrorLog {
   id: string;
@@ -24,15 +23,6 @@ const ErrorMonitoring: React.FC<ErrorMonitoringProps> = ({ agentId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedErrors, setExpandedErrors] = useState<string[]>([]);
-
-  // Initialize Supabase client with proper error handling
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  
-  // Initialize client only if variables are available
-  const supabase = supabaseUrl && supabaseAnonKey 
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
 
   useEffect(() => {
     if (!agentId || !supabase) {
