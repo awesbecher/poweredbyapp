@@ -1,5 +1,5 @@
 
-# PoweredBy AI Email Agent
+# Powered_by AI Email Agent
 
 This project provides an AI-powered email agent that can automatically read, understand, and reply to emails using advanced natural language processing.
 
