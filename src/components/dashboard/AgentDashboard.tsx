@@ -8,7 +8,6 @@ import { AgentStatus } from '@/components/dashboard/AgentStatusDot';
 import EmptyState from '@/components/dashboard/EmptyState';
 import SpotlightSearch from '@/components/dashboard/SpotlightSearch';
 import AgentFilters from '@/components/dashboard/AgentFilters';
-import TemplateCarousel from '@/components/dashboard/TemplateCarousel';
 import WhatsNewDrawer from '@/components/dashboard/WhatsNewDrawer';
 import AgentGrid from '@/components/dashboard/AgentGrid';
 
@@ -145,10 +144,6 @@ const AgentDashboard: React.FC = () => {
     setSortOption(sort);
   };
 
-  const handleUseTemplate = (templateId: string) => {
-    console.log('Using template:', templateId);
-  };
-
   const filteredAgents = activeFilters.length > 0
     ? agents.filter(agent => agent.tags.some(tag => activeFilters.includes(tag)))
     : agents;
@@ -174,14 +169,11 @@ const AgentDashboard: React.FC = () => {
       {showEmptyState ? (
         <EmptyState />
       ) : (
-        <>
-          <AgentGrid 
-            agents={sortedAgents}
-            onConfigure={handleAgentConfigure}
-            onToggleFavorite={handleToggleFavorite}
-          />
-          <TemplateCarousel onUseTemplate={handleUseTemplate} />
-        </>
+        <AgentGrid 
+          agents={sortedAgents}
+          onConfigure={handleAgentConfigure}
+          onToggleFavorite={handleToggleFavorite}
+        />
       )}
 
       <SpotlightSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
