@@ -46,7 +46,7 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
           from_address: 'support@company.com',
           subject: 'Your recent inquiry',
           raw_body: 'We received your message and wanted to follow up. Can you provide more details?',
-          ai_reply: 'I appreciate your follow-up. I've reviewed our previous communication and would like to provide the additional details you requested. Our company specializes in...',
+          ai_reply: 'I appreciate your follow-up. I\'ve reviewed our previous communication and would like to provide the additional details you requested. Our company specializes in...',
           status: 'replied',
           created_at: new Date(Date.now() - 3600000).toISOString()
         }
