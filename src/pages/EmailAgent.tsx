@@ -7,80 +7,97 @@ import NewAgentSetup from '@/components/email-agent/NewAgentSetup';
 import ConfirmationScreen from '@/components/email-agent/ConfirmationScreen';
 import EmailDashboardTabs from '@/components/email-agent/EmailDashboardTabs';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/utils/supabaseClient';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { useAgentData, AgentData } from '@/components/email-agent/hooks/useAgentData';
+
+type SetupStep = 'setup' | 'confirmation' | 'monitoring';
 
 const EmailAgent: React.FC = () => {
-  const [step, setStep] = useState<'setup' | 'confirmation' | 'monitoring'>('setup');
-  const [agentData, setAgentData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<SetupStep>('setup');
+  const [urlAgentId, setUrlAgentId] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  // If agent_id is in URL, try to load that agent
+  
+  // Extract agent_id from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const agentId = params.get('agent_id');
-    
     if (agentId) {
-      fetchAgentById(agentId);
+      setUrlAgentId(agentId);
     }
   }, []);
+  
+  // Fetch agent data if we have an ID from the URL
+  const { agentData, isLoading, error } = useAgentData(urlAgentId);
 
-  const fetchAgentById = async (id: string) => {
-    setIsLoading(true);
-    try {
-      // Get agent data
-      const { data: agent, error } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        throw new Error(`Agent not found: ${error.message}`);
-      }
-
-      // Get knowledge files
-      const { data: files } = await supabase
-        .from('knowledgebase_files')
-        .select('*')
-        .eq('agent_id', id);
-
-      const completeAgentData = {
-        ...agent,
-        fileCount: files?.length || 0,
-        fileNames: files?.map(file => file.file_name) || [],
-        knowledgeFiles: files || []
-      };
-
-      setAgentData(completeAgentData);
-      setStep('monitoring'); // Go directly to monitoring
-    } catch (error: any) {
-      console.error('Error fetching agent:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to load agent',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
+  // Set the appropriate step based on the agent data
+  useEffect(() => {
+    if (agentData && urlAgentId) {
+      setStep('monitoring');
     }
-  };
+  }, [agentData, urlAgentId]);
 
-  const handleSetupComplete = (data: any) => {
-    setAgentData(data);
+  const handleSetupComplete = (data: AgentData) => {
     setStep('confirmation');
   };
 
   const handleStartOver = () => {
-    setAgentData(null);
     setStep('setup');
   };
 
   const handleActivate = () => {
     setStep('monitoring');
+  };
+
+  // Render content based on current step
+  const renderStepContent = () => {
+    if (isLoading) {
+      return <LoadingSpinner />;
+    }
+    
+    if (error) {
+      return (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Loading Agent</AlertTitle>
+          <AlertDescription>
+            {error}
+            <div className="mt-4">
+              <Button onClick={() => window.location.reload()}>
+                Retry
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    
+    switch (step) {
+      case 'setup':
+        return <NewAgentSetup onComplete={handleSetupComplete} />;
+      
+      case 'confirmation':
+        return (
+          <ConfirmationScreen 
+            agentData={agentData!} 
+            onStartOver={handleStartOver}
+            onActivate={handleActivate}
+          />
+        );
+      
+      case 'monitoring':
+        return (
+          <EmailDashboardTabs 
+            agentId={agentData?.id}
+            onBack={() => setStep('confirmation')}
+          />
+        );
+        
+      default:
+        return <NewAgentSetup onComplete={handleSetupComplete} />;
+    }
   };
 
   return (
@@ -92,32 +109,7 @@ const EmailAgent: React.FC = () => {
           title="AI Email Agent Builder"
         />
         <main className="container-custom py-6 max-w-4xl mx-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <>
-              {step === 'setup' && (
-                <NewAgentSetup onComplete={handleSetupComplete} />
-              )}
-              
-              {step === 'confirmation' && (
-                <ConfirmationScreen 
-                  agentData={agentData} 
-                  onStartOver={handleStartOver}
-                  onActivate={handleActivate}
-                />
-              )}
-
-              {step === 'monitoring' && (
-                <EmailDashboardTabs 
-                  agentId={agentData?.id}
-                  onBack={() => setStep('confirmation')}
-                />
-              )}
-            </>
-          )}
+          {renderStepContent()}
         </main>
       </div>
     </div>
