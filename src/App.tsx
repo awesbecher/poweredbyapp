@@ -2,16 +2,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import VoiceAgent from "./pages/VoiceAgent";
 import ReviewAgent from "./pages/ReviewAgent";
 import EmailAgent from "./pages/EmailAgent";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Waitlist from "./pages/Waitlist";
 import ProjectText from "./pages/ProjectText";
-import { useState, createContext, useContext, useEffect } from "react";
+import { useState, createContext, useContext } from "react";
 
 // Create Authentication Context
 type AuthContextType = {
@@ -65,7 +64,6 @@ const App = () => {
                   <AuthCheck>
                     <Routes>
                       <Route path="/login" element={<Login />} />
-                      <Route path="/waitlist" element={<Waitlist />} />
                       <Route path="/project-text" element={<ProjectText />} />
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Index />} />

@@ -73,9 +73,9 @@ const Login = () => {
           
           <CardFooter className="flex justify-center border-t border-white/10 pt-6">
             <p className="text-sm text-accent">
-              Don't have an account?{" "}
-              <a href="/waitlist" className="text-primary font-medium hover:underline">
-                Join the waitlist!
+              Want to learn more?{" "}
+              <a href="https://poweredby.agency" className="text-primary font-medium hover:underline">
+                Visit our website
               </a>
             </p>
           </CardFooter>
