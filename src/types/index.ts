@@ -9,7 +9,7 @@ export interface EmailLog {
   subject: string;
   raw_body: string;
   ai_reply?: string;
-  status: 'received' | 'replied' | 'awaiting_approval';
+  status: 'received' | 'replied' | 'awaiting_approval' | 'rejected';
   created_at: string;
 }
 
