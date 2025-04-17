@@ -1,8 +1,9 @@
-
-import React from 'react';
-import { CheckCircle, Mail, FileText, RotateCw, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle, Mail, FileText, RotateCw, ArrowRight, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
+import { generateOnboardingEmailTemplate, sendOnboardingEmail } from '@/utils/emailTemplates';
 
 interface ConfirmationScreenProps {
   agentData: {
@@ -20,7 +21,44 @@ interface ConfirmationScreenProps {
   onActivate: () => void;
 }
 
-const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onStartOver, onActivate }) => {
+const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ 
+  agentData, 
+  onStartOver, 
+  onActivate 
+}) => {
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const handleSendOnboardingEmail = async () => {
+    setIsSendingEmail(true);
+    try {
+      const clientName = agentData.company_name || 'Valued Client';
+      const dashboardUrl = `${window.location.origin}/email-agent?agent_id=${agentData.id}`;
+      
+      const emailContent = generateOnboardingEmailTemplate({
+        clientName,
+        agentEmail: agentData.agent_email,
+        dashboardUrl
+      });
+
+      await sendOnboardingEmail(agentData.agent_email, emailContent);
+      
+      toast({
+        title: 'Onboarding Email Sent',
+        description: `Email sent to ${agentData.agent_email}`,
+        variant: 'default'
+      });
+    } catch (error) {
+      console.error('Failed to send onboarding email:', error);
+      toast({
+        title: 'Email Send Failed',
+        description: 'Could not send onboarding email. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center text-center pt-6 pb-8">
@@ -98,10 +136,21 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ agentData, onSt
           Create Another Agent
         </Button>
         
-        <Button onClick={onActivate}>
-          Activate Agent
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline" 
+            onClick={handleSendOnboardingEmail}
+            disabled={isSendingEmail}
+          >
+            <Send className="mr-2 h-4 w-4" />
+            Send Onboarding Email
+          </Button>
+          
+          <Button onClick={onActivate}>
+            Activate Agent
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
