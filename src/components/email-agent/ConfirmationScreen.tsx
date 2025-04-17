@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { CheckCircle, Mail, FileText, RotateCw, ArrowRight, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
-import { generateOnboardingEmailTemplate, sendOnboardingEmail } from '@/utils/emailTemplates';
+
+import React from 'react';
+import SuccessHeader from './confirmation/SuccessHeader';
+import EmailConnectionCard from './confirmation/EmailConnectionCard';
+import KnowledgeBaseCard from './confirmation/KnowledgeBaseCard';
+import AgentSummary from './confirmation/AgentSummary';
+import ActionButtons from './confirmation/ActionButtons';
+import { useOnboardingEmail } from './confirmation/useOnboardingEmail';
 
 interface ConfirmationScreenProps {
   agentData: {
@@ -26,132 +28,35 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
   onStartOver, 
   onActivate 
 }) => {
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-
-  const handleSendOnboardingEmail = async () => {
-    setIsSendingEmail(true);
-    try {
-      const clientName = agentData.company_name || 'Valued Client';
-      const dashboardUrl = `${window.location.origin}/email-agent?agent_id=${agentData.id}`;
-      
-      const emailContent = generateOnboardingEmailTemplate({
-        clientName,
-        agentEmail: agentData.agent_email,
-        dashboardUrl
-      });
-
-      await sendOnboardingEmail(agentData.agent_email, emailContent);
-      
-      toast({
-        title: 'Onboarding Email Sent',
-        description: `Email sent to ${agentData.agent_email}`,
-        variant: 'default'
-      });
-    } catch (error) {
-      console.error('Failed to send onboarding email:', error);
-      toast({
-        title: 'Email Send Failed',
-        description: 'Could not send onboarding email. Please try again.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsSendingEmail(false);
-    }
-  };
+  const { isSendingEmail, handleSendOnboardingEmail } = useOnboardingEmail({
+    agentData
+  });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center text-center pt-6 pb-8">
-        <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-          <CheckCircle className="h-10 w-10 text-green-600" />
-        </div>
-        <h2 className="text-2xl font-bold mb-2">Your Email Agent is Ready!</h2>
-        <p className="text-muted-foreground max-w-md">
-          The AI email agent for {agentData.company_name} has been successfully created. 
-          Next steps: Connect your Gmail and train it with your files.
-        </p>
-      </div>
+      <SuccessHeader companyName={agentData.company_name} />
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Mail className="mr-2 h-5 w-5" />
-              Connect Email
-            </CardTitle>
-            <CardDescription>
-              Connect your business Gmail account to start receiving emails
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full">
-              Connect with Google Workspace
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              Knowledge Base
-            </CardTitle>
-            <CardDescription>
-              {agentData.fileCount || 0} files uploaded to train your agent
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm space-y-1 mb-4">
-              {agentData.fileNames?.map((name: string, index: number) => (
-                <div key={index} className="flex items-center">
-                  <div className="bg-primary/10 text-primary rounded-full p-1 mr-2">
-                    <FileText className="h-3 w-3" />
-                  </div>
-                  <span className="truncate">{name}</span>
-                </div>
-              ))}
-            </div>
-            
-            <Button variant="outline" className="w-full">
-              Upload More Files
-            </Button>
-          </CardContent>
-        </Card>
+        <EmailConnectionCard />
+        <KnowledgeBaseCard 
+          fileCount={agentData.fileCount || 0}
+          fileNames={agentData.fileNames}
+        />
       </div>
 
-      <div className="border rounded-md p-4 bg-muted/30 mt-8">
-        <h3 className="text-sm font-medium mb-2">Agent Summary</h3>
-        <ul className="space-y-2 text-sm">
-          <li><span className="font-medium">Company:</span> {agentData.company_name}</li>
-          <li><span className="font-medium">Email:</span> {agentData.agent_email}</li>
-          <li><span className="font-medium">Tone:</span> {agentData.tone}</li>
-          <li><span className="font-medium">Auto-reply:</span> {agentData.auto_reply ? 'Enabled' : 'Requires Approval'}</li>
-        </ul>
-      </div>
+      <AgentSummary
+        company_name={agentData.company_name}
+        agent_email={agentData.agent_email}
+        tone={agentData.tone}
+        auto_reply={agentData.auto_reply}
+      />
 
-      <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={onStartOver}>
-          <RotateCw className="mr-2 h-4 w-4" />
-          Create Another Agent
-        </Button>
-        
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={handleSendOnboardingEmail}
-            disabled={isSendingEmail}
-          >
-            <Send className="mr-2 h-4 w-4" />
-            Send Onboarding Email
-          </Button>
-          
-          <Button onClick={onActivate}>
-            Activate Agent
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <ActionButtons
+        isSendingEmail={isSendingEmail}
+        onStartOver={onStartOver}
+        onSendEmail={handleSendOnboardingEmail}
+        onActivate={onActivate}
+      />
     </div>
   );
 };
