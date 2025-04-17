@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Index from "./pages/Index";
 import VoiceAgent from "./pages/VoiceAgent";
 import ReviewAgent from "./pages/ReviewAgent";
+import EmailAgent from "./pages/EmailAgent";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
@@ -75,6 +76,7 @@ const App = () => {
                       <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
                       <Route path="/review-agent" element={<ReviewAgent />} />
+                      <Route path="/email-agent" element={<EmailAgent />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AuthCheck>
