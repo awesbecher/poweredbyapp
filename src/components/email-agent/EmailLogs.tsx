@@ -1,29 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, Mail, CheckCircle, XCircle, Pencil } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { EmailLog } from "@/types";
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { 
   Table, 
   TableBody, 
-  TableCell, 
   TableHead, 
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import EmailListItem from './EmailListItem';
+import EmailDetailsDialog from './EmailDetailsDialog';
+import EditReplyDialog from './EditReplyDialog';
+import RejectConfirmDialog from './RejectConfirmDialog';
+import { getStatusBadgeClass } from './emailUtils';
 
 interface EmailLogsProps {
   agentId?: string;
@@ -49,7 +42,7 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
     
     // Mock data for UI demonstration
     setTimeout(() => {
-      const mockEmails = [
+      const mockEmails: EmailLog[] = [
         {
           id: '1',
           agent_id: agentId || '',
@@ -212,31 +205,6 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
     setShowViewDialog(true);
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    switch(status) {
-      case 'received':
-        return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/50';
-      case 'replied':
-        return 'bg-green-500/20 text-green-600 border-green-500/50';
-      case 'awaiting_approval':
-        return 'bg-blue-500/20 text-blue-600 border-blue-500/50';
-      case 'rejected':
-        return 'bg-red-500/20 text-red-600 border-red-500/50';
-      default:
-        return 'bg-gray-500/20 text-gray-600 border-gray-500/50';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -309,21 +277,12 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
                 </TableHeader>
                 <TableBody>
                   {filteredEmails.map((email) => (
-                    <TableRow key={email.id}>
-                      <TableCell className="font-medium">{email.from_address}</TableCell>
-                      <TableCell>{email.subject}</TableCell>
-                      <TableCell>{formatDate(email.created_at)}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 text-xs rounded-full border ${getStatusBadgeClass(email.status)}`}>
-                          {email.status.replace('_', ' ').toUpperCase()}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="outline" onClick={() => viewEmailDetails(email)}>
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                    <EmailListItem
+                      key={email.id}
+                      email={email}
+                      getStatusBadgeClass={getStatusBadgeClass}
+                      onViewDetails={viewEmailDetails}
+                    />
                   ))}
                 </TableBody>
               </Table>
@@ -348,122 +307,33 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
         </CardFooter>
       </Card>
 
-      {/* View Email Dialog */}
-      <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Email Details</DialogTitle>
-            <DialogDescription>
-              {selectedEmail?.subject}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedEmail && (
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-              <div className="border-b pb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <h4 className="font-medium">From: {selectedEmail.from_address}</h4>
-                    <p className="text-xs text-gray-500">
-                      {new Date(selectedEmail.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <span className={`px-2 py-1 text-xs rounded-full border ${getStatusBadgeClass(selectedEmail.status)}`}>
-                    {selectedEmail.status.replace('_', ' ').toUpperCase()}
-                  </span>
-                </div>
-                <h4 className="font-medium mt-4 mb-2">Original Message:</h4>
-                <p className="text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded border">{selectedEmail.raw_body}</p>
-              </div>
-              
-              <div className="border-b pb-4">
-                <h4 className="font-medium mb-2">AI Generated Reply:</h4>
-                <div className="bg-muted p-4 rounded">
-                  <p className="text-sm whitespace-pre-wrap">{selectedEmail.ai_reply}</p>
-                </div>
-              </div>
-              
-              {selectedEmail.status === 'awaiting_approval' && (
-                <div className="flex justify-end gap-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowRejectDialog(true)}
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Reject
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={handleEditReply}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button onClick={() => handleApproveReply(selectedEmail)}>
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Approve & Send
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Email Details Dialog */}
+      <EmailDetailsDialog
+        open={showViewDialog}
+        onOpenChange={setShowViewDialog}
+        email={selectedEmail}
+        getStatusBadgeClass={getStatusBadgeClass}
+        onApprove={handleApproveReply}
+        onEdit={handleEditReply}
+        onReject={() => setShowRejectDialog(true)}
+      />
 
       {/* Edit Reply Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Edit Reply</DialogTitle>
-            <DialogDescription>
-              Make changes to the AI-generated reply before sending
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedEmail && (
-            <div className="space-y-4">
-              <div className="border-b pb-4">
-                <h4 className="font-medium mb-2">Original Message:</h4>
-                <p className="text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded border">{selectedEmail.raw_body}</p>
-              </div>
-              
-              <div>
-                <h4 className="font-medium mb-2">Your Reply:</h4>
-                <Textarea 
-                  className="min-h-[200px]"
-                  value={editedReply} 
-                  onChange={(e) => setEditedReply(e.target.value)}
-                  placeholder="Edit the reply..."
-                />
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-                <Button onClick={handleSaveEdit}>Send Edited Reply</Button>
-              </DialogFooter>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditReplyDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        email={selectedEmail}
+        editedReply={editedReply}
+        onEditChange={setEditedReply}
+        onSave={handleSaveEdit}
+      />
 
       {/* Reject Confirmation Dialog */}
-      <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reject AI Reply</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to reject this AI-generated reply? 
-              The email will be marked as rejected and will remain in your inbox.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRejectReply}>
-              Confirm Rejection
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <RejectConfirmDialog
+        open={showRejectDialog}
+        onOpenChange={setShowRejectDialog}
+        onConfirm={handleRejectReply}
+      />
     </div>
   );
 };
