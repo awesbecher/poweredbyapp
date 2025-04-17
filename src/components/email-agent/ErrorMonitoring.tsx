@@ -1,38 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from '@/components/ui/button';
-import { AlertCircle, RefreshCw } from 'lucide-react';
-import { format } from 'date-fns';
+import { createClient } from '@supabase/supabase-js';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface ErrorLog {
   id: string;
   function_name: string;
   error_message: string;
   agent_id: string;
-  metadata: Record<string, any>;
+  metadata: any;
   created_at: string;
 }
 
@@ -41,159 +20,143 @@ interface ErrorMonitoringProps {
 }
 
 const ErrorMonitoring: React.FC<ErrorMonitoringProps> = ({ agentId }) => {
-  const supabase = useSupabaseClient();
   const [errorLogs, setErrorLogs] = useState<ErrorLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [timeframe, setTimeframe] = useState('24h');
-  const [functionFilter, setFunctionFilter] = useState('all');
-  const [uniqueFunctions, setUniqueFunctions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedErrors, setExpandedErrors] = useState<string[]>([]);
 
-  const fetchErrorLogs = async () => {
+  // Initialize Supabase client
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+  useEffect(() => {
     if (!agentId) return;
     
-    setLoading(true);
+    const fetchErrorLogs = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('error_logs')
+          .select('*')
+          .eq('agent_id', agentId)
+          .order('created_at', { ascending: false })
+          .limit(100);
+          
+        if (error) throw new Error(error.message);
+        
+        setErrorLogs(data || []);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch error logs');
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Calculate the date range based on selected timeframe
-    let startDate;
-    const now = new Date();
-    
-    switch (timeframe) {
-      case '24h':
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case '3d':
-        startDate = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-        break;
-      case '7d':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '30d':
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    }
-    
-    let query = supabase
-      .from('error_logs')
-      .select('*')
-      .eq('agent_id', agentId)
-      .gte('created_at', startDate.toISOString())
-      .order('created_at', { ascending: false });
-      
-    if (functionFilter !== 'all') {
-      query = query.eq('function_name', functionFilter);
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      console.error('Error fetching error logs:', error);
-    } else {
-      setErrorLogs(data || []);
-      
-      // Extract unique function names
-      const functions = Array.from(new Set(data?.map(log => log.function_name) || []));
-      setUniqueFunctions(functions);
-    }
-    
-    setLoading(false);
-  };
-  
-  useEffect(() => {
     fetchErrorLogs();
-  }, [agentId, timeframe, functionFilter]);
-  
+  }, [agentId, supabase]);
+
+  const toggleErrorExpand = (errorId: string) => {
+    setExpandedErrors(prev => 
+      prev.includes(errorId) 
+        ? prev.filter(id => id !== errorId) 
+        : [...prev, errorId]
+    );
+  };
+
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'MMM d, h:mm a');
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(date);
   };
-  
-  const truncateMessage = (message: string, maxLength = 100) => {
-    return message.length > maxLength 
-      ? `${message.substring(0, maxLength)}...` 
-      : message;
-  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (errorLogs.length === 0) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-8">
+            <h3 className="text-xl font-medium">No errors found</h3>
+            <p className="text-gray-500 mt-2">
+              Your email agent is running smoothly!
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <div>
-            <CardTitle>Error Monitoring</CardTitle>
-            <CardDescription>
-              Track and debug issues with your email agent
-            </CardDescription>
-          </div>
-          <Button size="sm" variant="outline" onClick={fetchErrorLogs} disabled={loading}>
-            <RefreshCw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+        <CardHeader>
+          <CardTitle>Error Monitoring</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-1 block">Time Period</label>
-              <Select value={timeframe} onValueChange={setTimeframe}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select timeframe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="24h">Last 24 Hours</SelectItem>
-                  <SelectItem value="3d">Last 3 Days</SelectItem>
-                  <SelectItem value="7d">Last 7 Days</SelectItem>
-                  <SelectItem value="30d">Last 30 Days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-1 block">Function</label>
-              <Select value={functionFilter} onValueChange={setFunctionFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All functions" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Functions</SelectItem>
-                  {uniqueFunctions.map(fn => (
-                    <SelectItem key={fn} value={fn}>{fn}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-4">
+            {errorLogs.map(log => (
+              <div 
+                key={log.id} 
+                className="border rounded-lg p-4 hover:bg-gray-50"
+              >
+                <div className="flex justify-between cursor-pointer" onClick={() => toggleErrorExpand(log.id)}>
+                  <div>
+                    <h4 className="font-semibold text-red-600">{log.function_name}</h4>
+                    <p className="text-sm text-gray-600 truncate" style={{ maxWidth: '80ch' }}>
+                      {log.error_message}
+                    </p>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {formatDate(log.created_at)}
+                    </div>
+                  </div>
+                  <div>
+                    {expandedErrors.includes(log.id) ? (
+                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                    ) : (
+                      <ChevronRight className="h-5 w-5 text-gray-500" />
+                    )}
+                  </div>
+                </div>
+                
+                {expandedErrors.includes(log.id) && (
+                  <div className="mt-4 p-3 bg-gray-100 rounded text-sm overflow-auto">
+                    <h5 className="font-medium mb-2">Error details:</h5>
+                    <pre className="whitespace-pre-wrap">{log.error_message}</pre>
+                    
+                    {log.metadata && Object.keys(log.metadata).length > 0 && (
+                      <>
+                        <h5 className="font-medium mb-2 mt-4">Metadata:</h5>
+                        <pre className="whitespace-pre-wrap">{JSON.stringify(log.metadata, null, 2)}</pre>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-
-          {errorLogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium">No errors found</h3>
-              <p className="text-sm text-muted-foreground max-w-md mt-2">
-                No error logs were found for the selected time period and filters.
-                That's good news!
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[180px]">Timestamp</TableHead>
-                    <TableHead className="w-[150px]">Function</TableHead>
-                    <TableHead>Error Message</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {errorLogs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell>{formatDate(log.created_at)}</TableCell>
-                      <TableCell className="font-mono text-xs">{log.function_name}</TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {truncateMessage(log.error_message)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
