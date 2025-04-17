@@ -37,4 +37,8 @@
 
 # Function build dependencies for document processing
 [functions.process-kb-upload]
-  included_files = ["node_modules/pdf-parse/**", "node_modules/mammoth/**"]
+  included_files = [
+    "node_modules/pdf-parse/**", 
+    "node_modules/mammoth/**",
+    "node_modules/mammoth/node_modules/**"
+  ]
