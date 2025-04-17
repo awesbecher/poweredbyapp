@@ -8,6 +8,9 @@ import ConfirmationScreen from '@/components/email-agent/ConfirmationScreen';
 import EmailDashboardTabs from '@/components/email-agent/EmailDashboardTabs';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/utils/supabaseClient';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 const EmailAgent: React.FC = () => {
   const [step, setStep] = useState<'setup' | 'confirmation' | 'monitoring'>('setup');
@@ -84,6 +87,45 @@ const EmailAgent: React.FC = () => {
   const handleActivate = () => {
     setStep('monitoring');
   };
+
+  // Display an error if Supabase is not initialized
+  if (!supabase) {
+    return (
+      <div className="flex min-h-screen bg-white">
+        <Sidebar />
+        <div className="flex-1 ml-16">
+          <Header 
+            showBackButton={true}
+            title="AI Email Agent Builder"
+          />
+          <main className="container-custom py-6 max-w-4xl mx-auto">
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Supabase Connection Error</AlertTitle>
+              <AlertDescription className="space-y-4">
+                <p>
+                  The Supabase client could not be initialized. This app requires environment variables for the Supabase connection.
+                </p>
+                <p>
+                  Please create a .env file in the project root with the following variables:
+                </p>
+                <pre className="bg-gray-100 p-4 rounded text-sm overflow-x-auto">
+                  VITE_SUPABASE_URL=your_supabase_project_url<br/>
+                  VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+                </pre>
+                <p>
+                  You can find these values in your Supabase project settings.
+                </p>
+                <Button onClick={() => window.location.reload()}>
+                  Refresh Page
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-white">

@@ -1,17 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Save, MessageSquare, RotateCw, Check, BookText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
+import { supabase } from '@/utils/supabaseClient';
 
 // Define prompt variation types
 const promptVariations = [
@@ -44,12 +39,19 @@ const PromptSettings: React.FC<PromptSettingsProps> = ({ agentId }) => {
   useEffect(() => {
     if (agentId) {
       fetchAgentData();
+    } else {
+      setIsLoading(false);
     }
   }, [agentId]);
 
   const fetchAgentData = async () => {
     setIsLoading(true);
     try {
+      // Check if Supabase is initialized
+      if (!supabase) {
+        throw new Error('Supabase client is not initialized. Please check your environment configuration.');
+      }
+      
       const { data, error } = await supabase
         .from('agents')
         .select('*')
@@ -68,9 +70,10 @@ const PromptSettings: React.FC<PromptSettingsProps> = ({ agentId }) => {
         });
       }
     } catch (error: any) {
+      console.error("Error fetching agent data:", error);
       toast({
         title: "Error fetching agent data",
-        description: error.message,
+        description: error.message || "Failed to load agent data",
         variant: "destructive",
       });
     } finally {
@@ -83,6 +86,11 @@ const PromptSettings: React.FC<PromptSettingsProps> = ({ agentId }) => {
     
     setIsSaving(true);
     try {
+      // Check if Supabase is initialized
+      if (!supabase) {
+        throw new Error('Supabase client is not initialized. Please check your environment configuration.');
+      }
+      
       const { error } = await supabase
         .from('agents')
         .update({
@@ -100,7 +108,7 @@ const PromptSettings: React.FC<PromptSettingsProps> = ({ agentId }) => {
     } catch (error: any) {
       toast({
         title: "Error saving prompt variations",
-        description: error.message,
+        description: error.message || "Failed to save prompt settings",
         variant: "destructive",
       });
     } finally {
