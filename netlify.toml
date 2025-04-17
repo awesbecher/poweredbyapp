@@ -33,7 +33,7 @@
 
 # Define scheduled functions
 [functions.poll-inbox]
-  schedule = "@hourly"
+  schedule = "*/5 * * * *"
 
 # Function build dependencies for document processing
 [functions.process-kb-upload]

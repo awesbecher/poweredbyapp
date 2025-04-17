@@ -27,6 +27,8 @@ exports.handler = async function(event, context) {
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
+  console.log(`Sending reply for message ${gmailMessageId}, agent ${agentId}`);
+
   // Initialize Supabase client
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -48,7 +50,7 @@ exports.handler = async function(event, context) {
     
     // Get the agent configuration
     const { data: agent, error: agentError } = await supabase
-      .from('email_agents')
+      .from('agents')
       .select('*')
       .eq('id', agentId)
       .single();
@@ -58,21 +60,9 @@ exports.handler = async function(event, context) {
       return { statusCode: 404, body: 'Agent not found' };
     }
     
-    // Get Gmail auth for this agent
-    const { data: auth, error: authError } = await supabase
-      .from('gmail_auth')
-      .select('*')
-      .eq('email', agent.agent_email)
-      .single();
-    
-    if (authError || !auth) {
-      console.error('Error fetching auth:', authError);
-      return { statusCode: 404, body: 'Auth not found' };
-    }
-    
     // Check if token needs refresh
-    let accessToken = auth.access_token;
-    if (new Date(auth.expires_at) <= new Date()) {
+    let accessToken = agent.gmail_access_token;
+    if (new Date(agent.gmail_token_expires_at) <= new Date()) {
       // Token expired, refresh it
       const oauth2Client = new google.auth.OAuth2(
         process.env.GMAIL_CLIENT_ID,
@@ -81,7 +71,7 @@ exports.handler = async function(event, context) {
       );
       
       oauth2Client.setCredentials({
-        refresh_token: auth.refresh_token
+        refresh_token: agent.gmail_refresh_token
       });
       
       try {
@@ -90,13 +80,14 @@ exports.handler = async function(event, context) {
         
         // Update the token in database
         await supabase
-          .from('gmail_auth')
+          .from('agents')
           .update({
-            access_token: token,
-            expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-            updated_at: new Date().toISOString()
+            gmail_access_token: token,
+            gmail_token_expires_at: new Date(Date.now() + 3600 * 1000).toISOString()
           })
-          .eq('email', agent.agent_email);
+          .eq('id', agent.id);
+          
+        console.log('Refreshed token for sending reply');
       } catch (refreshError) {
         console.error('Failed to refresh token:', refreshError);
         return { statusCode: 500, body: 'Failed to refresh token' };
@@ -153,6 +144,8 @@ exports.handler = async function(event, context) {
         threadId: originalMessage.data.threadId
       }
     });
+    
+    console.log('Email reply sent successfully');
     
     // Update the email record as replied
     const { error: updateError } = await supabase

@@ -64,19 +64,15 @@ exports.handler = async function(event, context) {
     const userInfo = await userInfoResponse.json();
     const email = userInfo.email;
 
-    // Store tokens in Supabase
+    // Update the agent record with Gmail tokens
     const { error } = await supabase
-      .from('gmail_auth')
-      .upsert({
-        email,
-        access_token,
-        refresh_token,
-        expires_at,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'email',
-      });
+      .from('agents')
+      .update({
+        gmail_access_token: access_token,
+        gmail_refresh_token: refresh_token,
+        gmail_token_expires_at: expires_at,
+      })
+      .eq('agent_email', email);
 
     if (error) {
       console.error('Error storing tokens:', error);

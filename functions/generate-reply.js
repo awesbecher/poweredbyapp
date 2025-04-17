@@ -28,6 +28,8 @@ exports.handler = async function(event, context) {
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
+  console.log(`Generating reply for message ${messageId}, agent ${agentId}`);
+
   // Initialize Supabase client
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -49,7 +51,7 @@ exports.handler = async function(event, context) {
     
     // Get the agent configuration
     const { data: agent, error: agentError } = await supabase
-      .from('email_agents')
+      .from('agents')
       .select('*')
       .eq('id', agentId)
       .single();
@@ -59,19 +61,28 @@ exports.handler = async function(event, context) {
       return { statusCode: 404, body: 'Agent not found' };
     }
     
-    // Get knowledge base embeddings for this agent
-    const { data: knowledgeBase, error: kbError } = await supabase
-      .from('kb_embeddings')
-      .select('*')
-      .eq('agent_id', agentId);
-    
-    if (kbError) {
-      console.error('Error fetching knowledge base:', kbError);
-      // Continue without knowledge base
-    }
-    
     // Initialize OpenAI client
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    
+    // Generate embedding for the email content to find relevant knowledge
+    const emailEmbedding = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: email.raw_body,
+    });
+    
+    // Get top 3 relevant knowledge chunks using vector search
+    const { data: relevantKnowledge, error: knowledgeError } = await supabase
+      .rpc('match_kb_embeddings', {
+        query_embedding: emailEmbedding.data[0].embedding,
+        match_threshold: 0.5, // Adjust as needed
+        match_count: 3,
+        agent_id: agentId
+      });
+    
+    if (knowledgeError) {
+      console.error('Error fetching relevant knowledge:', knowledgeError);
+      console.log('Continuing without knowledge base context');
+    }
     
     // Build the prompt
     let systemPrompt = `You are an AI email assistant for ${agent.company_name}. 
@@ -81,32 +92,12 @@ exports.handler = async function(event, context) {
     Respond to the email in a helpful, concise manner. Sign the email as "${agent.company_name} Team".`;
     
     // Add knowledge base context if available
-    let relevantContext = '';
-    if (knowledgeBase && knowledgeBase.length > 0) {
-      // Perform embedding search
-      const emailEmbedding = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
-        input: email.raw_body,
-      });
-      
-      // Calculate cosine similarity and find most relevant knowledge chunks
-      // This is a simplified version - in production, use vector search
-      let relevantChunks = knowledgeBase
-        .map(chunk => {
-          const similarity = cosineSimilarity(
-            emailEmbedding.data[0].embedding,
-            chunk.embedding
-          );
-          return { ...chunk, similarity };
-        })
-        .sort((a, b) => b.similarity - a.similarity)
-        .slice(0, 3); // Take top 3 most relevant chunks
-      
-      relevantContext = relevantChunks
-        .map(chunk => chunk.content)
-        .join('\n\n');
-      
-      systemPrompt += `\n\nRelevant information:\n${relevantContext}`;
+    if (relevantKnowledge && relevantKnowledge.length > 0) {
+      const context = relevantKnowledge.map(item => item.content).join('\n\n');
+      systemPrompt += `\n\nRelevant information from the knowledge base:\n${context}`;
+      console.log(`Found ${relevantKnowledge.length} relevant knowledge chunks`);
+    } else {
+      console.log('No relevant knowledge chunks found');
     }
     
     // Generate reply with OpenAI
@@ -120,6 +111,7 @@ exports.handler = async function(event, context) {
     });
     
     const aiReply = completion.choices[0].message.content;
+    console.log('Generated AI reply');
     
     // Update the email record with the AI reply
     const status = agent.auto_reply ? 'replied' : 'awaiting_approval';
@@ -137,17 +129,24 @@ exports.handler = async function(event, context) {
       return { statusCode: 500, body: 'Failed to update email with AI reply' };
     }
     
+    console.log(`Updated email status to ${status}`);
+    
     // If auto-reply is enabled, send the email immediately
     if (agent.auto_reply) {
-      await fetch(`${process.env.BASE_URL}/.netlify/functions/send-reply`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          agentId,
-          gmailMessageId: messageId,
-          replyText: aiReply
-        })
-      });
+      console.log('Auto-reply enabled, sending email automatically');
+      try {
+        await fetch(`${process.env.BASE_URL}/.netlify/functions/send-reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            agentId,
+            gmailMessageId: messageId,
+            replyText: aiReply
+          })
+        });
+      } catch (sendError) {
+        console.error('Error triggering send-reply:', sendError);
+      }
     }
     
     return {
@@ -166,11 +165,3 @@ exports.handler = async function(event, context) {
     };
   }
 };
-
-// Utility function for cosine similarity calculation
-function cosineSimilarity(vecA, vecB) {
-  const dotProduct = vecA.reduce((sum, val, i) => sum + val * vecB[i], 0);
-  const magnitudeA = Math.sqrt(vecA.reduce((sum, val) => sum + val * val, 0));
-  const magnitudeB = Math.sqrt(vecB.reduce((sum, val) => sum + val * val, 0));
-  return dotProduct / (magnitudeA * magnitudeB);
-}

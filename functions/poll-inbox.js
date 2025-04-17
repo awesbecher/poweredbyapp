@@ -23,19 +23,17 @@ exports.handler = async function(event, context) {
     // Get all active email agents
     const { data: agents, error: agentError } = await supabase
       .from('agents')
-      .select('*');
+      .select('*')
+      .not('gmail_access_token', 'is', null);
     
     if (agentError) {
       console.error('Error fetching agents:', agentError);
       return { statusCode: 500, body: JSON.stringify({ error: 'Failed to fetch agents' }) };
     }
     
+    console.log(`Found ${agents.length} agents with Gmail credentials`);
+    
     for (const agent of agents) {
-      // Skip agents without tokens
-      if (!agent.gmail_access_token || !agent.gmail_refresh_token) {
-        continue;
-      }
-      
       // Check if token needs refresh
       let accessToken = agent.gmail_access_token;
       if (new Date(agent.gmail_token_expires_at) <= new Date()) {
@@ -62,6 +60,8 @@ exports.handler = async function(event, context) {
               gmail_token_expires_at: new Date(Date.now() + 3600 * 1000).toISOString()
             })
             .eq('id', agent.id);
+            
+          console.log(`Refreshed token for agent ${agent.id}`);
         } catch (refreshError) {
           console.error(`Failed to refresh token for ${agent.id}:`, refreshError);
           continue;
@@ -73,7 +73,7 @@ exports.handler = async function(event, context) {
       oauth2Client.setCredentials({ access_token: accessToken });
       const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
       
-      // Get recent emails
+      // Get recent unread emails
       const messageList = await gmail.users.messages.list({
         userId: 'me',
         q: 'is:unread',
@@ -81,6 +81,8 @@ exports.handler = async function(event, context) {
       });
       
       const messages = messageList.data.messages || [];
+      console.log(`Found ${messages.length} unread messages for agent ${agent.id}`);
+      
       for (const message of messages) {
         // Check if we've already processed this message
         const { data: existingEmail } = await supabase
@@ -92,6 +94,7 @@ exports.handler = async function(event, context) {
         
         if (existingEmail) {
           // Skip already processed emails
+          console.log(`Skipping already processed message: ${message.id}`);
           continue;
         }
         
@@ -126,8 +129,7 @@ exports.handler = async function(event, context) {
           fromHeader.value.match(/<(.+)>/)[1] : fromHeader.value : 'unknown';
         
         // Add email to database
-        const status = agent.auto_reply ? 'received' : 'awaiting_approval';
-        const { error: insertError } = await supabase
+        const { data: newEmail, error: insertError } = await supabase
           .from('email_logs')
           .insert({
             agent_id: agent.id,
@@ -135,29 +137,47 @@ exports.handler = async function(event, context) {
             from_address: fromAddress,
             subject: subjectHeader ? subjectHeader.value : '(no subject)',
             raw_body: body,
-            status: status,
+            status: 'received',
             created_at: new Date().toISOString()
-          });
+          })
+          .select()
+          .single();
         
         if (insertError) {
           console.error(`Error storing email ${message.id}:`, insertError);
-        } else if (agent.auto_reply) {
-          // Trigger auto-reply generation
-          await fetch(`${process.env.BASE_URL}/.netlify/functions/generate-reply`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              messageId: message.id,
-              agentId: agent.id 
-            })
+        } else {
+          console.log(`Stored new email ${message.id} from ${fromAddress}`);
+          
+          // Mark message as read in Gmail
+          await gmail.users.messages.modify({
+            userId: 'me',
+            id: message.id,
+            requestBody: {
+              removeLabelIds: ['UNREAD']
+            }
           });
+          
+          // Trigger generate-reply function
+          try {
+            await fetch(`${process.env.BASE_URL}/.netlify/functions/generate-reply`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                messageId: message.id,
+                agentId: agent.id 
+              })
+            });
+            console.log(`Triggered generate-reply for message ${message.id}`);
+          } catch (triggerError) {
+            console.error(`Failed to trigger generate-reply:`, triggerError);
+          }
         }
       }
     }
     
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true })
+      body: JSON.stringify({ success: true, message: 'Inbox polling complete' })
     };
   } catch (error) {
     console.error('Poll inbox error:', error);
