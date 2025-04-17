@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, Mail } from 'lucide-react';
+import { RefreshCw, Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { EmailLog } from "@/types";
+import { EmailLog } from "@/lib/types";
 import { 
   Table, 
   TableBody, 
@@ -207,11 +206,7 @@ const EmailLogs: React.FC<EmailLogsProps> = ({ agentId, onBack }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={onBack} className="flex items-center gap-1">
-          <ArrowLeft size={16} />
-          Back to Agent Setup
-        </Button>
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <span className={`px-2 py-1 text-xs rounded-full ${pollingStatus === 'active' ? 
             'bg-green-500/20 text-green-600 border border-green-500/50' : 

@@ -38,3 +38,15 @@ export interface AgentRenderingState {
   isComplete: boolean;
   error: string | null;
 }
+
+export interface EmailLog {
+  id: string;
+  agent_id: string;
+  gmail_message_id: string;
+  from_address: string;
+  subject: string;
+  raw_body: string;
+  ai_reply?: string;
+  status: 'received' | 'awaiting_approval' | 'replied' | 'rejected';
+  created_at: string;
+}
