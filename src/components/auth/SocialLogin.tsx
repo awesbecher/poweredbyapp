@@ -1,11 +1,10 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Github, AlertTriangle } from 'lucide-react';
+import { Mail, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
-import { isAuthorizedUser } from '@/utils/authUtils';
 import { Input } from '@/components/ui/input';
 
 interface SocialLoginProps {
@@ -26,27 +25,16 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
     setIsLoading(true);
     setError(null);
     
-    // Check if the email is in the whitelist
-    if (isAuthorizedUser(email)) {
-      // Simulate successful login
-      setTimeout(() => {
-        login();
-        navigate('/dashboard'); // Change from '/' to '/dashboard'
-        toast({
-          title: "Login successful",
-          description: `Logged in as ${email}`,
-        });
-        setIsLoading(false);
-      }, 800);
-    } else {
-      setError("This email is not authorized to access this application. Please contact the administrator for access.");
+    // Always allow access
+    setTimeout(() => {
+      login();
+      navigate('/dashboard'); 
       toast({
-        title: "Access denied",
-        description: "Your email is not in our allowed users list",
-        variant: "destructive",
+        title: "Login successful",
+        description: `Welcome to the dashboard!`,
       });
       setIsLoading(false);
-    }
+    }, 800);
   };
 
   const handleGoogleClick = () => {
@@ -59,30 +47,17 @@ const SocialLogin = ({ setError, isLoading, setIsLoading }: SocialLoginProps) =>
     setError(null);
     toast({
       title: "GitHub login",
-      description: "Redirecting to GitHub authentication...",
+      description: "Processing login...",
     });
     
-    // Simulate OAuth flow
+    // Simulate OAuth flow but always succeed
     setTimeout(() => {
-      // Simulate a GitHub user for demo
-      const mockGithubEmail = "team@poweredby.agency"; // Use one of the whitelisted emails for demo
-      
-      // Check if the email is in the whitelist
-      if (isAuthorizedUser(mockGithubEmail)) {
-        login();
-        navigate('/dashboard'); // Change from '/' to '/dashboard'
-        toast({
-          title: "Login successful",
-          description: `Logged in as ${mockGithubEmail}`,
-        });
-      } else {
-        setError("Your GitHub account is not authorized to access this application. Please contact the administrator for access.");
-        toast({
-          title: "Access denied",
-          description: "Your GitHub account is not in our allowed users list",
-          variant: "destructive",
-        });
-      }
+      login();
+      navigate('/dashboard');
+      toast({
+        title: "Login successful",
+        description: "Welcome to the dashboard!",
+      });
       setIsLoading(false);
     }, 1000);
   };

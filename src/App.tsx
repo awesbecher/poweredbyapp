@@ -31,28 +31,9 @@ export const useAuth = () => {
   return context;
 };
 
-// Public routes that don't require authentication
-const PUBLIC_ROUTES = ['/login', '/signup', '/waitlist', '/project-text'];
-
-// Authentication Check Component
+// All routes are now public, no need to check authentication
 const AuthCheck = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
-  
-  // Check if the current path is in the public routes
-  const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname);
-  
-  // If user is trying to access a protected route without authentication, redirect to login
-  if (!isAuthenticated && !isPublicRoute) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-  
-  // If the user is authenticated and trying to access login/signup, redirect to home
-  if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/signup')) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return children;
+  return children; // Just return the children without any checks
 };
 
 const queryClient = new QueryClient();
@@ -71,7 +52,6 @@ const App = () => {
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('isAuthenticated');
-    // We don't need to handle redirection here since it will be handled by the components
   };
 
   return (
@@ -91,7 +71,7 @@ const App = () => {
                       <Route path="/signup" element={<SignUp />} />
                       <Route path="/waitlist" element={<Waitlist />} />
                       <Route path="/project-text" element={<ProjectText />} />
-                      <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Index />} />
                       <Route path="/voice-agent" element={<VoiceAgent />} />
                       <Route path="/review-agent" element={<ReviewAgent />} />

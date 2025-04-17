@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
-import { authenticateUser } from '@/utils/authUtils';
 import {
   Form,
   FormControl,
@@ -23,7 +22,7 @@ import {
 // Create a schema for form validation
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  password: z.string().min(1, { message: 'Password is required' }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -52,41 +51,16 @@ const LoginForm = ({ setError }: LoginFormProps) => {
     setError(null);
     
     try {
-      const result = await authenticateUser(values.email, values.password);
-      
-      if (result.success) {
+      // Simulate login process but always succeed
+      setTimeout(() => {
+        login(); // Set authenticated state
+        navigate('/dashboard');
         toast({
           title: "Login successful",
-          description: "Welcome back!",
+          description: "Welcome to the dashboard!",
         });
-        
-        login(); // Set authenticated state
-        navigate('/dashboard'); // Change from '/' to '/dashboard'
-      } else {
-        // Handle different error types
-        if (result.errorType === 'user_not_found') {
-          setError("This email is not registered in our system. Please check your email or request access.");
-          toast({
-            title: "Login failed",
-            description: "Email not recognized",
-            variant: "destructive",
-          });
-        } else if (result.errorType === 'invalid_password') {
-          setError("Invalid password. Please check your password and try again.");
-          toast({
-            title: "Login failed",
-            description: "Invalid password",
-            variant: "destructive",
-          });
-        } else {
-          setError("Invalid email or password. Please check your credentials.");
-          toast({
-            title: "Login failed",
-            description: "Authentication failed",
-            variant: "destructive",
-          });
-        }
-      }
+        setIsLoading(false);
+      }, 800);
     } catch (err) {
       setError("An error occurred during login. Please try again later.");
       toast({
@@ -95,7 +69,6 @@ const LoginForm = ({ setError }: LoginFormProps) => {
         variant: "destructive",
       });
       console.error("Login error:", err);
-    } finally {
       setIsLoading(false);
     }
   };
