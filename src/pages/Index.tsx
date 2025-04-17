@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -18,7 +17,6 @@ import DashboardSidebar from '@/components/dashboard/Sidebar';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { AgentStatus } from '@/components/dashboard/AgentStatusDot';
 import { Button } from '@/components/ui/button';
-import QuickStartBanner from '@/components/dashboard/QuickStartBanner';
 import SpotlightSearch from '@/components/dashboard/SpotlightSearch';
 import AgentFilters from '@/components/dashboard/AgentFilters';
 import TemplateCarousel from '@/components/dashboard/TemplateCarousel';
@@ -83,7 +81,6 @@ const agentData: AgentCardData[] = [
   }
 ];
 
-// Sample release notes
 const releaseNotes = [
   {
     id: 'release-1',
@@ -109,13 +106,11 @@ const Index = () => {
   const navigate = useNavigate();
   const [showEmptyState, setShowEmptyState] = useState(false);
   const [agents, setAgents] = useState<AgentCardData[]>(agentData);
-  const [showBanner, setShowBanner] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<AgentTag[]>([]);
   const [sortOption, setSortOption] = useState('recent');
   
-  // Effect to handle keyboard shortcuts
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -154,30 +149,20 @@ const Index = () => {
 
   const handleFilterChange = (filters: AgentTag[]) => {
     setActiveFilters(filters);
-    // Filter logic would be applied to agents display
   };
 
   const handleSortChange = (sort: string) => {
     setSortOption(sort);
-    // Sort logic would be applied to agents display
   };
 
   const handleUseTemplate = (templateId: string) => {
     console.log('Using template:', templateId);
-    // Logic to clone template into a new agent
   };
 
-  const handleResumeSetup = () => {
-    // Navigate to the setup page of the agent that needs attention
-    navigate('/email-agent');
-  };
-
-  // Filter agents based on active filters
   const filteredAgents = activeFilters.length > 0
     ? agents.filter(agent => agent.tags.some(tag => activeFilters.includes(tag)))
     : agents;
 
-  // Sort agents based on selected option
   const sortedAgents = [...filteredAgents].sort((a, b) => {
     if (sortOption === 'a-z') return a.name.localeCompare(b.name);
     if (sortOption === 'z-a') return b.name.localeCompare(a.name);
@@ -186,7 +171,6 @@ const Index = () => {
       if (!a.isFavorite && b.isFavorite) return 1;
       return 0;
     }
-    // Default is 'recent'
     return 0;
   });
 
@@ -203,15 +187,6 @@ const Index = () => {
           
           <main className="flex-grow px-4 pb-24">
             <div className="max-w-7xl mx-auto">
-              {showBanner && (
-                <QuickStartBanner 
-                  onboardingPercentage={60}
-                  nextStep="Configure email notifications"
-                  onDismiss={() => setShowBanner(false)}
-                  onResumeSetup={handleResumeSetup}
-                />
-              )}
-              
               <HeroHeader 
                 title="Pick your AI Agent" 
                 subtitle="Configure once, automate forever."
@@ -252,7 +227,6 @@ const Index = () => {
           </main>
         </div>
 
-        {/* Global Components */}
         <SpotlightSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         <WhatsNewDrawer 
           open={whatsNewOpen} 
