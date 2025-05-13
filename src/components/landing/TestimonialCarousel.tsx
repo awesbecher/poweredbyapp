@@ -35,7 +35,11 @@ const TestimonialCarousel = () => {
   return (
     <div className="relative max-w-4xl mx-auto">
       <Carousel
-        onSelect={(index) => setCurrent(index)}
+        setApi={(api) => {
+          api?.on('select', () => {
+            setCurrent(api.selectedScrollSnap());
+          });
+        }}
         className="w-full"
       >
         <CarouselContent>
