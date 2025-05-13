@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ShieldCheck, Lock, Check } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
@@ -14,7 +13,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import VideoSection from "@/components/landing/VideoSection";
 import DynamicProofStrip from "@/components/landing/DynamicProofStrip";
 import FeatureCard from "@/components/landing/FeatureCard";
-import TestimonialCarousel from "@/components/landing/TestimonialCarousel";
 import TrustedLogos from "@/components/landing/TrustedLogos";
 import LeadForm from "@/components/landing/LeadForm";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
@@ -235,15 +233,7 @@ const LandingPage = () => {
       {/* Trusted Logos */}
       <TrustedLogos />
 
-      {/* Testimonials Carousel */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center mb-12">What Our Clients Say</h2>
-          <TestimonialCarousel />
-        </div>
-      </section>
-
-      {/* FAQ Accordion */}
+      {/* FAQ Accordion - Removed testimonials section and kept the rest */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 max-w-3xl">
           <h2 className="text-3xl font-semibold text-center mb-8">Frequently Asked Questions</h2>
