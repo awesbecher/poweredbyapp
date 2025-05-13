@@ -9,7 +9,6 @@ import HeroSection from "@/components/landing/HeroSection";
 import DynamicProofStrip from "@/components/landing/DynamicProofStrip";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
 import RoiCalculator from "@/components/landing/RoiCalculator";
-import TrustedLogos from "@/components/landing/TrustedLogos";
 import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
@@ -127,9 +126,6 @@ const LandingPage = () => {
         isFormOpen={isFormOpen}
         setIsFormOpen={setIsFormOpen}
       />
-
-      {/* Trusted Logos */}
-      <TrustedLogos />
 
       {/* FAQ Accordion */}
       <FaqSection />
