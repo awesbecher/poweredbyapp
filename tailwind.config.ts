@@ -71,8 +71,8 @@ export default {
 					black: '#0F172A',
 					purple: {
 						light: '#9b87f5',
-						DEFAULT: '#7E57C2',
-						dark: '#1A0B3A'
+						DEFAULT: '#8B5CF6',
+						dark: '#7c4fee'
 					}
 				},
 				glass: 'rgba(255, 255, 255, 0.8)'

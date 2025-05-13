@@ -7,17 +7,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
 import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
 
 // Re-export the useAuth hook for easier access throughout the app
 export { useAuth } from "./contexts/AuthContext";
-
-// Create a minimal Home component
-const Home = () => (
-  <div className="container mx-auto p-8">
-    <h1 className="text-3xl font-bold mb-4">New Project</h1>
-    <p>This is a clean slate for your new design.</p>
-  </div>
-);
 
 const queryClient = new QueryClient();
 
@@ -29,7 +22,7 @@ const App = () => {
           <BrowserRouter>
             <TooltipProvider>
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
