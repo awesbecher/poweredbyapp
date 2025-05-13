@@ -4,7 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import StickyHeader from "@/components/landing/StickyHeader";
+import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import DynamicProofStrip from "@/components/landing/DynamicProofStrip";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
@@ -99,9 +99,9 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Sticky Header */}
-      <StickyHeader onDemoClick={() => setIsFormOpen(true)} />
+    <div className="min-h-screen flex flex-col bg-black text-white">
+      {/* New Navbar Component */}
+      <Navbar />
 
       {/* Hero Section with Video */}
       <HeroSection 

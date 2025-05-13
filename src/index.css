@@ -80,4 +80,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  
+  /* Add padding to account for fixed navbar */
+  body.has-navbar {
+    padding-top: 80px;
+  }
 }
+
+.container-custom {
+  @apply container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
