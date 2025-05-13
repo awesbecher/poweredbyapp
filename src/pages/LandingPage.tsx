@@ -1,59 +1,33 @@
 
-import React, { useState } from 'react';
-import { ArrowRight, ListCheck, Save, TrendingUp, Bell, Calendar, Mail, User, Copyright } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ShieldCheck, Lock, Check } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import VideoSection from "@/components/landing/VideoSection";
+import DynamicProofStrip from "@/components/landing/DynamicProofStrip";
+import FeatureCard from "@/components/landing/FeatureCard";
+import TestimonialCarousel from "@/components/landing/TestimonialCarousel";
+import TrustedLogos from "@/components/landing/TrustedLogos";
+import LeadForm from "@/components/landing/LeadForm";
+import ExitIntentModal from "@/components/landing/ExitIntentModal";
+import StickyHeader from "@/components/landing/StickyHeader";
 
 const LandingPage = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Form schema
-  const formSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters."),
-    email: z.string().email("Please enter a valid email."),
-    company: z.string().min(1, "Company name is required."),
-    industry: z.string().min(1, "Please select an industry.")
-  });
-
-  // Form setup
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      company: "",
-      industry: ""
-    }
-  });
-
-  // Form submission
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
-    try {
-      // In a real app, you'd send this data to your backend
-      console.log("Form data:", data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect to thank you page
-      window.location.href = "https://poweredby.agency/thank-you";
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // State for the ROI calculator
+  const [leadsPerMonth, setLeadsPerMonth] = useState(100);
+  const [revGrowth, setRevGrowth] = useState(12);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [formStep, setFormStep] = useState(1);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const exitIntentTriggered = useRef(false);
 
   // Industry options
   const industries = [
@@ -68,330 +42,251 @@ const LandingPage = () => {
     "Other"
   ];
 
-  // Testimonials data
-  const testimonials = [
-    {
-      quote: "Working with Powered_by cut our response time in half.",
-      name: "Sarah Johnson",
-      title: "CTO, Acme Corp",
-      image: "/placeholder.svg"
-    },
-    {
-      quote: "Our AI agent handles 80% of customer inquiries without human intervention.",
-      name: "Michael Chen",
-      title: "Operations Director, Retail Chain",
-      image: "/placeholder.svg"
-    },
-    {
-      quote: "The ROI on our Powered_by agent exceeded expectations within the first month.",
-      name: "Lisa Taylor",
-      title: "Marketing VP, Tech Solutions",
-      image: "/placeholder.svg"
-    }
-  ];
+  // Form schema
+  const formSchema = z.object({
+    email: z.string().email("Please enter a valid email."),
+    name: z.string().min(2, "Name must be at least 2 characters.").optional(),
+    company: z.string().min(1, "Company name is required.").optional(),
+    industry: z.string().min(1, "Please select an industry.").optional()
+  });
 
-  // Use cases data
-  const useCases = [
-    {
-      industry: "Auto Dealers",
-      description: "24/7 lead qualification and appointment scheduling"
-    },
-    {
-      industry: "Real Estate",
-      description: "Automated property inquiries and showings coordination"
-    },
-    {
-      industry: "Retail",
-      description: "Instant customer support and product recommendations"
-    },
-    {
-      industry: "Hospitality",
-      description: "Seamless booking and guest experience management"
-    },
-    {
-      industry: "SaaS",
-      description: "Efficient onboarding and technical support automation"
+  // Initialize form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      company: "",
+      industry: ""
     }
-  ];
+  });
+
+  // Handle form submission
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (formStep === 1 && data.email) {
+      setFormStep(2);
+      return;
+    }
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Redirect to thank you page
+      window.location.href = "https://poweredby.agency/thank-you";
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Calculate ROI based on leads
+  useEffect(() => {
+    setRevGrowth(Math.round(leadsPerMonth * 0.12));
+  }, [leadsPerMonth]);
+
+  // Exit intent detection for desktop
+  useEffect(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0 && !exitIntentTriggered.current) {
+        setShowExitModal(true);
+        exitIntentTriggered.current = true;
+        
+        // Reset after 30 minutes
+        setTimeout(() => {
+          exitIntentTriggered.current = false;
+        }, 30 * 60 * 1000);
+      }
+    };
+
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      document.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        document.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-cover bg-center" 
-        style={{backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80')"}}
-      >
-        <div className="absolute top-4 left-4 md:top-8 md:left-8">
-          <img src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" alt="Powered_by Logo" className="h-10 md:h-12" />
-        </div>
-        
-        <div className="container mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Custom AI Agents for SMBs</h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Deploy bespoke voice, email, and SMS-text agents in minutes to automate support, sales & scheduling.
-          </p>
-          <a 
-            href="https://cal.com/team-powered-by-dfbtbb/get-started-today" 
-            className="inline-flex items-center bg-[#8B5CF6] hover:bg-[#7c4fee] text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Get Started <ArrowRight className="ml-2" />
-          </a>
-        </div>
-      </section>
+    <div className="min-h-screen flex flex-col">
+      {/* Sticky Header */}
+      <StickyHeader onDemoClick={() => setIsFormOpen(true)} />
 
-      {/* Feature Highlights */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-8">Feature Highlights</h2>
-              <ul className="space-y-6">
-                <li className="flex items-start">
-                  <ListCheck className="mr-3 text-[#8B5CF6] flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold">Multi-channel AI</h3>
-                    <p className="text-gray-600">Voice, phone, email, and SMS capabilities in one platform</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <ListCheck className="mr-3 text-[#8B5CF6] flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold">Custom-trained on your business data</h3>
-                    <p className="text-gray-600">Agents that understand your products, services, and processes</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <ListCheck className="mr-3 text-[#8B5CF6] flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold">24/7 autonomous support with human escalation</h3>
-                    <p className="text-gray-600">Never miss a customer inquiry with smart handoff protocols</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <ListCheck className="mr-3 text-[#8B5CF6] flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold">CRM & Slack integrations</h3>
-                    <p className="text-gray-600">Seamless workflows with your existing business tools</p>
-                  </div>
-                </li>
-              </ul>
+      {/* Hero Section with Video */}
+      <section className="pt-24 pb-16 px-4 md:px-12 lg:px-24">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+            {/* Left column: Headline and Video */}
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
+                Custom AI Agents for SMBs
+              </h1>
+              <p className="text-xl text-gray-600 max-w-xl">
+                Automate support, sales & scheduling across voice, email & SMS
+              </p>
+              
+              {/* Video Demo */}
+              <VideoSection />
             </div>
-            <div className="flex justify-center">
-              <div className="w-full max-w-lg rounded-lg overflow-hidden shadow-xl">
-                <AspectRatio ratio={16/9}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80" 
-                    alt="AI Agent Dashboard" 
-                    className="object-cover h-full w-full"
-                  />
-                </AspectRatio>
-              </div>
+            
+            {/* Right column: Two-step Form */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <LeadForm 
+                form={form} 
+                formStep={formStep}
+                onSubmit={onSubmit}
+                industries={industries}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Benefits Strip */}
-      <section className="py-16 md:py-20 bg-gray-50">
+      {/* Dynamic Proof Strip */}
+      <DynamicProofStrip />
+
+      {/* Feature Spotlight */}
+      <section className="py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-semibold text-center mb-12">Powerful Features, Simple Setup</h2>
+          
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Save Time */}
-            <div className="bg-white p-8 rounded-xl shadow-md text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-[#8B5CF6]/10 rounded-full">
-                  <Save size={32} className="text-[#8B5CF6]" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Save Time</h3>
-              <p className="text-gray-600">Automate repetitive tasks and free up your team for high-value work</p>
-            </div>
-            
-            {/* Increase Revenue */}
-            <div className="bg-white p-8 rounded-xl shadow-md text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-[#8B5CF6]/10 rounded-full">
-                  <TrendingUp size={32} className="text-[#8B5CF6]" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Increase Revenue</h3>
-              <p className="text-gray-600">Capture every lead and never miss a sales opportunity, day or night</p>
-            </div>
-            
-            {/* Always On */}
-            <div className="bg-white p-8 rounded-xl shadow-md text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-[#8B5CF6]/10 rounded-full">
-                  <Bell size={32} className="text-[#8B5CF6]" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Always On</h3>
-              <p className="text-gray-600">24/7 Customer Engagement without increasing staffing costs</p>
-            </div>
+            <FeatureCard 
+              icon="messages-square" 
+              title="Multi-Channel AI" 
+              description="Voice, Email & SMS in one unified agent" 
+            />
+            <FeatureCard 
+              icon="plug" 
+              title="Plug-&-Play Integrations" 
+              description="CRM, Slack, Calendar - seamless connection" 
+            />
+            <FeatureCard 
+              icon="user" 
+              title="Human-Fallback" 
+              description="Seamless escalation to live agents when needed" 
+            />
           </div>
         </div>
       </section>
 
-      {/* Use Cases Carousel */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Industry Use Cases</h2>
+      {/* Interactive ROI Calculator */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-semibold mb-2">Calculate Your ROI</h2>
+            <p className="text-gray-600">See how our AI agents can impact your business</p>
+          </div>
           
-          <Carousel className="max-w-5xl mx-auto">
-            <CarouselContent>
-              {useCases.map((useCase, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="mb-8">
+              <label className="block text-sm font-medium mb-2">Leads per month</label>
+              <div className="flex items-center gap-4">
+                <span className="text-gray-500">0</span>
+                <Slider
+                  value={[leadsPerMonth]}
+                  min={0}
+                  max={1000}
+                  step={10}
+                  onValueChange={(value) => setLeadsPerMonth(value[0])}
+                  className="flex-1"
+                />
+                <span className="text-gray-500">1,000</span>
+              </div>
+              <div className="text-right text-sm text-gray-500 mt-1">Current: {leadsPerMonth} leads</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="text-[#8B5CF6] text-sm font-medium mb-1">ESTIMATED</div>
+                <div className="text-4xl font-bold mb-2">+{revGrowth}% Revenue Growth</div>
+                <p className="text-gray-500 text-sm">Based on average conversion rate improvements</p>
+              </div>
+              
+              <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-[#8B5CF6] hover:bg-[#7c4fee] text-white px-8 py-6 rounded-lg text-lg">
+                    See Your Numbers
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
                   <div className="p-4">
-                    <div className="rounded-xl border border-gray-200 p-6 text-center h-full flex flex-col justify-between">
-                      <div className="mb-4">
-                        <h3 className="text-xl font-bold text-[#8B5CF6] mb-2">{useCase.industry}</h3>
-                        <p className="text-gray-600">{useCase.description}</p>
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-semibold mb-4">Get Your Personalized ROI Report</h3>
+                    <LeadForm 
+                      form={form}
+                      formStep={formStep}
+                      onSubmit={onSubmit}
+                      industries={industries}
+                    />
                   </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="hidden md:block">
-              <CarouselPrevious className="absolute -left-12" />
-              <CarouselNext className="absolute -right-12" />
+                </DialogContent>
+              </Dialog>
             </div>
-          </Carousel>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">What Our Clients Say</h2>
-          
-          <Carousel className="max-w-5xl mx-auto">
-            <CarouselContent>
-              {testimonials.map((testimonial, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 p-4">
-                  <blockquote className="bg-white p-6 rounded-xl shadow-md h-full flex flex-col">
-                    <p className="text-lg italic mb-4">"{testimonial.quote}"</p>
-                    <div className="mt-auto flex items-center">
-                      <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                        <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">{testimonial.name}</p>
-                        <p className="text-gray-500 text-sm">{testimonial.title}</p>
-                      </div>
-                    </div>
-                  </blockquote>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="hidden md:block">
-              <CarouselPrevious className="absolute -left-12" />
-              <CarouselNext className="absolute -right-12" />
-            </div>
-          </Carousel>
-        </div>
-      </section>
-
-      {/* Lead Capture Form */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Ready to empower your business with AI?</h2>
-          <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center border rounded-md focus-within:ring-2 focus-within:ring-[#8B5CF6] focus-within:border-[#8B5CF6]">
-                          <User className="ml-3 h-5 w-5 text-gray-400" />
-                          <Input className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your name" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center border rounded-md focus-within:ring-2 focus-within:ring-[#8B5CF6] focus-within:border-[#8B5CF6]">
-                          <Mail className="ml-3 h-5 w-5 text-gray-400" />
-                          <Input className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your.email@company.com" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center border rounded-md focus-within:ring-2 focus-within:ring-[#8B5CF6] focus-within:border-[#8B5CF6]">
-                          <Input className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your company name" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Industry</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center border rounded-md focus-within:ring-2 focus-within:ring-[#8B5CF6] focus-within:border-[#8B5CF6]">
-                          <select
-                            className="w-full px-3 py-2 rounded-md focus:outline-none"
-                            {...field}
-                          >
-                            <option value="">Select your industry</option>
-                            {industries.map((industry) => (
-                              <option key={industry} value={industry}>
-                                {industry}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    className="w-full bg-[#8B5CF6] hover:bg-[#7c4fee] text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2" />
-                    ) : null}
-                    Request My Demo
-                  </button>
-                </div>
-              </form>
-            </Form>
           </div>
         </div>
       </section>
+
+      {/* Trusted Logos */}
+      <TrustedLogos />
+
+      {/* Testimonials Carousel */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-semibold text-center mb-12">What Our Clients Say</h2>
+          <TestimonialCarousel />
+        </div>
+      </section>
+
+      {/* FAQ Accordion */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl font-semibold text-center mb-8">Frequently Asked Questions</h2>
+          
+          <Accordion type="single" collapsible className="bg-white rounded-xl shadow-md">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                How fast can I deploy an AI agent?
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4">
+                Most of our clients can go from onboarding to a fully functional AI agent in less than 48 hours. 
+                Our rapid deployment process includes knowledge base setup, integration with your existing systems, 
+                and testing to ensure your agent is ready to handle real interactions.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                How is my business data kept secure?
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4">
+                Security is our top priority. We implement bank-level encryption, GDPR compliance, 
+                and SOC 2 certified infrastructure. Your data is never shared with third parties, 
+                and we provide complete transparency on how your information is stored and accessed.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                What kind of support do you provide?
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4">
+                We offer comprehensive support including 24/7 technical assistance, dedicated account management, 
+                and regular performance reviews. Our team will help you optimize your AI agent over time, 
+                train on new information, and scale as your business grows.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </section>
+
+      {/* Exit Intent Overlay (for desktop) */}
+      <ExitIntentModal isOpen={showExitModal} onClose={() => setShowExitModal(false)} />
 
       {/* Footer */}
       <footer className="py-8 bg-gray-50 border-t">
@@ -400,9 +295,8 @@ const LandingPage = () => {
             <div className="mb-4 md:mb-0">
               <img src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" alt="Powered_by Logo" className="h-8" />
             </div>
-            <div className="text-sm text-gray-500 flex items-center">
-              <Copyright className="mr-2 h-4 w-4" />
-              <span>{new Date().getFullYear()} Powered_by Agency. All rights reserved.</span>
+            <div className="text-sm text-gray-500">
+              © {new Date().getFullYear()} Powered_by Agency. All rights reserved.
             </div>
             <div className="mt-4 md:mt-0">
               <a href="#" className="text-sm text-gray-500 hover:text-[#8B5CF6] transition-colors">
