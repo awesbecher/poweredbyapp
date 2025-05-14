@@ -24,6 +24,7 @@ const BottomCTA = () => {
             <Button 
               variant="outline"
               className="border-[#ffffff66] text-white bg-transparent font-semibold py-6 px-6 rounded-md hover:bg-[#ffffff22] min-w-44 text-base"
+              onClick={() => window.location.href = "https://www.poweredby.agency/demo"}
             >
               Explore our AI Agent Demos <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
