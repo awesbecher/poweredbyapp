@@ -12,6 +12,7 @@ import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
 import MainCTA from "@/components/landing/MainCTA";
+import BusinessValueSection from "@/components/landing/BusinessValueSection";
 import BottomCTA from "@/components/landing/BottomCTA";
 
 const LandingPage = () => {
@@ -133,7 +134,10 @@ const LandingPage = () => {
         {/* FAQ Accordion */}
         <FaqSection />
         
-        {/* Bottom CTA Section - NEW */}
+        {/* Business Value Section - NEW */}
+        <BusinessValueSection />
+        
+        {/* Bottom CTA Section */}
         <BottomCTA />
 
         {/* Exit Intent Overlay (for desktop) */}
