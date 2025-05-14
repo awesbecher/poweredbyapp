@@ -40,19 +40,34 @@ const Navbar: React.FC = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Updated with new links */}
           <div className="hidden md:flex items-center gap-8">
             <a 
-              href="https://www.poweredby.agency/products" 
+              href="https://www.poweredby.agency/ai-agency" 
+              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+            >
+              AI Agency
+            </a>
+            <a 
+              href="https://www.poweredby.agency/solutions" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Solutions
             </a>
+            <a 
+              href="https://www.poweredby.agency/demos" 
+              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+            >
+              Demos
+            </a>
+            <a 
+              href="https://www.poweredby.agency/pricing" 
+              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+            >
+              Pricing
+            </a>
             <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
               About
-            </Link>
-            <Link to="/resources" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
-              Resources
             </Link>
             <div className="flex items-center gap-2">
               <Link to="/agent">
@@ -85,16 +100,37 @@ const Navbar: React.FC = () => {
           </div>
         </div>
         
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Also update with new links */}
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
               <a 
-                href="https://www.poweredby.agency/products" 
+                href="https://www.poweredby.agency/ai-agency" 
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                AI Agency
+              </a>
+              <a 
+                href="https://www.poweredby.agency/solutions" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Solutions
+              </a>
+              <a 
+                href="https://www.poweredby.agency/demos" 
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Demos
+              </a>
+              <a 
+                href="https://www.poweredby.agency/pricing" 
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
               </a>
               <Link 
                 to="/about" 
@@ -102,13 +138,6 @@ const Navbar: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About
-              </Link>
-              <Link 
-                to="/resources" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Resources
               </Link>
               <div className="flex flex-col gap-2 mt-2 px-4 pb-2">
                 <Link to="/agent">
