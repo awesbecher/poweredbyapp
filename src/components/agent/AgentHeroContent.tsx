@@ -10,7 +10,7 @@ const AgentHeroContent: React.FC = () => {
         <span className="text-2xl md:text-3xl">Tell us about it and we'll build it for you.</span>
       </h1>
       <p className="text-lg leading-relaxed text-white mb-10">
-        Botpress Experts specialize in building and deploying custom AI agents. Let us know what you're looking for and we'll match you with the right Expert.
+        We help small & mid-sized businesses build custom AI agent solutions completely tailored to their needs. If you have a vision (or just an initial idea) about an AI agent you'd like to implement, we'd love to help you build it!
       </p>
     </div>
   );
