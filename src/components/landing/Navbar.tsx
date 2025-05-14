@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex-shrink-0">
             <a 
               href="https://www.poweredby.agency/" 
               className="flex items-center"
@@ -40,28 +40,34 @@ const Navbar: React.FC = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <a 
-              href="https://www.poweredby.agency/products" 
-              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-            >
-              Solutions
-            </a>
-            <span className="text-white font-bold">|</span>
-            <a 
-              href="https://www.poweredby.agency/demo" 
-              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-            >
-              Demos
-            </a>
-            <span className="text-white font-bold">|</span>
-            <a 
-              href="https://www.poweredby.agency/about" 
-              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-            >
-              About
-            </a>
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden md:flex items-center justify-center flex-1 mx-4">
+            <div className="flex items-center gap-8">
+              <a 
+                href="https://www.poweredby.agency/products" 
+                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+              >
+                Solutions
+              </a>
+              <span className="text-white font-bold">|</span>
+              <a 
+                href="https://www.poweredby.agency/demo" 
+                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+              >
+                Demos
+              </a>
+              <span className="text-white font-bold">|</span>
+              <a 
+                href="https://www.poweredby.agency/about" 
+                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+              >
+                About
+              </a>
+            </div>
+          </div>
+          
+          {/* Action Button */}
+          <div className="flex-shrink-0">
             <div className="flex items-center gap-2">
               <Link to="/agent">
                 <Button 
