@@ -24,9 +24,16 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               </p>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white">
-              Custom AI Agents for SMBs
+            {/* Redesigned stylish heading with gradient effect */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-brand-purple-light bg-clip-text text-transparent 
+                               inline-block transform transition-all duration-500 hover:scale-[1.02] pb-2">
+                Custom AI Agents
+              </span>
+              <span className="block mt-1 text-white">for SMBs</span>
             </h1>
+            
+            {/* Original subtitle - kept the same as requested */}
             <p className="text-xl text-gray-200 max-w-xl">
               We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
