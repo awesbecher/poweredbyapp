@@ -21,7 +21,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             {/* Purple pill text box - updated to be transparent */}
             <div className="inline-block px-4 py-2 rounded-full bg-purple-100/20 backdrop-blur-sm border border-purple-200/30 mb-4">
               <p className="text-sm text-white font-medium">
-                Voice, chat, email, &amp; text AI agents that work 24/7 so you don't have to.
+                AI agents that work 24/7 so you don't have to.
               </p>
             </div>
             
