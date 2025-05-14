@@ -2,6 +2,7 @@
 import React from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
   form: UseFormReturn<z.infer<any>>;
@@ -37,6 +38,22 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             <p className="text-xl text-gray-200 max-w-xl">
               We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
+            
+            {/* 2x2 Button Grid */}
+            <div className="grid grid-cols-2 gap-4 max-w-md mt-8">
+              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+                AI Voice
+              </Button>
+              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+                AI Receptionist
+              </Button>
+              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+                AI Email
+              </Button>
+              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+                AI SMS-Text
+              </Button>
+            </div>
           </div>
           
           {/* Right column: Tally.so Embed */}
