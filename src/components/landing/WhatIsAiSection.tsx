@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Separator } from '@/components/ui/separator';
 
 const WhatIsAiSection = () => {
   return (
     <section className="py-16 px-4">
+      <Separator className="max-w-6xl mx-auto bg-white/20 mb-16" />
+      
       <div className="container mx-auto max-w-6xl text-center">
         <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
           What's an AI Agent?
