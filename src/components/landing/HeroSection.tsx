@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,37 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps) => {
+  const tallyContainerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Ensure that Tally loads properly by manually creating and injecting the iframe
+    if (tallyContainerRef.current) {
+      // Wait a moment to make sure the DOM is fully ready
+      setTimeout(() => {
+        // Clear the container first
+        if (tallyContainerRef.current) {
+          tallyContainerRef.current.innerHTML = '';
+          
+          // Create new iframe element
+          const iframe = document.createElement('iframe');
+          iframe.src = 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1';
+          iframe.width = '100%';
+          iframe.height = '350';
+          iframe.frameBorder = '0';
+          iframe.title = 'Contact Form';
+          iframe.style.minHeight = '350px';
+          iframe.style.border = 'none';
+          iframe.style.backgroundColor = 'transparent';
+          
+          // Append to container
+          tallyContainerRef.current.appendChild(iframe);
+          
+          console.log('Tally form iframe manually injected');
+        }
+      }, 500);
+    }
+  }, []);
+
   return (
     <section className="pt-24 pb-16 px-4 md:px-12 lg:px-24">
       <div className="container mx-auto">
@@ -72,18 +103,12 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             </div>
           </div>
           
-          {/* Right column: Tally.so Embed - removed the black box container */}
-          <div className="tally-iframe-container">
-            <iframe
-              data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1"
-              loading="lazy"
-              width="100%"
-              height="350"
-              frameBorder="0"
-              marginHeight={0}
-              marginWidth={0}
-              title="Contact Form"
-            ></iframe>
+          {/* Right column: Tally.so Embed - removed container styling for better visibility */}
+          <div 
+            ref={tallyContainerRef} 
+            className="tally-iframe-container min-h-[350px]"
+          >
+            {/* Iframe will be injected here via useEffect */}
           </div>
         </div>
       </div>
