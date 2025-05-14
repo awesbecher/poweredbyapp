@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          {/* Logo - changed from external link with target="_blank" to regular href */}
+          {/* Logo */}
           <div className="flex items-center">
             <a 
               href="https://www.poweredby.agency/" 
@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation - Removed Pricing link */}
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <a 
               href="https://www.poweredby.agency/products" 
@@ -71,12 +71,6 @@ const Navbar: React.FC = () => {
                   Build me an AI Agent
                 </Button>
               </Link>
-              <Button 
-                className="bg-white text-black hover:bg-gray-100"
-                size="sm"
-              >
-                Get Started
-              </Button>
             </div>
           </div>
           
@@ -93,7 +87,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
         
-        {/* Mobile Navigation - Also removed Pricing link */}
+        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
@@ -128,13 +122,6 @@ const Navbar: React.FC = () => {
                     Build me an AI Agent
                   </Button>
                 </Link>
-                <Button 
-                  className="bg-white text-black hover:bg-gray-100 w-full"
-                  size="sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Get Started
-                </Button>
               </div>
             </div>
           </div>
