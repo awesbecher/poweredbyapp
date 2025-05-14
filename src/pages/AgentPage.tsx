@@ -49,182 +49,190 @@ const AgentPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-      <div className="max-w-[480px] w-full rounded-2xl shadow-md bg-white p-8">
+    <div className="w-full font-sans">
+      <div className="max-w-[1200px] mx-auto px-4 py-20 md:py-80">
         {!isSubmitted ? (
-          <>
-            {/* Logo */}
-            <div className="flex justify-center mb-6">
-              <Link to="/">
-                <img 
-                  src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" 
-                  alt="Powered_by Logo" 
-                  className="h-10"
-                  loading="lazy"
-                />
-              </Link>
+          <div className="flex flex-col md:flex-row md:gap-10">
+            {/* Left Column - 60% on desktop */}
+            <div className="md:w-[60%] mb-10 md:mb-0">
+              <h1 className="text-3xl md:text-[42px] font-semibold text-[#111] mb-6">
+                Tell us about your project.
+              </h1>
+              <p className="text-lg leading-relaxed text-[#555] mb-10">
+                Botpress Experts specialize in building and deploying custom AI agents. Let us know what you're looking for and we'll match you with the right Expert.
+              </p>
             </div>
             
-            {/* Heading */}
-            <h1 className="text-xl font-semibold text-center mb-8">Tell us about your project.</h1>
-            
-            {/* Form */}
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Project Description */}
-                <FormField
-                  control={form.control}
-                  name="projectDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What do you want to build?</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="e.g. AI support chatbot" 
-                          {...field}
-                          className="border-gray-300 focus:ring-2 focus:ring-purple-200 focus:border-[#8B5CF6]"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Budget Selection */}
-                <FormField
-                  control={form.control}
-                  name="budget"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>What is your total project budget (USD)?</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          className="space-y-3"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="under2k" id="under2k" />
-                            <Label htmlFor="under2k">Under $2 K</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="2k-10k" id="2k-10k" />
-                            <Label htmlFor="2k-10k">$2 K–$10 K</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="10k-50k" id="10k-50k" />
-                            <Label htmlFor="10k-50k">$10 K–$50 K</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="over50k" id="over50k" />
-                            <Label htmlFor="over50k">Over $50 K</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Contact Information Section */}
-                <div className="space-y-4 pt-2">
-                  <h2 className="font-medium">How can we reach you?</h2>
-                  
-                  {/* First Name */}
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field}
-                            className="border-gray-300 focus:ring-2 focus:ring-purple-200 focus:border-[#8B5CF6]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {/* Last Name */}
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field}
-                            className="border-gray-300 focus:ring-2 focus:ring-purple-200 focus:border-[#8B5CF6]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {/* Business Email */}
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            {...field}
-                            className="border-gray-300 focus:ring-2 focus:ring-purple-200 focus:border-[#8B5CF6]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {/* Phone Number */}
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number (optional)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="tel" 
-                            {...field}
-                            className="border-gray-300 focus:ring-2 focus:ring-purple-200 focus:border-[#8B5CF6]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  className="w-full bg-[#8B5CF6] hover:bg-[#7c4fee] text-white px-6 py-3 rounded-md shadow-sm transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-                >
-                  Submit
-                </button>
-                
-                {/* Legal Text */}
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  By clicking 'Submit', you agree to our{" "}
-                  <a href="/terms" className="text-[#8B5CF6] hover:underline">ToS</a>
-                  {" "}and{" "}
-                  <a href="/privacy" className="text-[#8B5CF6] hover:underline">Privacy Policy</a>.
-                </p>
-              </form>
-            </Form>
-          </>
+            {/* Right Column - 40% on desktop */}
+            <div className="md:w-[40%]">
+              <div className="bg-[#F9F9F9] rounded-lg shadow-md p-8">
+                {/* Form */}
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Project Description */}
+                    <FormField
+                      control={form.control}
+                      name="projectDescription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="uppercase text-sm text-[#777]">What do you want to build?</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g. AI support chatbot" 
+                              {...field}
+                              className="w-full py-3 px-3 border-2 border-[#DDD] rounded-md focus:ring-2 focus:ring-[#0062FF]/20 focus:border-[#0062FF]"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {/* Budget Selection */}
+                    <FormField
+                      control={form.control}
+                      name="budget"
+                      render={({ field }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel className="uppercase text-sm text-[#777]">What is your total project budget (USD)?</FormLabel>
+                          <FormControl>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                type="button"
+                                onClick={() => field.onChange("under2k")}
+                                className={`p-2 border-2 rounded-md text-center text-sm ${field.value === "under2k" ? "bg-white border-[#0062FF]" : "border-[#DDD]"}`}
+                              >
+                                Under $2 K
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => field.onChange("2k-10k")}
+                                className={`p-2 border-2 rounded-md text-center text-sm ${field.value === "2k-10k" ? "bg-white border-[#0062FF]" : "border-[#DDD]"}`}
+                              >
+                                $2 K–$10 K
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => field.onChange("10k-50k")}
+                                className={`p-2 border-2 rounded-md text-center text-sm ${field.value === "10k-50k" ? "bg-white border-[#0062FF]" : "border-[#DDD]"}`}
+                              >
+                                $10 K–$50 K
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => field.onChange("over50k")}
+                                className={`p-2 border-2 rounded-md text-center text-sm ${field.value === "over50k" ? "bg-white border-[#0062FF]" : "border-[#DDD]"}`}
+                              >
+                                Over $50 K
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {/* Contact Information Section */}
+                    <div className="space-y-4 pt-2">
+                      <h2 className="uppercase text-sm text-[#777]">How can we reach you?</h2>
+                      
+                      {/* First Name */}
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="uppercase text-sm text-[#777]">First Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                className="w-full py-3 px-3 border-2 border-[#DDD] rounded-md focus:ring-2 focus:ring-[#0062FF]/20 focus:border-[#0062FF]"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {/* Last Name */}
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="uppercase text-sm text-[#777]">Last Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field}
+                                className="w-full py-3 px-3 border-2 border-[#DDD] rounded-md focus:ring-2 focus:ring-[#0062FF]/20 focus:border-[#0062FF]"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {/* Business Email */}
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="uppercase text-sm text-[#777]">Business Email</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="email" 
+                                {...field}
+                                className="w-full py-3 px-3 border-2 border-[#DDD] rounded-md focus:ring-2 focus:ring-[#0062FF]/20 focus:border-[#0062FF]"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {/* Phone Number */}
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="uppercase text-sm text-[#777]">Phone Number (optional)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="tel" 
+                                {...field}
+                                className="w-full py-3 px-3 border-2 border-[#DDD] rounded-md focus:ring-2 focus:ring-[#0062FF]/20 focus:border-[#0062FF]"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      className="w-full bg-[#0062FF] hover:bg-[#0056E6] text-white px-4 py-4 rounded-md font-semibold text-base mt-4 transition-colors"
+                    >
+                      Submit
+                    </button>
+                    
+                    {/* Legal Text */}
+                    <p className="text-xs text-[#999] text-center mt-3">
+                      By clicking 'Submit', you agree to the Botpress{" "}
+                      <a href="/terms" className="text-[#0062FF] hover:underline">Terms of Service</a>
+                      {" "}and{" "}
+                      <a href="/privacy" className="text-[#0062FF] hover:underline">Privacy Policy</a>.
+                    </p>
+                  </form>
+                </Form>
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-12 max-w-md mx-auto">
             <h2 className="text-xl font-semibold mb-4">Thank you for submitting your request.</h2>
             <p className="text-gray-600">
               We'll be in touch shortly to connect you with the best builder for your project.
