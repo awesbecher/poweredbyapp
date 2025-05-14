@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import LandingPage from "./pages/LandingPage";
+import AgentPage from "./pages/AgentPage";
 
 // Re-export the useAuth hook for easier access throughout the app
 export { useAuth } from "./contexts/AuthContext";
@@ -24,6 +25,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/agent" element={<AgentPage />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
               <Toaster />
