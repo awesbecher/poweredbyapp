@@ -12,6 +12,7 @@ import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
 import MainCTA from "@/components/landing/MainCTA";
+import BottomCTA from "@/components/landing/BottomCTA";
 
 const LandingPage = () => {
   const [showExitModal, setShowExitModal] = useState(false);
@@ -113,7 +114,7 @@ const LandingPage = () => {
           industries={industries} 
         />
         
-        {/* Main CTA Section - NEW */}
+        {/* Main CTA Section */}
         <MainCTA />
 
         {/* Feature Spotlight */}
@@ -131,6 +132,9 @@ const LandingPage = () => {
 
         {/* FAQ Accordion */}
         <FaqSection />
+        
+        {/* Bottom CTA Section - NEW */}
+        <BottomCTA />
 
         {/* Exit Intent Overlay (for desktop) */}
         <ExitIntentModal isOpen={showExitModal} onClose={() => setShowExitModal(false)} />
