@@ -6,7 +6,7 @@ import Footer from '@/components/landing/Footer';
 import AgentHeroContent from '@/components/agent/AgentHeroContent';
 import AgentSubmissionForm from '@/components/agent/AgentSubmissionForm';
 import ThankYouMessage from '@/components/agent/ThankYouMessage';
-import type { AgentFormValues } from '@/components/agent/AgentSubmissionForm';
+import type { AgentFormValues } from '@/components/agent/AgentFormSchema';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
