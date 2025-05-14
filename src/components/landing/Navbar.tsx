@@ -54,20 +54,22 @@ const Navbar: React.FC = () => {
             <Link to="/resources" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
               Resources
             </Link>
-            <Link to="/agent">
+            <div className="flex items-center gap-2">
+              <Link to="/agent">
+                <Button 
+                  className="bg-brand-purple hover:bg-brand-purple-dark text-white"
+                  size="sm"
+                >
+                  Build me an AI Agent
+                </Button>
+              </Link>
               <Button 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white ml-2"
+                className="bg-white text-black hover:bg-gray-100"
                 size="sm"
               >
-                Build me an AI Agent
+                Get Started
               </Button>
-            </Link>
-            <Button 
-              className="bg-white text-black hover:bg-gray-100"
-              size="sm"
-            >
-              Get Started
-            </Button>
+            </div>
           </div>
           
           {/* Mobile menu button */}
