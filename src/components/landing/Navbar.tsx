@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation - Removed AI Agency link */}
+          {/* Desktop Navigation - Removed Pricing link */}
           <div className="hidden md:flex items-center gap-8">
             <a 
               href="https://www.poweredby.agency/solutions" 
@@ -54,13 +54,6 @@ const Navbar: React.FC = () => {
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Demos
-            </a>
-            <span className="text-white font-bold">|</span>
-            <a 
-              href="https://www.poweredby.agency/pricing" 
-              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-            >
-              Pricing
             </a>
             <span className="text-white font-bold">|</span>
             <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
@@ -97,7 +90,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
         
-        {/* Mobile Navigation - Also removed AI Agency link */}
+        {/* Mobile Navigation - Also removed Pricing link */}
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
@@ -114,13 +107,6 @@ const Navbar: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Demos
-              </a>
-              <a 
-                href="https://www.poweredby.agency/pricing" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Pricing
               </a>
               <Link 
                 to="/about" 
