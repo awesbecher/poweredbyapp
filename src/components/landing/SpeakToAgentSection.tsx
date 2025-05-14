@@ -21,7 +21,7 @@ const SpeakToAgentSection = () => {
               <Headphones className="w-16 h-16 text-purple-400 mb-6" />
               <h3 className="text-3xl font-bold text-white mb-4">Experience AI Voice Interactions</h3>
               <p className="text-xl text-gray-300 mb-8 max-w-lg text-center">
-                Try our interactive AI voice agent and experience the future of customer communications firsthand.
+                Speak live with an AI agent now! Ask it anything about AI Agents, how they work, use cases, or AI best practices.
               </p>
               <Link to="/agent">
                 <Button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-8 py-6 h-auto text-lg font-bold transition-transform hover:scale-105">
