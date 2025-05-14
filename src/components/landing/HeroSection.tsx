@@ -39,7 +39,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
                 data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1"
                 loading="lazy"
                 width="100%"
-                height="500"
+                height="400"
                 frameBorder="0"
                 marginHeight={0}
                 marginWidth={0}
