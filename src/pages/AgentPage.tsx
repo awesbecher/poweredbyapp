@@ -52,8 +52,8 @@ const AgentPage: React.FC = () => {
       iframe.width = '100%';
       iframe.height = '600px'; // Increased height
       iframe.frameBorder = '0';
-      iframe.marginHeight = 0;
-      iframe.marginWidth = 0;
+      iframe.marginHeight = '0'; // Convert from number to string
+      iframe.marginWidth = '0'; // Convert from number to string
       iframe.title = 'Landing Page | Agent Form';
       iframe.style.minHeight = '600px';
       iframe.style.border = 'none';
