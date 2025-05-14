@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -99,6 +99,14 @@ const LandingPage = () => {
     };
   }, []);
 
+  // Initialize Tally forms
+  useEffect(() => {
+    // This ensures the Tally script is loaded and initialized
+    if ((window as any).Tally) {
+      (window as any).Tally.loadEmbeds();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar stays with original background */}
@@ -119,8 +127,6 @@ const LandingPage = () => {
 
         {/* Feature Spotlight */}
         <FeatureSpotlight />
-
-        {/* Removed ROI Calculator section */}
         
         {/* FAQ Accordion */}
         <FaqSection />

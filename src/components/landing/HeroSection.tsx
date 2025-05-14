@@ -1,6 +1,5 @@
 
 import React from 'react';
-import LeadForm from "@/components/landing/LeadForm";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -33,14 +32,20 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             </p>
           </div>
           
-          {/* Right column: Two-step Form - Updated with black background and white text */}
+          {/* Right column: Tally.so Embed */}
           <div className="bg-black rounded-xl shadow-lg p-8 border border-white/10">
-            <LeadForm 
-              form={form} 
-              formStep={formStep}
-              onSubmit={onSubmit}
-              industries={industries} 
-            />
+            <div className="tally-iframe-container">
+              <iframe
+                data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1"
+                loading="lazy"
+                width="100%"
+                height="500"
+                frameBorder="0"
+                marginHeight={0}
+                marginWidth={0}
+                title="Contact Form"
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>
