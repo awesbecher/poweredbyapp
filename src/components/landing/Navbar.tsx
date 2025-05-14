@@ -40,32 +40,29 @@ const Navbar: React.FC = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation - Updated with new links */}
+          {/* Desktop Navigation - Removed AI Agency link */}
           <div className="hidden md:flex items-center gap-8">
-            <a 
-              href="https://www.poweredby.agency/ai-agency" 
-              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-            >
-              AI Agency
-            </a>
             <a 
               href="https://www.poweredby.agency/solutions" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Solutions
             </a>
+            <span className="text-white font-bold">|</span>
             <a 
               href="https://www.poweredby.agency/demos" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Demos
             </a>
+            <span className="text-white font-bold">|</span>
             <a 
               href="https://www.poweredby.agency/pricing" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Pricing
             </a>
+            <span className="text-white font-bold">|</span>
             <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
               About
             </Link>
@@ -100,17 +97,10 @@ const Navbar: React.FC = () => {
           </div>
         </div>
         
-        {/* Mobile Navigation - Also update with new links */}
+        {/* Mobile Navigation - Also removed AI Agency link */}
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
-              <a 
-                href="https://www.poweredby.agency/ai-agency" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                AI Agency
-              </a>
               <a 
                 href="https://www.poweredby.agency/solutions" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
