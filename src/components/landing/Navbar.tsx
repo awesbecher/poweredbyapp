@@ -44,9 +44,14 @@ const Navbar: React.FC = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/solutions" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
+            <a 
+              href="https://www.poweredby.agency/products" 
+              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Solutions
-            </Link>
+            </a>
             <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
               About
             </Link>
@@ -84,13 +89,15 @@ const Navbar: React.FC = () => {
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
-              <Link 
-                to="/solutions" 
+              <a 
+                href="https://www.poweredby.agency/products" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Solutions
-              </Link>
+              </a>
               <Link 
                 to="/about" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
