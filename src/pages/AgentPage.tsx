@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
@@ -11,11 +11,6 @@ const AgentPage: React.FC = () => {
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load the Tally.so script
-    const script = document.createElement('script');
-    script.src = 'https://tally.so/widgets/embed.js';
-    script.async = true;
-    
     // Add event listener for form submission
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === 'tally-form-submit-success') {
@@ -24,11 +19,9 @@ const AgentPage: React.FC = () => {
     };
     
     window.addEventListener('message', handleMessage);
-    document.body.appendChild(script);
     
     return () => {
       window.removeEventListener('message', handleMessage);
-      document.body.removeChild(script);
     };
   }, []);
 
