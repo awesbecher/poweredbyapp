@@ -12,9 +12,10 @@ const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const formRef = useRef<HTMLDivElement>(null);
-
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  
+  // Listen for messages from the Tally iframe
   useEffect(() => {
-    // Add event listener for form submission
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === 'tally-form-submit-success') {
         setIsSubmitted(true);
@@ -23,41 +24,51 @@ const AgentPage: React.FC = () => {
     
     window.addEventListener('message', handleMessage);
     
-    // Set loading to false after a short delay
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
     return () => {
       window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  // Set loading to false after a short delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Increased timeout to ensure iframe has time to load
+    
+    return () => {
       clearTimeout(timer);
     };
   }, []);
 
-  // Function to initialize Tally embed with direct script loading
+  // Function to manually insert the Tally iframe after component mount
   useEffect(() => {
-    // Create script element
-    const script = document.createElement('script');
-    script.src = 'https://tally.so/widgets/embed.js';
-    script.async = true;
-    script.onload = () => {
-      // When script is loaded, initialize Tally if available
-      if (typeof window.Tally !== 'undefined') {
-        window.Tally.loadEmbeds();
-      }
-    };
-    
-    // Add the script to the document
-    document.body.appendChild(script);
-    
-    // Clean up
-    return () => {
-      // Only remove if it's the script we added
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+    if (!isLoading && formRef.current && !iframeLoaded) {
+      // Clear any existing content
+      formRef.current.innerHTML = '';
+      
+      // Create and configure the iframe
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
+      iframe.width = '100%';
+      iframe.height = '600px'; // Increased height
+      iframe.frameBorder = '0';
+      iframe.marginHeight = 0;
+      iframe.marginWidth = 0;
+      iframe.title = 'Landing Page | Agent Form';
+      iframe.style.minHeight = '600px';
+      iframe.style.border = 'none';
+      iframe.style.backgroundColor = 'transparent';
+      
+      // Add load event listener
+      iframe.onload = () => {
+        setIframeLoaded(true);
+        console.log('Tally iframe loaded successfully');
+      };
+      
+      // Append the iframe to the container
+      formRef.current.appendChild(iframe);
+    }
+  }, [isLoading, iframeLoaded]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -86,7 +97,7 @@ const AgentPage: React.FC = () => {
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full p-8">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[400px]">
+                        <div className="flex justify-center items-center h-[500px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -95,17 +106,9 @@ const AgentPage: React.FC = () => {
                       <div 
                         ref={formRef}
                         className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
+                        style={{ minHeight: '600px' }}
                       >
-                        <iframe 
-                          data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1" 
-                          width="100%" 
-                          height="500" 
-                          frameBorder="0" 
-                          marginHeight={0} 
-                          marginWidth={0} 
-                          title="Landing Page | Agent Form"
-                          style={{minHeight: "500px"}}
-                        ></iframe>
+                        {/* Iframe will be inserted here by the useEffect */}
                       </div>
                     </Card>
                   </div>

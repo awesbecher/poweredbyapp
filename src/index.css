@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
@@ -91,15 +90,18 @@
   @apply container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Tally iframe styling */
+/* Improved Tally iframe styling */
 .tally-iframe-container {
   width: 100% !important;
+  min-height: 600px !important;
 }
 
 .tally-iframe-container iframe {
   width: 100% !important;
-  min-height: 400px !important;
-  border: none;
+  height: 600px !important;
+  min-height: 600px !important;
+  border: none !important;
+  background-color: transparent !important;
 }
 
 /* Animation classes */
