@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
@@ -6,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
-import DynamicProofStrip from "@/components/landing/DynamicProofStrip";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
 import RoiCalculator from "@/components/landing/RoiCalculator";
 import FaqSection from "@/components/landing/FaqSection";
@@ -103,16 +101,13 @@ const LandingPage = () => {
       {/* New Navbar Component */}
       <Navbar />
 
-      {/* Hero Section with Video */}
+      {/* Hero Section */}
       <HeroSection 
         form={form} 
         formStep={formStep} 
         onSubmit={onSubmit} 
         industries={industries} 
       />
-
-      {/* Dynamic Proof Strip */}
-      <DynamicProofStrip />
 
       {/* Feature Spotlight */}
       <FeatureSpotlight />
