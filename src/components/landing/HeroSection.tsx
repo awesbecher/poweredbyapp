@@ -18,6 +18,13 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left column: Headline */}
           <div className="space-y-6">
+            {/* New purple pill text box */}
+            <div className="inline-block px-4 py-2 rounded-full bg-purple-100 border border-purple-200 mb-4">
+              <p className="text-sm text-brand-purple font-medium">
+                Voice, chat, email, &amp; text AI agents that work 24/7 so you don't have to.
+              </p>
+            </div>
+            
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white">
               Custom AI Agents for SMBs
             </h1>
