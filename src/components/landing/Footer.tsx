@@ -12,9 +12,12 @@ const Footer = () => {
           <div className="text-sm text-gray-300">
             © {new Date().getFullYear()} Powered_by Agency. All rights reserved.
           </div>
-          <div className="mt-4 md:mt-0">
-            <a href="#" className="text-sm text-gray-300 hover:text-[#9b87f5] transition-colors">
-              Privacy Policy
+          <div className="mt-4 md:mt-0 flex space-x-6">
+            <a href="mailto:team@poweredby.agency" className="text-sm text-gray-300 hover:text-[#9b87f5] transition-colors">
+              Contact
+            </a>
+            <a href="https://www.poweredby.agency/about" className="text-sm text-gray-300 hover:text-[#9b87f5] transition-colors">
+              About Us
             </a>
           </div>
         </div>
