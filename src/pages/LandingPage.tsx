@@ -123,14 +123,16 @@ const LandingPage = () => {
           industries={industries} 
         />
         
-        {/* What's an AI Agent Section - explicitly restoring this section */}
+        {/* What's an AI Agent Section */}
         <WhatIsAiSection />
         
-        {/* Main CTA Section */}
+        {/* Main CTA Section - with reduced top padding */}
         <MainCTA />
 
-        {/* Feature Spotlight */}
-        <FeatureSpotlight />
+        {/* Feature Spotlight - move closer to MainCTA */}
+        <div className="-mt-12">
+          <FeatureSpotlight />
+        </div>
         
         {/* FAQ Accordion */}
         <FaqSection />
