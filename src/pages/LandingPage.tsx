@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import WhatIsAiSection from "@/components/landing/WhatIsAiSection";
+import SpeakToAgentSection from "@/components/landing/SpeakToAgentSection";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
 import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
@@ -125,6 +126,9 @@ const LandingPage = () => {
         
         {/* What's an AI Agent Section */}
         <WhatIsAiSection />
+        
+        {/* NEW: Speak to an AI Agent Section */}
+        <SpeakToAgentSection />
         
         {/* Main CTA Section - with reduced top padding */}
         <MainCTA />
