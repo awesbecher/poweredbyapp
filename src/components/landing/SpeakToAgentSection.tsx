@@ -3,7 +3,6 @@ import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { Headphones } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 const SpeakToAgentSection = () => {
   return (
@@ -23,11 +22,13 @@ const SpeakToAgentSection = () => {
               <p className="text-xl text-gray-300 mb-8 max-w-lg text-center">
                 Speak live with an AI agent now! Ask it anything about AI Agents, how they work, use cases, or AI best practices.
               </p>
-              <Link to="/agent">
-                <Button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-8 py-6 h-auto text-lg font-bold transition-transform hover:scale-105">
-                  <Headphones className="mr-2" /> Call +1 (650) 484-5356
-                </Button>
-              </Link>
+              {/* Button without Link wrapper to disable click action */}
+              <Button 
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white px-8 py-6 h-auto text-lg font-bold transition-transform hover:scale-105"
+                disabled={true} // Disable the button
+              >
+                <Headphones className="mr-2" /> Call +1 (650) 484-5356
+              </Button>
             </div>
           </AspectRatio>
         </div>
