@@ -22,7 +22,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               Custom AI Agents for SMBs
             </h1>
             <p className="text-xl text-gray-200 max-w-xl">
-              Automate support, sales & scheduling across voice, email & SMS
+              We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
           </div>
           
@@ -32,7 +32,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               form={form} 
               formStep={formStep}
               onSubmit={onSubmit}
-              industries={industries}
+              industries={industries} 
             />
           </div>
         </div>
