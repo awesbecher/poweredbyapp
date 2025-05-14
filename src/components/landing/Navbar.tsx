@@ -45,8 +45,6 @@ const Navbar: React.FC = () => {
             <a 
               href="https://www.poweredby.agency/products" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Solutions
             </a>
@@ -92,8 +90,6 @@ const Navbar: React.FC = () => {
               <a 
                 href="https://www.poweredby.agency/products" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
-                target="_blank"
-                rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Solutions
