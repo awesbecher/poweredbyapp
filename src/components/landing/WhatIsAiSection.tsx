@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const WhatIsAiSection = () => {
   return (
@@ -8,7 +9,20 @@ const WhatIsAiSection = () => {
         <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
           What's an AI Agent?
         </h2>
-        <div className="w-24 h-1 bg-[#8B5CF6] mx-auto"></div>
+        <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
+        
+        {/* YouTube Video Player */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
+            <iframe
+              src="https://www.youtube.com/embed/w6juT92KdRo?si=kQu8axwX4usr0ywF"
+              title="What is an AI Agent?"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </AspectRatio>
+        </div>
         
         <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 transition-transform hover:scale-105">
