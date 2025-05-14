@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
@@ -128,14 +127,5 @@ const AgentPage: React.FC = () => {
     </div>
   );
 };
-
-// Add Tally to the Window interface
-declare global {
-  interface Window {
-    Tally: {
-      loadEmbeds: () => void;
-    };
-  }
-}
 
 export default AgentPage;

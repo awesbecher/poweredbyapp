@@ -25,15 +25,6 @@ const loadTallyScript = () => {
   }
 };
 
-// Make sure Tally is available in the window object
-declare global {
-  interface Window {
-    Tally?: {
-      loadEmbeds: () => void;
-    };
-  }
-}
-
 // Load Tally script first, then render React
 loadTallyScript();
 
