@@ -39,7 +39,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
             
-            {/* 2x2 Button Grid with links */}
+            {/* 2x2 Button Grid with direct links */}
             <div className="grid grid-cols-2 gap-4 max-w-md mt-8">
               <Button 
                 variant="default" 
