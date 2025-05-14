@@ -4,23 +4,10 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import AgentHeroContent from '@/components/agent/AgentHeroContent';
-import AgentSubmissionForm from '@/components/agent/AgentSubmissionForm';
 import ThankYouMessage from '@/components/agent/ThankYouMessage';
-import type { AgentFormValues } from '@/components/agent/AgentFormSchema';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // Handle form submission
-  const onSubmit = async (values: AgentFormValues) => {
-    console.log("Form submitted:", values);
-    
-    // Simulate API call with delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Show success state
-    setIsSubmitted(true);
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,9 +22,11 @@ const AgentPage: React.FC = () => {
               {/* Left Column - Hero Content */}
               <AgentHeroContent />
               
-              {/* Right Column - Form */}
+              {/* Right Column - Space for Tally.so form to be added later */}
               <div className="md:w-[40%]">
-                <AgentSubmissionForm onSubmit={onSubmit} />
+                <div className="bg-black rounded-lg shadow-md p-8 h-full flex items-center justify-center">
+                  <p className="text-white text-center">Tally.so form will be embedded here.</p>
+                </div>
               </div>
             </div>
           ) : (
