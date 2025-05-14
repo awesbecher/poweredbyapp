@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
-import RoiCalculator from "@/components/landing/RoiCalculator";
 import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
@@ -121,20 +120,12 @@ const LandingPage = () => {
         {/* Feature Spotlight */}
         <FeatureSpotlight />
 
-        {/* Interactive ROI Calculator */}
-        <RoiCalculator 
-          form={form}
-          formStep={formStep}
-          onSubmit={onSubmit}
-          industries={industries}
-          isFormOpen={isFormOpen}
-          setIsFormOpen={setIsFormOpen}
-        />
-
+        {/* Removed ROI Calculator section */}
+        
         {/* FAQ Accordion */}
         <FaqSection />
         
-        {/* Business Value Section - NEW */}
+        {/* Business Value Section */}
         <BusinessValueSection />
         
         {/* Bottom CTA Section */}

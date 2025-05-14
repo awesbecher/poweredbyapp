@@ -23,10 +23,7 @@ const MainCTA = () => {
             </Button>
           </div>
           
-          {/* Small muted text */}
-          <p className="text-[15px] text-[#888] mt-[24px]">
-            Talk to an AI Agent now
-          </p>
+          {/* Removed the small muted text */}
         </div>
       </div>
     </section>
