@@ -4,9 +4,9 @@ import FeatureCard from "@/components/landing/FeatureCard";
 
 const FeatureSpotlight = () => {
   return (
-    <section className="py-16 md:py-20 bg-white">
+    <section className="py-16 md:py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-semibold text-center mb-12">Powerful Features, Simple Setup</h2>
+        <h2 className="text-3xl font-semibold text-center mb-12 text-white">Powerful Features, Simple Setup</h2>
         
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureCard 

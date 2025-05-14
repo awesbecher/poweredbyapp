@@ -18,10 +18,10 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left column: Headline */}
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white">
               Custom AI Agents for SMBs
             </h1>
-            <p className="text-xl text-gray-600 max-w-xl">
+            <p className="text-xl text-gray-200 max-w-xl">
               Automate support, sales & scheduling across voice, email & SMS
             </p>
           </div>

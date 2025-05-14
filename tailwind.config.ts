@@ -75,7 +75,8 @@ export default {
 						dark: '#7c4fee'
 					}
 				},
-				glass: 'rgba(255, 255, 255, 0.8)'
+				glass: 'rgba(255, 255, 255, 0.8)',
+				'deep-purple': '#1A0B3A',
 			},
 			backgroundColor: {
 				'deep-purple': '#1A0B3A',

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
@@ -97,36 +98,39 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
-      {/* New Navbar Component */}
+    <div className="min-h-screen flex flex-col">
+      {/* Navbar stays with original background */}
       <Navbar />
 
-      {/* Hero Section */}
-      <HeroSection 
-        form={form} 
-        formStep={formStep} 
-        onSubmit={onSubmit} 
-        industries={industries} 
-      />
+      {/* Content area with dark purple gradient background */}
+      <div className="flex-1 bg-gradient-to-b from-deep-purple to-[#120829] text-white">
+        {/* Hero Section */}
+        <HeroSection 
+          form={form} 
+          formStep={formStep} 
+          onSubmit={onSubmit} 
+          industries={industries} 
+        />
 
-      {/* Feature Spotlight */}
-      <FeatureSpotlight />
+        {/* Feature Spotlight */}
+        <FeatureSpotlight />
 
-      {/* Interactive ROI Calculator */}
-      <RoiCalculator 
-        form={form}
-        formStep={formStep}
-        onSubmit={onSubmit}
-        industries={industries}
-        isFormOpen={isFormOpen}
-        setIsFormOpen={setIsFormOpen}
-      />
+        {/* Interactive ROI Calculator */}
+        <RoiCalculator 
+          form={form}
+          formStep={formStep}
+          onSubmit={onSubmit}
+          industries={industries}
+          isFormOpen={isFormOpen}
+          setIsFormOpen={setIsFormOpen}
+        />
 
-      {/* FAQ Accordion */}
-      <FaqSection />
+        {/* FAQ Accordion */}
+        <FaqSection />
 
-      {/* Exit Intent Overlay (for desktop) */}
-      <ExitIntentModal isOpen={showExitModal} onClose={() => setShowExitModal(false)} />
+        {/* Exit Intent Overlay (for desktop) */}
+        <ExitIntentModal isOpen={showExitModal} onClose={() => setShowExitModal(false)} />
+      </div>
 
       {/* Footer */}
       <Footer />

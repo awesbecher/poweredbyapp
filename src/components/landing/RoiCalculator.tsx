@@ -33,18 +33,18 @@ const RoiCalculator = ({
   }, [leadsPerMonth]);
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-semibold mb-2">Calculate Your ROI</h2>
-          <p className="text-gray-600">See how our AI agents can impact your business</p>
+          <h2 className="text-3xl font-semibold mb-2 text-white">Calculate Your ROI</h2>
+          <p className="text-gray-200">See how our AI agents can impact your business</p>
         </div>
         
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg p-8">
           <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">Leads per month</label>
+            <label className="block text-sm font-medium mb-2 text-white">Leads per month</label>
             <div className="flex items-center gap-4">
-              <span className="text-gray-500">0</span>
+              <span className="text-gray-300">0</span>
               <Slider
                 value={[leadsPerMonth]}
                 min={0}
@@ -53,21 +53,21 @@ const RoiCalculator = ({
                 onValueChange={(value) => setLeadsPerMonth(value[0])}
                 className="flex-1"
               />
-              <span className="text-gray-500">1,000</span>
+              <span className="text-gray-300">1,000</span>
             </div>
-            <div className="text-right text-sm text-gray-500 mt-1">Current: {leadsPerMonth} leads</div>
+            <div className="text-right text-sm text-gray-300 mt-1">Current: {leadsPerMonth} leads</div>
           </div>
           
           <div className="text-center">
             <div className="mb-6">
-              <div className="text-[#8B5CF6] text-sm font-medium mb-1">ESTIMATED</div>
-              <div className="text-4xl font-bold mb-2">+{revGrowth}% Revenue Growth</div>
-              <p className="text-gray-500 text-sm">Based on average conversion rate improvements</p>
+              <div className="text-[#9b87f5] text-sm font-medium mb-1">ESTIMATED</div>
+              <div className="text-4xl font-bold mb-2 text-white">+{revGrowth}% Revenue Growth</div>
+              <p className="text-gray-300 text-sm">Based on average conversion rate improvements</p>
             </div>
             
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#8B5CF6] hover:bg-[#7c4fee] text-white px-8 py-6 rounded-lg text-lg">
+                <Button className="bg-[#9b87f5] hover:bg-[#7c4fee] text-white px-8 py-6 rounded-lg text-lg">
                   See Your Numbers
                 </Button>
               </DialogTrigger>
