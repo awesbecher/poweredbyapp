@@ -39,18 +39,34 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
             
-            {/* 2x2 Button Grid */}
+            {/* 2x2 Button Grid with links */}
             <div className="grid grid-cols-2 gap-4 max-w-md mt-8">
-              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+              <Button 
+                variant="default" 
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
+              >
                 AI Voice
               </Button>
-              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+              <Button 
+                variant="default" 
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
+              >
                 AI Receptionist
               </Button>
-              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+              <Button 
+                variant="default" 
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
+              >
                 AI Email
               </Button>
-              <Button variant="default" className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6">
+              <Button 
+                variant="default" 
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
+              >
                 AI SMS-Text
               </Button>
             </div>
