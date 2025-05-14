@@ -91,3 +91,24 @@
   @apply container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
+/* Tally iframe styling */
+.tally-iframe-container {
+  width: 100% !important;
+}
+
+.tally-iframe-container iframe {
+  width: 100% !important;
+  min-height: 400px !important;
+  border: none;
+}
+
+/* Animation classes */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

@@ -5,6 +5,8 @@ import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import AgentHeroContent from '@/components/agent/AgentHeroContent';
 import ThankYouMessage from '@/components/agent/ThankYouMessage';
+import { Card } from '@/components/ui/card';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -51,42 +53,81 @@ const AgentPage: React.FC = () => {
       {/* Navbar */}
       <Navbar />
       
-      {/* Content area with same background as landing page */}
+      {/* Content area with floating card design */}
       <div className="flex-1 bg-gradient-to-b from-deep-purple to-[#120829] text-white">
-        <div className="max-w-[1200px] mx-auto px-4 py-20 md:py-80">
+        <div className="max-w-[1200px] mx-auto px-4 py-16 md:py-24">
           {!isSubmitted ? (
-            <div className="flex flex-col md:flex-row md:gap-10">
-              {/* Left Column - Hero Content */}
-              <AgentHeroContent />
+            <div className="relative">
+              {/* Decorative elements */}
+              <div className="hidden md:block absolute -top-20 right-20 w-64 h-64 rounded-full bg-brand-purple/10 blur-3xl"></div>
+              <div className="hidden md:block absolute top-40 -left-10 w-40 h-40 rounded-full bg-brand-purple-light/10 blur-2xl"></div>
               
-              {/* Right Column - Tally.so embed */}
-              <div className="md:w-[40%]">
-                <div className="bg-black rounded-lg shadow-md p-8 h-full">
-                  {isLoading && (
-                    <div className="flex justify-center items-center h-[300px]">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              <div className="rounded-2xl border border-white/10 backdrop-blur-sm bg-black/20 overflow-hidden shadow-xl animate-fade-in">
+                <div className="md:flex">
+                  {/* Left Column - Hero Content with improved styling */}
+                  <div className="md:w-[60%] p-8 md:p-12 flex items-center">
+                    <div className="space-y-6">
+                      <span className="inline-block py-1 px-3 rounded-full bg-brand-purple/30 text-white text-xs font-medium tracking-wide mb-2">
+                        CUSTOM AI DEVELOPMENT
+                      </span>
+                      <AgentHeroContent />
+                      
+                      <div className="pt-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="relative h-10 w-10">
+                            <AspectRatio ratio={1/1} className="rounded-full overflow-hidden">
+                              <img 
+                                src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" 
+                                alt="Company Logo" 
+                                className="object-cover"
+                              />
+                            </AspectRatio>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white">Join over 500+ businesses</p>
+                            <p className="text-xs text-white/70">using our AI agent solutions</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div 
-                    ref={formRef}
-                    className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
-                  >
-                    <iframe 
-                      data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1" 
-                      loading="lazy" 
-                      width="100%" 
-                      height="200" 
-                      frameBorder="0" 
-                      marginHeight="0" 
-                      marginWidth="0" 
-                      title="Landing Page | Agent Form"
-                    ></iframe>
+                  </div>
+                  
+                  {/* Right Column - Tally.so embed with improved styling */}
+                  <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
+                    
+                    <Card className="bg-black border-0 shadow-none rounded-none h-full p-8">
+                      {isLoading && (
+                        <div className="flex justify-center items-center h-[300px]">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                          </div>
+                        </div>
+                      )}
+                      <div 
+                        ref={formRef}
+                        className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
+                      >
+                        <iframe 
+                          data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1" 
+                          loading="lazy" 
+                          width="100%" 
+                          height={200} 
+                          frameBorder={0} 
+                          marginHeight={0} 
+                          marginWidth={0} 
+                          title="Landing Page | Agent Form"
+                        ></iframe>
+                      </div>
+                    </Card>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <ThankYouMessage />
+            <div className="rounded-2xl border border-white/10 backdrop-blur-sm bg-black/20 p-12 shadow-xl animate-fade-in">
+              <ThankYouMessage />
+            </div>
           )}
         </div>
       </div>
