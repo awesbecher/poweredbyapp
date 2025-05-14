@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
+import WhatIsAiSection from "@/components/landing/WhatIsAiSection";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
 import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
@@ -121,6 +122,9 @@ const LandingPage = () => {
           onSubmit={onSubmit} 
           industries={industries} 
         />
+        
+        {/* What's an AI Agent Section */}
+        <WhatIsAiSection />
         
         {/* Main CTA Section */}
         <MainCTA />
