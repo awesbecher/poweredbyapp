@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { icons } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -10,9 +11,8 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = ({ icon, title, description }: FeatureCardProps) => {
-  // Using the icons object which contains all available icons from lucide-react
-  // This approach is type-safe and recommended in the lucide documentation
-  const IconComponent = (icons as Record<string, LucideIcon>)[icon] || icons.HelpCircle;
+  // Using the dynamic approach to get icons from lucide-react with fallback
+  const IconComponent = icons[icon] || HelpCircle;
     
   return (
     <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 flex flex-col items-center text-center transition-transform hover:scale-105 hover:shadow-lg shadow-md">
