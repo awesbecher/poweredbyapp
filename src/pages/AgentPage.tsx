@@ -21,38 +21,29 @@ const AgentPage: React.FC = () => {
     
     window.addEventListener('message', handleMessage);
     
-    // Manual initialization of Tally form
-    const initializeForm = () => {
-      if (!window.Tally) {
-        console.log("Tally not found, loading script...");
-        // If Tally isn't loaded, add the script dynamically
-        const script = document.createElement('script');
-        script.src = "https://tally.so/widgets/embed.js";
-        script.async = true;
-        script.onload = () => {
-          console.log("Tally script loaded, initializing embed...");
-          if (window.Tally) {
-            window.Tally.loadEmbeds();
-            setIsLoading(false);
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        console.log("Tally found, initializing embed...");
-        window.Tally.loadEmbeds();
-        setIsLoading(false);
-      }
-    };
-    
-    // Initialize form with a slight delay to ensure DOM is fully rendered
+    // Set loading to false after a short delay
     const timer = setTimeout(() => {
-      initializeForm();
+      setIsLoading(false);
     }, 500);
     
     return () => {
       window.removeEventListener('message', handleMessage);
       clearTimeout(timer);
     };
+  }, []);
+
+  // Function to initialize Tally embed
+  const initializeTallyEmbed = () => {
+    const script = document.createElement('script');
+    script.innerHTML = `
+      var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
+    `;
+    document.body.appendChild(script);
+  };
+
+  // Call the initialize function when the component mounts
+  useEffect(() => {
+    initializeTallyEmbed();
   }, []);
 
   return (
@@ -77,11 +68,20 @@ const AgentPage: React.FC = () => {
                     </div>
                   )}
                   <div 
-                    ref={formRef} 
-                    data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&transparentBackground=1&dynamicHeight=1" 
+                    ref={formRef}
                     className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
-                    style={{ minHeight: '400px' }}
-                  ></div>
+                  >
+                    <iframe 
+                      data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1" 
+                      loading="lazy" 
+                      width="100%" 
+                      height="200" 
+                      frameBorder="0" 
+                      marginHeight="0" 
+                      marginWidth="0" 
+                      title="Landing Page | Agent Form"
+                    ></iframe>
+                  </div>
                 </div>
               </div>
             </div>
