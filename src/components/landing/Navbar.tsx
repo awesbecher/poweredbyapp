@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
               className="bg-brand-purple hover:bg-brand-purple-dark text-white ml-2"
               size="sm"
             >
-              Sign In
+              Build me an AI Agent
             </Button>
             <Button 
               className="bg-white text-black hover:bg-gray-100"
@@ -118,7 +118,7 @@ const Navbar: React.FC = () => {
                   size="sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign In
+                  Build me an AI Agent
                 </Button>
                 <Button 
                   className="bg-white text-black hover:bg-gray-100 w-full"
