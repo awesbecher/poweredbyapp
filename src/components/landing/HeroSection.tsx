@@ -3,6 +3,8 @@ import React from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Sparkles } from "lucide-react";
 
 interface HeroSectionProps {
   form: UseFormReturn<z.infer<any>>;
@@ -39,35 +41,62 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
             </p>
             
-            {/* 2x2 Button Grid with links */}
+            {/* Enhanced 2x2 Button Grid with improved styling */}
             <div className="grid grid-cols-2 gap-4 max-w-md mt-8">
               <Button 
                 variant="default" 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                className="relative group overflow-hidden bg-gradient-to-br from-purple-600 to-indigo-800 hover:from-purple-700 hover:to-indigo-900 
+                           text-white font-medium py-6 border border-purple-400/30 shadow-lg shadow-purple-900/20
+                           transition-all duration-300 hover:shadow-purple-500/30 hover:scale-[1.02]"
                 onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
               >
-                AI Voice
+                <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span className="relative flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-purple-300" />
+                  AI Voice
+                </span>
               </Button>
+              
               <Button 
                 variant="default" 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                className="relative group overflow-hidden bg-gradient-to-br from-violet-600 to-purple-800 hover:from-violet-700 hover:to-purple-900 
+                           text-white font-medium py-6 border border-violet-400/30 shadow-lg shadow-purple-900/20
+                           transition-all duration-300 hover:shadow-purple-500/30 hover:scale-[1.02]"
                 onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
               >
-                AI Receptionist
+                <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span className="relative flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-purple-300" />
+                  AI Receptionist
+                </span>
               </Button>
+              
               <Button 
                 variant="default" 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                className="relative group overflow-hidden bg-gradient-to-br from-indigo-600 to-blue-800 hover:from-indigo-700 hover:to-blue-900 
+                           text-white font-medium py-6 border border-indigo-400/30 shadow-lg shadow-indigo-900/20
+                           transition-all duration-300 hover:shadow-indigo-500/30 hover:scale-[1.02]"
                 onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
               >
-                AI Email
+                <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span className="relative flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-indigo-300" />
+                  AI Email
+                </span>
               </Button>
+              
               <Button 
                 variant="default" 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium py-6"
+                className="relative group overflow-hidden bg-gradient-to-br from-blue-600 to-cyan-800 hover:from-blue-700 hover:to-cyan-900 
+                           text-white font-medium py-6 border border-blue-400/30 shadow-lg shadow-blue-900/20
+                           transition-all duration-300 hover:shadow-blue-500/30 hover:scale-[1.02]"
                 onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
               >
-                AI SMS-Text
+                <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span className="relative flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-300" />
+                  AI SMS-Text
+                </span>
               </Button>
             </div>
           </div>
