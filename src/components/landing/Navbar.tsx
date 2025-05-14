@@ -45,21 +45,21 @@ const Navbar: React.FC = () => {
             <div className="flex items-center gap-8">
               <a 
                 href="https://www.poweredby.agency/products" 
-                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+                className="text-white hover:text-brand-purple-light transition-colors text-base font-medium"
               >
                 Solutions
               </a>
               <span className="text-white font-bold">|</span>
               <a 
                 href="https://www.poweredby.agency/demo" 
-                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+                className="text-white hover:text-brand-purple-light transition-colors text-base font-medium"
               >
                 Demos
               </a>
               <span className="text-white font-bold">|</span>
               <a 
                 href="https://www.poweredby.agency/about" 
-                className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+                className="text-white hover:text-brand-purple-light transition-colors text-base font-medium"
               >
                 About
               </a>
@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <Link to="/agent">
                 <Button 
-                  className="bg-brand-purple hover:bg-brand-purple-dark text-white"
+                  className="bg-brand-purple hover:bg-brand-purple-dark text-white font-bold text-base"
                   size="sm"
                 >
                   Build me an AI Agent
@@ -99,21 +99,21 @@ const Navbar: React.FC = () => {
             <div className="flex flex-col gap-2 px-2">
               <a 
                 href="https://www.poweredby.agency/products" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-base"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Solutions
               </a>
               <a 
                 href="https://www.poweredby.agency/demo" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-base"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Demos
               </a>
               <a 
                 href="https://www.poweredby.agency/about" 
-                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
+                className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-base"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About
@@ -121,7 +121,7 @@ const Navbar: React.FC = () => {
               <div className="flex flex-col gap-2 mt-2 px-4 pb-2">
                 <Link to="/agent">
                   <Button 
-                    className="bg-brand-purple hover:bg-brand-purple-dark text-white w-full"
+                    className="bg-brand-purple hover:bg-brand-purple-dark text-white w-full font-bold text-base"
                     size="sm"
                     onClick={() => setMobileMenuOpen(false)}
                   >
