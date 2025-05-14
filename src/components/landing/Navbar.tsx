@@ -26,15 +26,20 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - changed from Link to anchor tag with external URL */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <a 
+              href="https://www.poweredby.agency/" 
+              className="flex items-center"
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
               <img 
                 src="/lovable-uploads/a3ce0501-322f-4a7c-991e-66d07fdde2fc.png" 
                 alt="Powered By Agency" 
                 className="h-10 md:h-12" 
               />
-            </Link>
+            </a>
           </div>
           
           {/* Desktop Navigation */}
