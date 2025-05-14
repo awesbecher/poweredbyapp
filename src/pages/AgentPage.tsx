@@ -66,30 +66,7 @@ const AgentPage: React.FC = () => {
                 <div className="md:flex">
                   {/* Left Column - Hero Content with improved styling */}
                   <div className="md:w-[60%] p-8 md:p-12 flex items-center">
-                    <div className="space-y-6">
-                      <span className="inline-block py-1 px-3 rounded-full bg-brand-purple/30 text-white text-xs font-medium tracking-wide mb-2">
-                        CUSTOM AI DEVELOPMENT
-                      </span>
-                      <AgentHeroContent />
-                      
-                      <div className="pt-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="relative h-10 w-10">
-                            <AspectRatio ratio={1/1} className="rounded-full overflow-hidden">
-                              <img 
-                                src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" 
-                                alt="Company Logo" 
-                                className="object-cover"
-                              />
-                            </AspectRatio>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-white">Join over 500+ businesses</p>
-                            <p className="text-xs text-white/70">using our AI agent solutions</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <AgentHeroContent />
                   </div>
                   
                   {/* Right Column - Tally.so embed with improved styling */}
