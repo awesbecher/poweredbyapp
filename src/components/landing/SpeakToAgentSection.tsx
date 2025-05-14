@@ -25,7 +25,7 @@ const SpeakToAgentSection = () => {
               </p>
               <Link to="/agent">
                 <Button className="bg-brand-purple hover:bg-brand-purple-dark text-white px-8 py-6 h-auto text-lg font-bold transition-transform hover:scale-105">
-                  <Headphones className="mr-2" /> Start Voice Demo
+                  <Headphones className="mr-2" /> Call +1 (650) 484-5356
                 </Button>
               </Link>
             </div>
