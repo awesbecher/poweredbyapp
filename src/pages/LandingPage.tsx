@@ -123,7 +123,7 @@ const LandingPage = () => {
           industries={industries} 
         />
         
-        {/* What's an AI Agent Section */}
+        {/* What's an AI Agent Section - explicitly restoring this section */}
         <WhatIsAiSection />
         
         {/* Main CTA Section */}
