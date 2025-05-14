@@ -8,6 +8,7 @@ import ThankYouMessage from '@/components/agent/ThankYouMessage';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,24 +21,37 @@ const AgentPage: React.FC = () => {
     
     window.addEventListener('message', handleMessage);
     
-    // Initialize Tally form
-    if (window.Tally && formRef.current) {
-      window.Tally.loadEmbeds();
-    } else {
-      // If Tally hasn't loaded yet, try again after a short delay
-      const checkTally = setInterval(() => {
-        if (window.Tally) {
-          window.Tally.loadEmbeds();
-          clearInterval(checkTally);
-        }
-      }, 100);
-      
-      // Clear interval after 10 seconds to prevent infinite checking
-      setTimeout(() => clearInterval(checkTally), 10000);
-    }
+    // Manual initialization of Tally form
+    const initializeForm = () => {
+      if (!window.Tally) {
+        console.log("Tally not found, loading script...");
+        // If Tally isn't loaded, add the script dynamically
+        const script = document.createElement('script');
+        script.src = "https://tally.so/widgets/embed.js";
+        script.async = true;
+        script.onload = () => {
+          console.log("Tally script loaded, initializing embed...");
+          if (window.Tally) {
+            window.Tally.loadEmbeds();
+            setIsLoading(false);
+          }
+        };
+        document.head.appendChild(script);
+      } else {
+        console.log("Tally found, initializing embed...");
+        window.Tally.loadEmbeds();
+        setIsLoading(false);
+      }
+    };
+    
+    // Initialize form with a slight delay to ensure DOM is fully rendered
+    const timer = setTimeout(() => {
+      initializeForm();
+    }, 500);
     
     return () => {
       window.removeEventListener('message', handleMessage);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -57,10 +71,16 @@ const AgentPage: React.FC = () => {
               {/* Right Column - Tally.so embed */}
               <div className="md:w-[40%]">
                 <div className="bg-black rounded-lg shadow-md p-8 h-full">
+                  {isLoading && (
+                    <div className="flex justify-center items-center h-[300px]">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    </div>
+                  )}
                   <div 
                     ref={formRef} 
                     data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&transparentBackground=1&dynamicHeight=1" 
-                    className="tally-form w-full"
+                    className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
+                    style={{ minHeight: '400px' }}
                   ></div>
                 </div>
               </div>
