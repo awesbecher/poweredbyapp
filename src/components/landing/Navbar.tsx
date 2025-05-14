@@ -43,22 +43,25 @@ const Navbar: React.FC = () => {
           {/* Desktop Navigation - Removed Pricing link */}
           <div className="hidden md:flex items-center gap-8">
             <a 
-              href="https://www.poweredby.agency/solutions" 
+              href="https://www.poweredby.agency/products" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Solutions
             </a>
             <span className="text-white font-bold">|</span>
             <a 
-              href="https://www.poweredby.agency/demos" 
+              href="https://www.poweredby.agency/demo" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Demos
             </a>
             <span className="text-white font-bold">|</span>
-            <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
+            <a 
+              href="https://www.poweredby.agency/about" 
+              className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
+            >
               About
-            </Link>
+            </a>
             <div className="flex items-center gap-2">
               <Link to="/agent">
                 <Button 
@@ -95,26 +98,26 @@ const Navbar: React.FC = () => {
           <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
               <a 
-                href="https://www.poweredby.agency/solutions" 
+                href="https://www.poweredby.agency/products" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Solutions
               </a>
               <a 
-                href="https://www.poweredby.agency/demos" 
+                href="https://www.poweredby.agency/demo" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Demos
               </a>
-              <Link 
-                to="/about" 
+              <a 
+                href="https://www.poweredby.agency/about" 
                 className="text-white hover:text-brand-purple-light transition-colors py-2 px-4 text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About
-              </Link>
+              </a>
               <div className="flex flex-col gap-2 mt-2 px-4 pb-2">
                 <Link to="/agent">
                   <Button 
