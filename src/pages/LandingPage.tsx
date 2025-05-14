@@ -11,6 +11,7 @@ import RoiCalculator from "@/components/landing/RoiCalculator";
 import FaqSection from "@/components/landing/FaqSection";
 import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
+import MainCTA from "@/components/landing/MainCTA";
 
 const LandingPage = () => {
   const [showExitModal, setShowExitModal] = useState(false);
@@ -111,6 +112,9 @@ const LandingPage = () => {
           onSubmit={onSubmit} 
           industries={industries} 
         />
+        
+        {/* Main CTA Section - NEW */}
+        <MainCTA />
 
         {/* Feature Spotlight */}
         <FeatureSpotlight />
