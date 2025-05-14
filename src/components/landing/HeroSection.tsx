@@ -33,13 +33,13 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           </div>
           
           {/* Right column: Tally.so Embed */}
-          <div className="bg-black rounded-xl shadow-lg p-8 border border-white/10">
+          <div className="bg-black rounded-xl shadow-lg p-6 border border-white/10">
             <div className="tally-iframe-container">
               <iframe
                 data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1"
                 loading="lazy"
                 width="100%"
-                height="400"
+                height="300"
                 frameBorder="0"
                 marginHeight={0}
                 marginWidth={0}
