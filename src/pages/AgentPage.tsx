@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
@@ -8,6 +8,29 @@ import ThankYouMessage from '@/components/agent/ThankYouMessage';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load the Tally.so script
+    const script = document.createElement('script');
+    script.src = 'https://tally.so/widgets/embed.js';
+    script.async = true;
+    
+    // Add event listener for form submission
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data.type === 'tally-form-submit-success') {
+        setIsSubmitted(true);
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    document.body.appendChild(script);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,10 +45,10 @@ const AgentPage: React.FC = () => {
               {/* Left Column - Hero Content */}
               <AgentHeroContent />
               
-              {/* Right Column - Space for Tally.so form to be added later */}
+              {/* Right Column - Tally.so embed */}
               <div className="md:w-[40%]">
-                <div className="bg-black rounded-lg shadow-md p-8 h-full flex items-center justify-center">
-                  <p className="text-white text-center">Tally.so form will be embedded here.</p>
+                <div className="bg-black rounded-lg shadow-md p-8 h-full">
+                  <div ref={formRef} data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&transparentBackground=1&dynamicHeight=1" data-tally-width="100%" className="tally-form"></div>
                 </div>
               </div>
             </div>
