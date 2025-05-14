@@ -7,7 +7,9 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
-            <img src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" alt="Powered_by Logo" className="h-8" />
+            <a href="https://www.poweredby.agency/" className="block">
+              <img src="/lovable-uploads/83a3f394-4c25-41ec-abf4-fa47df5cb6f3.png" alt="Powered_by Logo" className="h-8" />
+            </a>
           </div>
           <div className="text-sm text-gray-300">
             © {new Date().getFullYear()} Powered_by Agency. All rights reserved.
