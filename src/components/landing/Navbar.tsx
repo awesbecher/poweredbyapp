@@ -48,24 +48,28 @@ const Navbar: React.FC = () => {
             >
               AI Agency
             </a>
+            <span className="text-white font-bold">|</span>
             <a 
               href="https://www.poweredby.agency/solutions" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Solutions
             </a>
+            <span className="text-white font-bold">|</span>
             <a 
               href="https://www.poweredby.agency/demos" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Demos
             </a>
+            <span className="text-white font-bold">|</span>
             <a 
               href="https://www.poweredby.agency/pricing" 
               className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium"
             >
               Pricing
             </a>
+            <span className="text-white font-bold">|</span>
             <Link to="/about" className="text-white hover:text-brand-purple-light transition-colors text-sm font-medium">
               About
             </Link>
