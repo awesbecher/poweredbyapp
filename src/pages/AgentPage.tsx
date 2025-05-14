@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
@@ -49,12 +50,12 @@ const AgentPage: React.FC = () => {
       const iframe = document.createElement('iframe');
       iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
       iframe.width = '100%';
-      iframe.height = '600px'; // Increased height
+      iframe.height = '700px'; // Increased height from 600px to 700px
       iframe.frameBorder = '0';
       iframe.marginHeight = '0'; // Convert from number to string
       iframe.marginWidth = '0'; // Convert from number to string
       iframe.title = 'Landing Page | Agent Form';
-      iframe.style.minHeight = '600px';
+      iframe.style.minHeight = '700px'; // Increased min-height from 600px to 700px
       iframe.style.border = 'none';
       iframe.style.backgroundColor = 'transparent';
       
@@ -96,7 +97,7 @@ const AgentPage: React.FC = () => {
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full p-8">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[500px]">
+                        <div className="flex justify-center items-center h-[700px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -105,7 +106,7 @@ const AgentPage: React.FC = () => {
                       <div 
                         ref={formRef}
                         className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
-                        style={{ minHeight: '600px' }}
+                        style={{ minHeight: '700px' }} // Increased min-height from 600px to 700px
                       >
                         {/* Iframe will be inserted here by the useEffect */}
                       </div>
