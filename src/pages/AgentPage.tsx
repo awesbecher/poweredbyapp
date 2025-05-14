@@ -26,7 +26,7 @@ const AgentPage: React.FC = () => {
     // Set loading to false after a short delay
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 1000);
     
     return () => {
       window.removeEventListener('message', handleMessage);
@@ -34,18 +34,29 @@ const AgentPage: React.FC = () => {
     };
   }, []);
 
-  // Function to initialize Tally embed
-  const initializeTallyEmbed = () => {
-    const script = document.createElement('script');
-    script.innerHTML = `
-      var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
-    `;
-    document.body.appendChild(script);
-  };
-
-  // Call the initialize function when the component mounts
+  // Function to initialize Tally embed with direct script loading
   useEffect(() => {
-    initializeTallyEmbed();
+    // Create script element
+    const script = document.createElement('script');
+    script.src = 'https://tally.so/widgets/embed.js';
+    script.async = true;
+    script.onload = () => {
+      // When script is loaded, initialize Tally if available
+      if (typeof window.Tally !== 'undefined') {
+        window.Tally.loadEmbeds();
+      }
+    };
+    
+    // Add the script to the document
+    document.body.appendChild(script);
+    
+    // Clean up
+    return () => {
+      // Only remove if it's the script we added
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, []);
 
   return (
@@ -64,7 +75,7 @@ const AgentPage: React.FC = () => {
               
               <div className="rounded-2xl border border-white/10 backdrop-blur-sm bg-black/20 overflow-hidden shadow-xl animate-fade-in">
                 <div className="md:flex">
-                  {/* Left Column - Hero Content with improved styling */}
+                  {/* Left Column - Hero Content */}
                   <div className="md:w-[60%] p-8 md:p-12 flex items-center">
                     <AgentHeroContent />
                   </div>
@@ -75,7 +86,7 @@ const AgentPage: React.FC = () => {
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full p-8">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[300px]">
+                        <div className="flex justify-center items-center h-[400px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -87,13 +98,13 @@ const AgentPage: React.FC = () => {
                       >
                         <iframe 
                           data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1" 
-                          loading="lazy" 
                           width="100%" 
-                          height={200} 
-                          frameBorder={0} 
+                          height="500" 
+                          frameBorder="0" 
                           marginHeight={0} 
                           marginWidth={0} 
                           title="Landing Page | Agent Form"
+                          style={{minHeight: "500px"}}
                         ></iframe>
                       </div>
                     </Card>
