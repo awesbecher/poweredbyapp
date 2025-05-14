@@ -7,17 +7,6 @@ const MainCTA = () => {
     <section className="py-14">
       <div className="container mx-auto px-4">
         <div className="max-w-[600px] mx-auto text-center">
-          {/* Main Heading */}
-          <h2 className="text-[32px] font-bold text-[#111] mb-[18px]">
-            Custom AI Agents for SMBs
-          </h2>
-          
-          {/* Supporting Paragraph */}
-          <p className="text-[18px] text-[#444] leading-[1.6] mb-[32px]">
-            We design, build, and deploy AI agents that automate work for businesses of all sizes. 
-            See what a custom agent can do for you.
-          </p>
-          
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <Button 
