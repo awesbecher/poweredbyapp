@@ -26,8 +26,8 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             </p>
           </div>
           
-          {/* Right column: Two-step Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          {/* Right column: Two-step Form - Updated with black background and white text */}
+          <div className="bg-black rounded-xl shadow-lg p-8 border border-white/10">
             <LeadForm 
               form={form} 
               formStep={formStep}
