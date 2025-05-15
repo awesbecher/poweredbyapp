@@ -43,9 +43,9 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   }, []);
 
   return (
-    <section className="pt-8 pb-16 px-4 md:px-12 lg:px-24"> {/* Reduced top padding to just pt-8 */}
+    <section className="pt-20 pb-16 px-4 md:px-12 lg:px-24"> {/* Increased top padding from pt-8 to pt-20 */}
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start"> {/* Changed items-center to items-start to align at top */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start"> {/* Keep items-start alignment */}
           {/* Left column: Headline */}
           <div className="space-y-6"> 
             {/* Purple pill text box - updated to match reference image */}
@@ -71,8 +71,8 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           </div>
           
           {/* Right column: Tally.so Embed */}
-          <div className="flex flex-col"> {/* Added flex container to adjust position */}
-            <h2 className="text-2xl font-semibold mb-4 text-white">Get Started Today!</h2> {/* Heading to match screenshot */}
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold mb-4 text-white">Get Started Today!</h2>
             <div 
               ref={tallyContainerRef} 
               className="tally-iframe-container min-h-[350px]"
