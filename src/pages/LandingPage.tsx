@@ -10,17 +10,14 @@ import WhatIsAiSection from "@/components/landing/WhatIsAiSection";
 import SpeakToAgentSection from "@/components/landing/SpeakToAgentSection";
 import FeatureSpotlight from "@/components/landing/FeatureSpotlight";
 import FaqSection from "@/components/landing/FaqSection";
-import ExitIntentModal from "@/components/landing/ExitIntentModal";
 import Footer from "@/components/landing/Footer";
 import MainCTA from "@/components/landing/MainCTA";
 import BusinessValueSection from "@/components/landing/BusinessValueSection";
 import BottomCTA from "@/components/landing/BottomCTA";
 
 const LandingPage = () => {
-  const [showExitModal, setShowExitModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const exitIntentTriggered = useRef(false);
 
   // Industry options
   const industries = [
@@ -76,31 +73,6 @@ const LandingPage = () => {
     }
   };
 
-  // Exit intent detection for desktop
-  React.useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !exitIntentTriggered.current) {
-        setShowExitModal(true);
-        exitIntentTriggered.current = true;
-        
-        // Reset after 30 minutes
-        setTimeout(() => {
-          exitIntentTriggered.current = false;
-        }, 30 * 60 * 1000);
-      }
-    };
-
-    if (typeof window !== 'undefined' && window.innerWidth > 768) {
-      document.addEventListener('mouseleave', handleMouseLeave);
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        document.removeEventListener('mouseleave', handleMouseLeave);
-      }
-    };
-  }, []);
-
   // Initialize Tally forms
   useEffect(() => {
     // This ensures the Tally script is loaded and initialized
@@ -146,9 +118,6 @@ const LandingPage = () => {
         
         {/* Bottom CTA Section */}
         <BottomCTA />
-
-        {/* Exit Intent Overlay (for desktop) */}
-        <ExitIntentModal isOpen={showExitModal} onClose={() => setShowExitModal(false)} />
       </div>
 
       {/* Footer */}
