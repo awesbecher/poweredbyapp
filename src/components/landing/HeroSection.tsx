@@ -43,7 +43,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   }, []);
 
   return (
-    <section className="pt-20 pb-16 px-4 md:px-12 lg:px-24"> {/* Increased top padding from pt-8 to pt-20 */}
+    <section className="pt-28 pb-16 px-4 md:px-12 lg:px-24"> {/* Increased top padding from pt-20 to pt-28 */}
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start"> {/* Keep items-start alignment */}
           {/* Left column: Headline */}
