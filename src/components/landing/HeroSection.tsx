@@ -43,11 +43,11 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   }, []);
 
   return (
-    <section className="pt-24 pb-16 px-4 md:px-12 lg:px-24">
+    <section className="pt-16 pb-16 px-4 md:px-12 lg:px-24"> {/* Reduced top padding from pt-24 to pt-16 */}
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
-          {/* Left column: Headline */}
-          <div className="space-y-6 pt-6"> {/* Added pt-6 for more vertical buffer */}
+          {/* Left column: Headline - moved up by reducing top padding */}
+          <div className="space-y-6"> {/* Removed pt-6 to bring content higher */}
             {/* Purple pill text box - updated to match reference image */}
             <div className="inline-block px-6 py-3 rounded-full bg-purple-800/20 backdrop-blur-sm border border-purple-500/30 mb-4">
               <p className="text-sm text-purple-300 font-medium">
