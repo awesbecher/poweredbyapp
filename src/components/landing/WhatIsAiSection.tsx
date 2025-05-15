@@ -2,6 +2,7 @@
 import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 const WhatIsAiSection = () => {
   return (
@@ -15,7 +16,7 @@ const WhatIsAiSection = () => {
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
         {/* YouTube Video Player */}
-        <div className="max-w-4xl mx-auto mb-12">
+        <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
             <iframe
               src="https://www.youtube.com/embed/w6juT92KdRo?si=kQu8axwX4usr0ywF"
@@ -25,6 +26,38 @@ const WhatIsAiSection = () => {
               className="w-full h-full"
             ></iframe>
           </AspectRatio>
+        </div>
+        
+        {/* Added Button Grid in a single horizontal row */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-4xl mx-auto">
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
+          >
+            AI Voice
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
+          >
+            AI Receptionist
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
+          >
+            AI Email
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
+          >
+            AI SMS-Text
+          </Button>
         </div>
         
         <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
