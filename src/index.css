@@ -94,14 +94,14 @@
 /* Improved Tally iframe styling */
 .tally-iframe-container {
   width: 100% !important;
-  min-height: 700px !important;
+  min-height: 500px !important; /* Reduced from 700px to fit better at top of page */
   display: block !important;
 }
 
 .tally-iframe-container iframe {
   width: 100% !important;
-  height: 700px !important;
-  min-height: 700px !important;
+  height: 100% !important;
+  min-height: 500px !important; /* Reduced from 700px to fit better at top of page */
   border: none !important;
   background-color: transparent !important;
   display: block !important;
