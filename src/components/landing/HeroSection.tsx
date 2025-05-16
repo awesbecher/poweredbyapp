@@ -1,8 +1,9 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEmbed } from "@/hooks/useEmbed";
 
 interface HeroSectionProps {
   form: UseFormReturn<z.infer<any>>;
@@ -12,90 +13,18 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps) => {
-  const tallyContainerRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    // Enhanced approach to ensure Tally form loads properly in all environments
-    if (tallyContainerRef.current) {
-      // Set data attributes for direct iframe injection if needed
-      tallyContainerRef.current.setAttribute('data-tally-src', 
-        'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1');
-      tallyContainerRef.current.setAttribute('data-tally-height', '350');
-      
-      // Multiple loading strategies to ensure the form appears
-      
-      // Strategy 1: Use Tally global object if available
-      if (window && (window as any).Tally) {
-        try {
-          console.log("Loading Tally form via global object in HeroSection");
-          (window as any).Tally.loadEmbeds();
-        } catch (e) {
-          console.error("Error loading Tally form via global object:", e);
-        }
-      }
-      
-      // Strategy 2: Direct iframe injection (always perform this as a fallback)
-      setTimeout(() => {
-        if (tallyContainerRef.current && !tallyContainerRef.current.querySelector('iframe')) {
-          const iframe = document.createElement('iframe');
-          iframe.src = 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1';
-          iframe.width = '100%';
-          iframe.height = '350';
-          iframe.title = 'Contact Form';
-          iframe.style.border = 'none';
-          iframe.style.backgroundColor = 'transparent';
-          iframe.style.minHeight = '350px';
-          iframe.style.maxWidth = '100%';
-          iframe.style.display = 'block';
-          iframe.style.overflow = 'hidden';
-          
-          // Clear container and add the iframe
-          tallyContainerRef.current.innerHTML = '';
-          tallyContainerRef.current.appendChild(iframe);
-          
-          console.log('Directly injected Tally iframe in HeroSection');
-        }
-      }, 100); // Reduced initial timeout for faster loading
+  const tallyOptions = {
+    src: 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1',
+    type: 'tally' as const,
+    height: '350',
+    additionalOptions: { 
+      alignLeft: '1', 
+      transparentBackground: '1', 
+      dynamicHeight: '1'
     }
-    
-    // Additional retry attempts with increasing delays
-    const retryTimes = [800, 1500, 3000];
-    const retryTimers = retryTimes.map(time => 
-      setTimeout(() => {
-        if (tallyContainerRef.current && !tallyContainerRef.current.querySelector('iframe')) {
-          console.log(`Retry attempt at ${time}ms for Tally form in HeroSection`);
-          
-          // Try Tally global object first
-          if (window && (window as any).Tally) {
-            try {
-              (window as any).Tally.loadEmbeds();
-            } catch (e) {
-              console.error(`Error in retry at ${time}ms:`, e);
-            }
-          }
-          
-          // If still no iframe, inject directly
-          if (tallyContainerRef.current && !tallyContainerRef.current.querySelector('iframe')) {
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1';
-            iframe.width = '100%';
-            iframe.height = '350';
-            iframe.title = 'Contact Form';
-            iframe.style.border = 'none';
-            iframe.style.backgroundColor = 'transparent';
-            iframe.style.minHeight = '350px';
-            iframe.style.display = 'block';
-            
-            tallyContainerRef.current.innerHTML = '';
-            tallyContainerRef.current.appendChild(iframe);
-            console.log(`Directly injected Tally iframe on retry at ${time}ms`);
-          }
-        }
-      }, time)
-    );
-    
-    return () => retryTimers.forEach(timer => clearTimeout(timer));
-  }, []);
+  };
+  
+  const { containerRef } = useEmbed(tallyOptions);
 
   return (
     <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24">
@@ -127,12 +56,10 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           
           {/* Right column: Tally.so Embed with improved loading */}
           <div className="flex flex-col">
-            {/* Tally form container - removed the spinner placeholder */}
+            {/* Tally form container */}
             <div 
-              ref={tallyContainerRef} 
+              ref={containerRef} 
               className="tally-embed bg-transparent min-h-[350px] w-full"
-              data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1"
-              data-tally-height="350"
             ></div>
           </div>
         </div>

@@ -1,84 +1,17 @@
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import { useEmbed } from '@/hooks/useEmbed';
 
 const WhatIsAiSection = () => {
-  const youtubeRef = useRef<HTMLIFrameElement>(null);
+  const youtubeOptions = {
+    type: 'youtube' as const,
+    src: 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency',
+  };
   
-  // Enhanced YouTube iframe loading strategy
-  useEffect(() => {
-    // Function to load YouTube iframe
-    const loadYoutubeIframe = () => {
-      if (youtubeRef.current) {
-        // Use YouTube-nocookie domain for privacy and better loading
-        const originalSrc = "https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency";
-        
-        // Set to empty first to force a reload
-        youtubeRef.current.src = '';
-        
-        // Small delay before setting the src back
-        setTimeout(() => {
-          if (youtubeRef.current) {
-            youtubeRef.current.src = originalSrc;
-            console.log('YouTube iframe source set');
-            
-            // Add load event listener to confirm loading
-            youtubeRef.current.onload = () => {
-              console.log('YouTube iframe loaded successfully');
-              // Hide placeholder when video loads
-              const placeholder = document.getElementById('youtube-placeholder');
-              if (placeholder) placeholder.style.display = 'none';
-            };
-            
-            // Add error handling
-            youtubeRef.current.onerror = () => {
-              console.error('YouTube iframe failed to load, retrying...');
-              setTimeout(loadYoutubeIframe, 1000);
-            };
-          }
-        }, 100);
-      }
-    };
-    
-    // Initial load with delay to ensure DOM is ready
-    setTimeout(loadYoutubeIframe, 300);
-    
-    // Set up retry attempts with increasing delays
-    const retryTimers = [
-      setTimeout(loadYoutubeIframe, 1000),
-      setTimeout(loadYoutubeIframe, 2500),
-      setTimeout(loadYoutubeIframe, 4000)
-    ];
-    
-    // Alternative loading method for environments where the first approach fails
-    setTimeout(() => {
-      if (youtubeRef.current && (!youtubeRef.current.src || youtubeRef.current.src === '')) {
-        console.log('Using alternate YouTube loading approach');
-        const iframe = document.createElement('iframe');
-        iframe.src = "https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency";
-        iframe.title = "What is an AI Agent?";
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.allowFullscreen = true;
-        iframe.className = "w-full h-full relative z-20";
-        iframe.loading = "lazy";
-        
-        // Replace the existing iframe
-        if (youtubeRef.current.parentNode) {
-          youtubeRef.current.parentNode.replaceChild(iframe, youtubeRef.current);
-          youtubeRef.current = iframe;
-          
-          // Hide placeholder
-          const placeholder = document.getElementById('youtube-placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        }
-      }
-    }, 5000);
-    
-    // Clean up timers on unmount
-    return () => retryTimers.forEach(timer => clearTimeout(timer));
-  }, []);
+  const { containerRef } = useEmbed(youtubeOptions);
 
   return (
     <section className="py-8 px-4"> {/* Reduced top padding */}
@@ -98,20 +31,21 @@ const WhatIsAiSection = () => {
               <div className="text-white text-lg">Loading video...</div>
             </div>
             
-            <iframe
-              ref={youtubeRef}
-              src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
-              title="What is an AI Agent?"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full relative z-20"
-              loading="lazy"
-              onLoad={() => {
-                // Hide placeholder when video loads
-                const placeholder = document.getElementById('youtube-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-              }}
-            ></iframe>
+            <div ref={containerRef} className="w-full h-full">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
+                title="What is an AI Agent?"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full relative z-20"
+                loading="lazy"
+                onLoad={() => {
+                  // Hide placeholder when video loads
+                  const placeholder = document.getElementById('youtube-placeholder');
+                  if (placeholder) placeholder.style.display = 'none';
+                }}
+              ></iframe>
+            </div>
           </AspectRatio>
         </div>
         
