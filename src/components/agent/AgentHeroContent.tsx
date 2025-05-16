@@ -11,9 +11,7 @@ const AgentHeroContent: React.FC = () => {
         </span>
       </h1>
       <p className="text-base md:text-lg leading-relaxed text-white/90">
-        We help small & mid-sized businesses build custom AI agent solutions completely 
-        tailored to their needs. If you have a vision (or just an initial idea) about an 
-        AI agent you'd like to implement, we'd love to help you build it!
+        We build AI agents designed for your SMB, tackling everything from customer service to sales. Have an idea? We'll make it real, fast. Let's build your future now.
       </p>
     </div>
   );
