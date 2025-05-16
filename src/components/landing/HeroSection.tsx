@@ -72,7 +72,6 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           
           {/* Right column: Tally.so Embed */}
           <div className="flex flex-col">
-            <h2 className="text-2xl font-semibold mb-4 text-white">Get Started Today!</h2>
             <div 
               ref={tallyContainerRef} 
               className="tally-iframe-container min-h-[350px]"
