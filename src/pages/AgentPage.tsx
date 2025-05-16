@@ -50,10 +50,10 @@ const AgentPage: React.FC = () => {
         const iframe = document.createElement('iframe');
         iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
         iframe.width = '100%';
-        iframe.height = '900px'; 
+        iframe.height = '1100px'; // Increased height from 900px to 1100px
         iframe.frameBorder = '0';
         iframe.title = 'Agent Form';
-        iframe.style.minHeight = '900px';
+        iframe.style.minHeight = '1100px'; // Increased min-height from 900px to 1100px
         iframe.style.border = 'none';
         iframe.style.backgroundColor = 'transparent';
         iframe.style.display = 'block';
@@ -102,7 +102,7 @@ const AgentPage: React.FC = () => {
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[900px]">
+                        <div className="flex justify-center items-center h-[1100px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -112,10 +112,10 @@ const AgentPage: React.FC = () => {
                         ref={formRef}
                         className={`tally-form-container w-full ${isLoading ? 'hidden' : 'block'}`}
                         style={{ 
-                          minHeight: '900px',
+                          minHeight: '1100px', // Increased from 900px to 1100px
                           display: 'block',
                           visibility: 'visible',
-                          paddingBottom: '24px',
+                          paddingBottom: '48px', // Increased padding bottom from 24px to 48px
                           overflow: 'hidden'
                         }}
                       >

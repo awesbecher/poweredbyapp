@@ -27,6 +27,7 @@
         visibility: visible !important;
         opacity: 1 !important;
         background-color: transparent !important;
+        padding-bottom: 48px !important; /* Added consistent padding bottom */
       }
       
       .tally-form-container iframe {
@@ -48,6 +49,11 @@
         display: block !important;
       }
       
+      /* Agent form specific styles */
+      .agent-tally-form iframe[src*="tally.so"] {
+        min-height: 1100px !important;
+      }
+      
       /* Ensure YouTube embeds are visible */
       iframe[src*="youtube"] {
         display: block !important;
@@ -57,7 +63,7 @@
     </style>
     <!-- Load Tally script with higher priority using preload -->
     <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" />
-    <script async defer importance="high" src="https://tally.so/widgets/embed.js"></script>
+    <script async defer src="https://tally.so/widgets/embed.js"></script>
   </head>
 
   <body>
