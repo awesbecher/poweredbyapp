@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Completely overhauled embed management system
+// Fixed and optimized embed management system
 const EmbedManager = {
   init() {
     console.log('Initializing EmbedManager');
@@ -114,21 +114,26 @@ const EmbedManager = {
     document.querySelectorAll('[data-tally-src]').forEach(container => {
       if (!container.querySelector('iframe')) {
         try {
+          // Here's the TypeScript fix: Cast container to HTMLElement so we can safely access the attributes
+          const containerEl = container as HTMLElement;
+          const src = containerEl.getAttribute('data-tally-src') || '';
+          const height = containerEl.getAttribute('data-tally-height') || '500';
+          
           const iframe = document.createElement('iframe');
-          iframe.src = container.getAttribute('data-tally-src') || '';
+          iframe.src = src;
           iframe.width = '100%';
-          iframe.height = container.getAttribute('data-tally-height') || '500';
+          iframe.height = height;
           iframe.title = 'Tally Form';
           iframe.style.border = 'none';
           iframe.style.width = '100%';
-          iframe.style.minHeight = `${iframe.height}px`;
+          iframe.style.minHeight = `${height}px`;
           iframe.style.overflow = 'hidden';
           
           // Don't override if container already has an iframe
-          if (!container.querySelector('iframe')) {
-            container.innerHTML = '';
-            container.appendChild(iframe);
-            console.log(`Directly injected Tally iframe: ${iframe.src}`);
+          if (!containerEl.querySelector('iframe')) {
+            containerEl.innerHTML = '';
+            containerEl.appendChild(iframe);
+            console.log(`Directly injected Tally iframe: ${src}`);
           }
         } catch (e) {
           console.error('Error injecting Tally iframe:', e);
@@ -137,7 +142,7 @@ const EmbedManager = {
     });
   },
   
-  // Refresh YouTube embeds
+  // Refresh YouTube embeds - Fixed TypeScript errors
   refreshYouTube() {
     console.log('EmbedManager: Refreshing YouTube videos');
     document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {

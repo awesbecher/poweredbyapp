@@ -13,7 +13,7 @@
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
     
-    <!-- Load Tally script immediately - moved to HEAD -->
+    <!-- Load Tally script with high priority -->
     <script async src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
     
     <!-- Critical preloads for external resources -->
@@ -55,17 +55,6 @@
       .agent-tally-form iframe {
         min-height: 1400px !important; /* Increased height to ensure visibility */
       }
-      
-      /* Ensure placeholders look nice while loading */
-      .embed-placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        min-height: inherit;
-        background-color: rgba(0, 0, 0, 0.05);
-      }
     </style>
   </head>
 
@@ -75,21 +64,18 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Direct embed initializer that doesn't rely on the Tally global object -->
+    <!-- Direct embed initializer that always runs regardless of other scripts -->
     <script>
-      // Enhanced embed management
       document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM fully loaded - initializing embeds');
         
-        // Initialize all embeds on page load
-        initializeAllEmbeds();
+        // Initialize all embeds now and then after delays
+        setTimeout(initializeAllEmbeds, 100);
+        setTimeout(initializeAllEmbeds, 1000);
+        setTimeout(initializeAllEmbeds, 3000);
         
         // Set up observers for route changes and DOM updates
         setupObservers();
-        
-        // Additional initialization after a short delay
-        setTimeout(initializeAllEmbeds, 1000);
-        setTimeout(initializeAllEmbeds, 3000);
       });
       
       // Handle window load event separately
@@ -101,7 +87,7 @@
       
       // Function to initialize all embedded content
       function initializeAllEmbeds() {
-        // Initialize Tally forms
+        // Initialize Tally forms using multiple approaches
         if (window.Tally) {
           try {
             window.Tally.loadEmbeds();
@@ -121,59 +107,75 @@
       
       // Direct injection fallback for Tally forms when the global object fails
       function directlyInjectTallyForms() {
+        console.log('Using direct iframe injection for Tally forms');
         document.querySelectorAll('[data-tally-src]').forEach(function(container) {
           if (!container.querySelector('iframe')) {
             const iframe = document.createElement('iframe');
-            iframe.src = container.getAttribute('data-tally-src');
+            iframe.src = container.getAttribute('data-tally-src') || '';
             iframe.width = '100%';
             iframe.height = container.getAttribute('data-tally-height') || '500';
             iframe.title = 'Tally Form';
-            iframe.setAttribute('frameborder', '0');
-            iframe.style.width = '100%';
-            iframe.style.height = container.getAttribute('data-tally-height') || '500px';
             iframe.style.border = 'none';
-            container.innerHTML = '';
-            container.appendChild(iframe);
-            console.log('Directly injected Tally iframe for', iframe.src);
+            iframe.style.backgroundColor = 'transparent';
+            iframe.style.width = '100%';
+            iframe.style.minHeight = iframe.height + 'px';
+            iframe.style.overflow = 'hidden';
+            
+            // Don't override if container already has an iframe
+            if (!container.querySelector('iframe')) {
+              container.innerHTML = '';
+              container.appendChild(iframe);
+              console.log('Directly injected Tally iframe for', iframe.src);
+            }
           }
         });
       }
       
       // Function to refresh YouTube embeds
       function refreshYouTubeEmbeds() {
+        console.log('Refreshing YouTube videos');
         document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
-          const currentSrc = iframe.src;
-          if (currentSrc) {
-            iframe.src = '';
-            setTimeout(function() {
-              iframe.src = currentSrc;
-              console.log('Refreshed YouTube iframe:', currentSrc);
-            }, 100);
+          try {
+            const currentSrc = iframe.src;
+            if (currentSrc) {
+              iframe.src = '';
+              setTimeout(function() {
+                iframe.src = currentSrc;
+                console.log('Refreshed YouTube iframe:', currentSrc);
+              }, 100);
+            }
+          } catch (e) {
+            console.error('Error refreshing YouTube iframe:', e);
           }
         });
       }
       
       // Set up mutation observers to detect DOM changes
       function setupObservers() {
-        const observer = new MutationObserver(function(mutations) {
-          let shouldCheckEmbeds = false;
-          
-          mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length) {
-              shouldCheckEmbeds = true;
+        try {
+          const observer = new MutationObserver(function(mutations) {
+            let shouldCheckEmbeds = false;
+            
+            mutations.forEach(function(mutation) {
+              // Check for relevant DOM changes
+              if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                shouldCheckEmbeds = true;
+              }
+            });
+            
+            if (shouldCheckEmbeds) {
+              setTimeout(initializeAllEmbeds, 100);
             }
           });
           
-          if (shouldCheckEmbeds) {
-            setTimeout(initializeAllEmbeds, 100);
-          }
-        });
-        
-        // Start observing the document body for added nodes
-        observer.observe(document.body, { 
-          childList: true, 
-          subtree: true 
-        });
+          // Start observing the document body for added nodes
+          observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+          });
+        } catch (e) {
+          console.error('Error setting up mutation observer:', e);
+        }
       }
     </script>
   </body>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
@@ -11,7 +12,7 @@ const WhatIsAiSection = () => {
     // Function to load YouTube iframe
     const loadYoutubeIframe = () => {
       if (youtubeRef.current) {
-        // Store the original source
+        // Use YouTube-nocookie domain for privacy and better loading
         const originalSrc = "https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency";
         
         // Set to empty first to force a reload
@@ -26,27 +27,54 @@ const WhatIsAiSection = () => {
             // Add load event listener to confirm loading
             youtubeRef.current.onload = () => {
               console.log('YouTube iframe loaded successfully');
+              // Hide placeholder when video loads
+              const placeholder = document.getElementById('youtube-placeholder');
+              if (placeholder) placeholder.style.display = 'none';
             };
             
             // Add error handling
             youtubeRef.current.onerror = () => {
               console.error('YouTube iframe failed to load, retrying...');
-              setTimeout(loadYoutubeIframe, 1500);
+              setTimeout(loadYoutubeIframe, 1000);
             };
           }
         }, 100);
       }
     };
     
-    // Initial load
-    loadYoutubeIframe();
+    // Initial load with delay to ensure DOM is ready
+    setTimeout(loadYoutubeIframe, 300);
     
-    // Set up retry attempts
+    // Set up retry attempts with increasing delays
     const retryTimers = [
-      setTimeout(loadYoutubeIframe, 1500),
-      setTimeout(loadYoutubeIframe, 3000),
-      setTimeout(loadYoutubeIframe, 5000)
+      setTimeout(loadYoutubeIframe, 1000),
+      setTimeout(loadYoutubeIframe, 2500),
+      setTimeout(loadYoutubeIframe, 4000)
     ];
+    
+    // Alternative loading method for environments where the first approach fails
+    setTimeout(() => {
+      if (youtubeRef.current && (!youtubeRef.current.src || youtubeRef.current.src === '')) {
+        console.log('Using alternate YouTube loading approach');
+        const iframe = document.createElement('iframe');
+        iframe.src = "https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency";
+        iframe.title = "What is an AI Agent?";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        iframe.className = "w-full h-full relative z-20";
+        iframe.loading = "lazy";
+        
+        // Replace the existing iframe
+        if (youtubeRef.current.parentNode) {
+          youtubeRef.current.parentNode.replaceChild(iframe, youtubeRef.current);
+          youtubeRef.current = iframe;
+          
+          // Hide placeholder
+          const placeholder = document.getElementById('youtube-placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+        }
+      }
+    }, 5000);
     
     // Clean up timers on unmount
     return () => retryTimers.forEach(timer => clearTimeout(timer));
@@ -66,8 +94,8 @@ const WhatIsAiSection = () => {
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden embed-container">
             {/* Placeholder while YouTube is loading */}
-            <div className="embed-placeholder absolute inset-0 flex items-center justify-center bg-black/20 z-10" id="youtube-placeholder">
-              <div className="animate-pulse text-white text-lg">Loading video...</div>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-10" id="youtube-placeholder">
+              <div className="text-white text-lg">Loading video...</div>
             </div>
             
             <iframe
