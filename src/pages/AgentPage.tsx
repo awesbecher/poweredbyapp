@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
@@ -50,10 +49,10 @@ const AgentPage: React.FC = () => {
         const iframe = document.createElement('iframe');
         iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
         iframe.width = '100%';
-        iframe.height = '1100px'; // Increased height from 900px to 1100px
+        iframe.height = '1300px'; // Increased height from 1100px to 1300px
         iframe.frameBorder = '0';
         iframe.title = 'Agent Form';
-        iframe.style.minHeight = '1100px'; // Increased min-height from 900px to 1100px
+        iframe.style.minHeight = '1300px'; // Increased min-height from 1100px to 1300px
         iframe.style.border = 'none';
         iframe.style.backgroundColor = 'transparent';
         iframe.style.display = 'block';
@@ -102,7 +101,7 @@ const AgentPage: React.FC = () => {
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[1100px]">
+                        <div className="flex justify-center items-center h-[1300px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -110,12 +109,12 @@ const AgentPage: React.FC = () => {
                       )}
                       <div 
                         ref={formRef}
-                        className={`tally-form-container w-full ${isLoading ? 'hidden' : 'block'}`}
+                        className={`tally-form-container agent-tally-form w-full ${isLoading ? 'hidden' : 'block'}`}
                         style={{ 
-                          minHeight: '1100px', // Increased from 900px to 1100px
+                          minHeight: '1300px', // Increased from 1100px to 1300px
                           display: 'block',
                           visibility: 'visible',
-                          paddingBottom: '48px', // Increased padding bottom from 24px to 48px
+                          paddingBottom: '64px', // Increased padding bottom from 48px to 64px
                           overflow: 'hidden'
                         }}
                       >
