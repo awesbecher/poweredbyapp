@@ -50,12 +50,12 @@ const AgentPage: React.FC = () => {
       const iframe = document.createElement('iframe');
       iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
       iframe.width = '100%';
-      iframe.height = '800px'; // Increased height from 700px to 800px
+      iframe.height = '900px'; // Increased height from 800px to 900px
       iframe.frameBorder = '0';
       iframe.marginHeight = '0';
       iframe.marginWidth = '0';
       iframe.title = 'Landing Page | Agent Form';
-      iframe.style.minHeight = '800px'; // Increased min-height from 700px to 800px
+      iframe.style.minHeight = '900px'; // Increased min-height from 800px to 900px
       iframe.style.border = 'none';
       iframe.style.backgroundColor = 'transparent';
       iframe.style.display = 'block'; // Ensure iframe displays as block
@@ -97,9 +97,9 @@ const AgentPage: React.FC = () => {
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
-                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-12">
+                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-16"> {/* Increased vertical padding from py-12 to py-16 */}
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[800px]">
+                        <div className="flex justify-center items-center h-[900px]"> {/* Updated height to match iframe */}
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -109,9 +109,10 @@ const AgentPage: React.FC = () => {
                         ref={formRef}
                         className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
                         style={{ 
-                          minHeight: '800px',
+                          minHeight: '900px', // Increased from 800px to 900px
                           display: 'block',
-                          visibility: 'visible'
+                          visibility: 'visible',
+                          paddingBottom: '24px' // Added explicit bottom padding
                         }}
                       >
                         {/* Iframe will be inserted here by the useEffect */}
