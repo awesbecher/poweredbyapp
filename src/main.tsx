@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check for YouTube elements
             if (
               element.querySelector('iframe[src*="youtube"]') ||
-              element.tagName === 'IFRAME' && (element as HTMLIFrameElement).src.includes('youtube')
+              (element.tagName === 'IFRAME' && (element as HTMLIFrameElement).src.includes('youtube'))
             ) {
               shouldReloadYouTube = true;
             }
@@ -126,10 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shouldReloadYouTube) {
       console.log("DOM changed, refreshing YouTube embeds");
       document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {
-        const currentSrc = iframe.src;
-        iframe.src = '';
+        // Cast to HTMLIFrameElement to access src property
+        const currentSrc = (iframe as HTMLIFrameElement).src;
+        (iframe as HTMLIFrameElement).src = '';
         setTimeout(() => {
-          iframe.src = currentSrc;
+          (iframe as HTMLIFrameElement).src = currentSrc;
         }, 100);
       });
     }
