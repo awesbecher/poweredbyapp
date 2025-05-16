@@ -22,12 +22,12 @@ const SpeakToAgentSection = () => {
               <p className="text-xl text-gray-300 mb-8 max-w-lg text-center">
                 Speak live with an AI agent now! Ask it anything about AI Agents, how they work, use cases, or AI best practices.
               </p>
-              {/* Button without Link wrapper to disable click action */}
+              {/* Button updated with bright white text */}
               <Button 
-                className="bg-brand-purple hover:bg-brand-purple-dark text-white px-8 py-6 h-auto text-lg font-bold transition-transform hover:scale-105"
-                disabled={true} // Disable the button
+                className="bg-brand-purple hover:bg-brand-purple-dark text-white font-bold px-8 py-6 h-auto text-lg transition-transform hover:scale-105"
+                disabled={false} // Set to false to remove the greyed-out appearance
               >
-                <Headphones className="mr-2" /> Call +1 (650) 484-5356
+                <Headphones className="mr-2 text-white" /> Call +1 (650) 484-5356
               </Button>
             </div>
           </AspectRatio>
