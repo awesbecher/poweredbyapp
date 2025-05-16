@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from 'react';
-import { embedManager } from '../utils/embedManager/EmbedManager';
+import { embedManager } from '../utils/embedManager';
 
 interface UseEmbedOptions {
   type: 'tally' | 'youtube';
