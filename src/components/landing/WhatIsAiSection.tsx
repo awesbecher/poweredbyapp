@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 
 const WhatIsAiSection = () => {
   return (
-    <section className="py-12 px-4">
-      <Separator className="max-w-6xl mx-auto bg-white/20 mb-16" />
+    <section className="py-8 px-4"> {/* Reduced top padding from py-12 to py-8 */}
+      <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" /> {/* Reduced margin bottom from mb-16 to mb-12 */}
       
       <div className="container mx-auto max-w-6xl text-center">
         <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">

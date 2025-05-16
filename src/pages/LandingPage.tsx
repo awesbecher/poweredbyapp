@@ -96,8 +96,10 @@ const LandingPage = () => {
           industries={industries} 
         />
         
-        {/* What's an AI Agent Section */}
-        <WhatIsAiSection />
+        {/* What's an AI Agent Section - reduced bottom padding of Hero section */}
+        <div className="-mt-6"> {/* Added negative margin to pull WhatIsAiSection up */}
+          <WhatIsAiSection />
+        </div>
         
         {/* NEW: Speak to an AI Agent Section */}
         <SpeakToAgentSection />
