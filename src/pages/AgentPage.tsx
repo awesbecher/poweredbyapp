@@ -12,7 +12,6 @@ const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const formRef = useRef<HTMLDivElement>(null);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
   
   // Listen for messages from the Tally iframe
   useEffect(() => {
@@ -33,7 +32,7 @@ const AgentPage: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000); // Reduced timeout to ensure form appears faster
+    }, 800);
     
     return () => {
       clearTimeout(timer);
@@ -42,35 +41,39 @@ const AgentPage: React.FC = () => {
 
   // Function to manually insert the Tally iframe after component mount
   useEffect(() => {
-    if (!isLoading && formRef.current && !iframeLoaded) {
-      // Clear any existing content
-      formRef.current.innerHTML = '';
-      
-      // Create and configure the iframe
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
-      iframe.width = '100%';
-      iframe.height = '900px'; // Increased height from 800px to 900px
-      iframe.frameBorder = '0';
-      iframe.marginHeight = '0';
-      iframe.marginWidth = '0';
-      iframe.title = 'Landing Page | Agent Form';
-      iframe.style.minHeight = '900px'; // Increased min-height from 800px to 900px
-      iframe.style.border = 'none';
-      iframe.style.backgroundColor = 'transparent';
-      iframe.style.display = 'block'; // Ensure iframe displays as block
-      iframe.style.visibility = 'visible'; // Make sure visibility is set to visible
-      
-      // Add load event listener
-      iframe.onload = () => {
-        setIframeLoaded(true);
-        console.log('Tally iframe loaded successfully');
-      };
-      
-      // Append the iframe to the container
-      formRef.current.appendChild(iframe);
-    }
-  }, [isLoading, iframeLoaded]);
+    const loadTallyForm = () => {
+      if (!isLoading && formRef.current) {
+        // Clear any existing content
+        formRef.current.innerHTML = '';
+        
+        // Create and configure the iframe with direct injection
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
+        iframe.width = '100%';
+        iframe.height = '900px'; 
+        iframe.frameBorder = '0';
+        iframe.title = 'Agent Form';
+        iframe.style.minHeight = '900px';
+        iframe.style.border = 'none';
+        iframe.style.backgroundColor = 'transparent';
+        iframe.style.display = 'block';
+        iframe.style.visibility = 'visible';
+        iframe.style.overflow = 'hidden';
+        
+        // Append the iframe to the container
+        formRef.current.appendChild(iframe);
+        console.log('Tally iframe loaded in AgentPage');
+      }
+    };
+
+    // Initial load
+    loadTallyForm();
+    
+    // Also try loading after a delay to ensure DOM is ready
+    const retryTimer = setTimeout(loadTallyForm, 1500);
+    
+    return () => clearTimeout(retryTimer);
+  }, [isLoading]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -97,9 +100,9 @@ const AgentPage: React.FC = () => {
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
-                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-16"> {/* Increased vertical padding from py-12 to py-16 */}
+                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
                       {isLoading && (
-                        <div className="flex justify-center items-center h-[900px]"> {/* Updated height to match iframe */}
+                        <div className="flex justify-center items-center h-[900px]">
                           <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
                           </div>
@@ -107,12 +110,13 @@ const AgentPage: React.FC = () => {
                       )}
                       <div 
                         ref={formRef}
-                        className={`tally-iframe-container w-full ${isLoading ? 'hidden' : 'block'}`}
+                        className={`tally-form-container w-full ${isLoading ? 'hidden' : 'block'}`}
                         style={{ 
-                          minHeight: '900px', // Increased from 800px to 900px
+                          minHeight: '900px',
                           display: 'block',
                           visibility: 'visible',
-                          paddingBottom: '24px' // Added explicit bottom padding
+                          paddingBottom: '24px',
+                          overflow: 'hidden'
                         }}
                       >
                         {/* Iframe will be inserted here by the useEffect */}

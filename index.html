@@ -13,23 +13,34 @@
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
     <style>
-      /* Add custom styles for Tally embed */
-      .tally-iframe-container {
+      /* Improved styling for Tally embed */
+      .tally-form-container {
         width: 100% !important;
+        overflow: hidden !important;
       }
-      .tally-iframe-container iframe {
+      
+      .tally-form-container iframe {
         width: 100% !important;
-        min-height: 700px !important;
+        min-height: 350px !important;
         border: none !important;
         background-color: transparent !important;
+        overflow: hidden !important;
+      }
+      
+      /* Make sure iframe fits properly */
+      iframe[src*="tally.so"] {
+        width: 100% !important;
+        border: none !important;
+        background: transparent !important;
+        overflow: hidden !important;
       }
     </style>
+    <!-- Load Tally script with higher priority -->
+    <script async src="https://tally.so/widgets/embed.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
-    <!-- Load Tally script directly -->
-    <script async src="https://tally.so/widgets/embed.js"></script>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>

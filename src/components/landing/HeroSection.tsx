@@ -14,38 +14,43 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   const tallyContainerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    // Ensure that Tally loads properly by manually creating and injecting the iframe
-    if (tallyContainerRef.current) {
-      // Wait a moment to make sure the DOM is fully ready
-      setTimeout(() => {
-        // Clear the container first
-        if (tallyContainerRef.current) {
-          tallyContainerRef.current.innerHTML = '';
-          
-          // Create new iframe element
-          const iframe = document.createElement('iframe');
-          iframe.src = 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1';
-          iframe.width = '100%';
-          iframe.height = '350';
-          iframe.frameBorder = '0';
-          iframe.title = 'Contact Form';
-          iframe.style.minHeight = '350px';
-          iframe.style.border = 'none';
-          iframe.style.backgroundColor = 'transparent';
-          
-          // Append to container
-          tallyContainerRef.current.appendChild(iframe);
-          
-          console.log('Tally form iframe manually injected');
-        }
-      }, 500);
-    }
+    // More robust approach to loading Tally forms
+    const loadTallyForm = () => {
+      if (tallyContainerRef.current) {
+        // Make sure container is empty first
+        tallyContainerRef.current.innerHTML = '';
+        
+        // Create direct iframe for better compatibility
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1';
+        iframe.width = '100%';
+        iframe.height = '350';
+        iframe.title = 'Contact Form';
+        iframe.style.border = 'none';
+        iframe.style.backgroundColor = 'transparent';
+        iframe.style.minHeight = '350px';
+        iframe.style.display = 'block';
+        iframe.style.overflow = 'hidden';
+        
+        tallyContainerRef.current.appendChild(iframe);
+        
+        console.log('Tally form iframe directly injected in HeroSection');
+      }
+    };
+    
+    // Initial load
+    loadTallyForm();
+    
+    // Also try loading after a short delay to ensure DOM is fully ready
+    const timer = setTimeout(loadTallyForm, 1000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24"> {/* Reduced bottom padding from pb-16 to pb-10 */}
+    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start"> {/* Keep items-start alignment */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left column: Headline */}
           <div className="space-y-6"> 
             {/* Purple pill text box - updated to match reference image */}
@@ -74,7 +79,8 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           <div className="flex flex-col">
             <div 
               ref={tallyContainerRef} 
-              className="tally-iframe-container min-h-[350px]"
+              className="tally-form-container bg-transparent min-h-[350px] w-full"
+              style={{ overflow: 'hidden' }}
             >
               {/* Iframe will be injected here via useEffect */}
             </div>
