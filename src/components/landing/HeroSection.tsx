@@ -55,13 +55,13 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               </p>
             </div>
             
-            {/* Redesigned stylish heading with gradient effect */}
+            {/* Redesigned stylish heading with gradient effect - UPDATED TEXT */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
               <span className="bg-gradient-to-r from-white via-purple-200 to-brand-purple-light bg-clip-text text-transparent 
                                inline-block transform transition-all duration-500 hover:scale-[1.02] pb-2">
-                Custom AI Agents
+                Smarter Work,
               </span>
-              <span className="block mt-1 text-white">for SMBs</span>
+              <span className="block mt-1 text-white">Powered by AI Agents</span>
             </h1>
             
             {/* Original subtitle - kept the same as requested */}
