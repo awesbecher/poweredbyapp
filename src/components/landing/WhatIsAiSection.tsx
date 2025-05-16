@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 const WhatIsAiSection = () => {
   return (
-    <section className="py-12 px-4"> {/* Reduced top and bottom padding from py-16 to py-12 */}
+    <section className="py-12 px-4">
       <Separator className="max-w-6xl mx-auto bg-white/20 mb-16" />
       
       <div className="container mx-auto max-w-6xl text-center">
@@ -15,11 +15,11 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* YouTube Video Player - Updated with the new URL */}
+        {/* YouTube Video Player - Updated with the correct embed URL format */}
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
             <iframe
-              src="https://youtu.be/C2FAFvwwnL0?si=-4WHB1f-uBDpo522"
+              src="https://www.youtube.com/embed/C2FAFvwwnL0?si=way-XV9Qy4Rxi9Ek"
               title="What is an AI Agent?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -28,7 +28,7 @@ const WhatIsAiSection = () => {
           </AspectRatio>
         </div>
         
-        {/* Added Button Grid in a single horizontal row */}
+        {/* Button Grid in a single horizontal row */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-4xl mx-auto">
           <Button 
             variant="default" 
