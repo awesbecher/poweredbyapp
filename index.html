@@ -12,10 +12,14 @@
     <meta property="og:description" content="Deploy bespoke voice, email & SMS AI agents to automate support, sales & scheduling for your small to medium business." />
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
-    <!-- Preconnect to essential domains -->
-    <link rel="preconnect" href="https://tally.so" />
-    <link rel="preconnect" href="https://www.youtube.com" />
-    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    
+    <!-- Enhanced preconnects to speed up external resource loading -->
+    <link rel="preconnect" href="https://tally.so" crossorigin />
+    <link rel="dns-prefetch" href="https://tally.so" />
+    <link rel="preconnect" href="https://www.youtube.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
     <style>
       /* Improved styling for Tally embed with additional fallbacks */
@@ -54,16 +58,19 @@
         min-height: 1300px !important; /* Increased from 1100px to 1300px */
       }
       
-      /* Ensure YouTube embeds are visible */
+      /* Ensure YouTube embeds are visible and interactive */
       iframe[src*="youtube"] {
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        max-width: 100% !important;
+        border: none !important;
       }
     </style>
-    <!-- Load Tally script with higher priority using preload -->
-    <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" />
-    <script async defer src="https://tally.so/widgets/embed.js"></script>
+    
+    <!-- Preload and load Tally script with higher priority -->
+    <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" crossorigin />
+    <script async defer src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
@@ -71,15 +78,45 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Extra fallback for Tally initialization -->
+    
+    <!-- Enhanced fallback for Tally and YouTube loading -->
     <script>
+      // Improved script to ensure Tally and YouTube embeds load properly
       window.addEventListener('load', function() {
+        // Initialize Tally after window load
         setTimeout(function() {
           if (window.Tally) {
             console.log('Window load event - initializing Tally');
-            window.Tally.loadEmbeds();
+            try {
+              window.Tally.loadEmbeds();
+            } catch (e) {
+              console.error('Error initializing Tally:', e);
+            }
           }
+          
+          // Force YouTube iframes to reload
+          document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(function() {
+              iframe.src = currentSrc;
+            }, 100);
+          });
         }, 1000);
+      });
+      
+      // Backup initialization in case DOMContentLoaded fires after script loads
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          if (window.Tally) {
+            console.log('DOM ready - initializing Tally');
+            try {
+              window.Tally.loadEmbeds();
+            } catch (e) {
+              console.error('Error initializing Tally:', e);
+            }
+          }
+        }, 1500);
       });
     </script>
   </body>

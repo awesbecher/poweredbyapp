@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
@@ -10,13 +11,19 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadRetries, setLoadRetries] = useState(0);
   const formRef = useRef<HTMLDivElement>(null);
   
-  // Listen for messages from the Tally iframe
+  // Listen for messages from the Tally iframe with improved error handling
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.data.type === 'tally-form-submit-success') {
-        setIsSubmitted(true);
+      try {
+        if (e.data && e.data.type === 'tally-form-submit-success') {
+          setIsSubmitted(true);
+          console.log('Tally form submission successful');
+        }
+      } catch (error) {
+        console.error('Error handling Tally message:', error);
       }
     };
     
@@ -38,41 +45,72 @@ const AgentPage: React.FC = () => {
     };
   }, []);
 
-  // Function to manually insert the Tally iframe after component mount
+  // Enhanced Tally form loading with retries and loading verification
   useEffect(() => {
+    // Function to load the Tally form with better error handling
     const loadTallyForm = () => {
       if (!isLoading && formRef.current) {
-        // Clear any existing content
-        formRef.current.innerHTML = '';
-        
-        // Create and configure the iframe with direct injection
-        const iframe = document.createElement('iframe');
-        iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
-        iframe.width = '100%';
-        iframe.height = '1300px'; // Increased height from 1100px to 1300px
-        iframe.frameBorder = '0';
-        iframe.title = 'Agent Form';
-        iframe.style.minHeight = '1300px'; // Increased min-height from 1100px to 1300px
-        iframe.style.border = 'none';
-        iframe.style.backgroundColor = 'transparent';
-        iframe.style.display = 'block';
-        iframe.style.visibility = 'visible';
-        iframe.style.overflow = 'hidden';
-        
-        // Append the iframe to the container
-        formRef.current.appendChild(iframe);
-        console.log('Tally iframe loaded in AgentPage');
+        try {
+          // Clear any existing content
+          formRef.current.innerHTML = '';
+          
+          // Create and configure the iframe with direct injection
+          const iframe = document.createElement('iframe');
+          iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
+          iframe.width = '100%';
+          iframe.height = '1300px'; // Increased height to 1300px
+          iframe.frameBorder = '0';
+          iframe.title = 'Agent Form';
+          iframe.style.minHeight = '1300px'; // Increased min-height to 1300px
+          iframe.style.border = 'none';
+          iframe.style.backgroundColor = 'transparent';
+          iframe.style.display = 'block';
+          iframe.style.visibility = 'visible';
+          iframe.style.overflow = 'hidden';
+          
+          // Add load event to verify iframe loaded correctly
+          iframe.onload = () => {
+            console.log('Tally iframe loaded successfully in AgentPage');
+            // Try to initialize Tally explicitly
+            if (window && (window as any).Tally) {
+              try {
+                (window as any).Tally.loadEmbeds();
+              } catch (e) {
+                console.error('Error initializing Tally after iframe load:', e);
+              }
+            }
+          };
+          
+          // Add error handling
+          iframe.onerror = () => {
+            console.error('Tally iframe failed to load, retrying...');
+            if (loadRetries < 3) {
+              setTimeout(() => {
+                setLoadRetries(prev => prev + 1);
+                loadTallyForm();
+              }, 1000);
+            }
+          };
+          
+          // Append the iframe to the container
+          formRef.current.appendChild(iframe);
+        } catch (error) {
+          console.error('Error creating Tally iframe:', error);
+        }
       }
     };
 
     // Initial load
     loadTallyForm();
     
-    // Also try loading after a delay to ensure DOM is ready
-    const retryTimer = setTimeout(loadTallyForm, 1500);
+    // Multiple retries with increasing delays to ensure DOM is ready
+    const retryTimers = [
+      setTimeout(loadTallyForm, 1500),
+      setTimeout(loadTallyForm, 3000)
+    ];
     
-    return () => clearTimeout(retryTimer);
-  }, [isLoading]);
+    return () => retryTimers.forEach(timer => clearTimeout(timer));
+  }, [isLoading, loadRetries]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -111,10 +149,10 @@ const AgentPage: React.FC = () => {
                         ref={formRef}
                         className={`tally-form-container agent-tally-form w-full ${isLoading ? 'hidden' : 'block'}`}
                         style={{ 
-                          minHeight: '1300px', // Increased from 1100px to 1300px
+                          minHeight: '1300px', // Increased to 1300px
                           display: 'block',
                           visibility: 'visible',
-                          paddingBottom: '64px', // Increased padding bottom from 48px to 64px
+                          paddingBottom: '64px', // Increased padding bottom to 64px
                           overflow: 'hidden'
                         }}
                       >

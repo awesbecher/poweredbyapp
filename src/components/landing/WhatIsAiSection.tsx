@@ -1,10 +1,31 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 
 const WhatIsAiSection = () => {
+  const youtubeRef = useRef<HTMLIFrameElement>(null);
+  
+  // Force reload YouTube iframe after component mount
+  useEffect(() => {
+    if (youtubeRef.current) {
+      const currentSrc = youtubeRef.current.src;
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        if (youtubeRef.current) {
+          youtubeRef.current.src = '';
+          setTimeout(() => {
+            if (youtubeRef.current) {
+              youtubeRef.current.src = currentSrc;
+              console.log('YouTube iframe reloaded');
+            }
+          }, 100);
+        }
+      }, 500);
+    }
+  }, []);
+
   return (
     <section className="py-8 px-4"> {/* Reduced top padding */}
       <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" />
@@ -15,11 +36,12 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* Enhanced YouTube embed with additional attributes for improved reliability */}
+        {/* Enhanced YouTube embed with better loading strategy */}
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
             <iframe
-              src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0"
+              ref={youtubeRef}
+              src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
               title="What is an AI Agent?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Enhanced function to load and initialize Tally with better error handling
+// Enhanced function to load and initialize Tally with better error handling and retries
 const loadTallyScript = () => {
   return new Promise((resolve) => {
     try {
@@ -64,12 +64,16 @@ const loadTallyScript = () => {
 loadTallyScript().then((success) => {
   console.log(`Tally initialization ${success ? "completed" : "failed"} at application start`);
   
-  // Retry loading after a short delay to improve reliability
+  // Implement multiple retry attempts with increasing delays
   if (!success) {
-    setTimeout(() => {
-      console.log("Retrying Tally initialization");
-      loadTallyScript();
-    }, 2000);
+    const retryDelays = [2000, 4000, 8000];
+    
+    retryDelays.forEach((delay, index) => {
+      setTimeout(() => {
+        console.log(`Retry ${index + 1} of ${retryDelays.length} for Tally initialization`);
+        loadTallyScript();
+      }, delay);
+    });
   }
 });
 
@@ -78,24 +82,37 @@ loadTallyScript().then((success) => {
 document.addEventListener('DOMContentLoaded', () => {
   const observer = new MutationObserver((mutations) => {
     let shouldReloadTally = false;
+    let shouldReloadYouTube = false;
     
     mutations.forEach((mutation) => {
-      // Check if any tally-related elements were added
+      // Check if any tally-related or youtube-related elements were added
       if (mutation.type === 'childList') {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === 1) { // Element node
             const element = node as Element;
+            
+            // Check for Tally elements
             if (
               element.querySelector('.tally-form-container') || 
-              element.classList?.contains('tally-form-container')
+              element.classList?.contains('tally-form-container') ||
+              element.querySelector('iframe[src*="tally.so"]')
             ) {
               shouldReloadTally = true;
+            }
+            
+            // Check for YouTube elements
+            if (
+              element.querySelector('iframe[src*="youtube"]') ||
+              element.tagName === 'IFRAME' && (element as HTMLIFrameElement).src.includes('youtube')
+            ) {
+              shouldReloadYouTube = true;
             }
           }
         });
       }
     });
     
+    // Reload Tally if needed
     if (shouldReloadTally && (window as any).Tally) {
       console.log("DOM changed, reloading Tally embeds");
       try {
@@ -104,6 +121,18 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Error reloading Tally embeds after DOM change:", e);
       }
     }
+    
+    // Reload YouTube iframes if needed
+    if (shouldReloadYouTube) {
+      console.log("DOM changed, refreshing YouTube embeds");
+      document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {
+        const currentSrc = iframe.src;
+        iframe.src = '';
+        setTimeout(() => {
+          iframe.src = currentSrc;
+        }, 100);
+      });
+    }
   });
   
   // Start observing changes to the document body
@@ -111,6 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
     childList: true, 
     subtree: true 
   });
+  
+  // Initial check for elements that might need initialization
+  setTimeout(() => {
+    if (document.querySelector('.tally-form-container') && (window as any).Tally) {
+      console.log("Initial check: Found Tally containers, initializing");
+      try {
+        (window as any).Tally.loadEmbeds();
+      } catch (e) {
+        console.error("Error initializing Tally embeds on initial check:", e);
+      }
+    }
+  }, 2000);
 });
 
 // Render the React application
