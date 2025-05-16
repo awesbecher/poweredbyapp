@@ -14,7 +14,6 @@ const loadTallyScript = () => {
         script.src = "https://tally.so/widgets/embed.js";
         script.async = true;
         script.defer = false;
-        script.importance = "high";
         script.setAttribute('crossorigin', 'anonymous');
         script.onload = () => {
           console.log("Tally script loaded successfully");

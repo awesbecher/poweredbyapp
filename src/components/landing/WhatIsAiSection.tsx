@@ -25,7 +25,6 @@ const WhatIsAiSection = () => {
               allowFullScreen
               className="w-full h-full"
               loading="lazy"
-              importance="high"
               frameBorder="0"
             ></iframe>
           </AspectRatio>
