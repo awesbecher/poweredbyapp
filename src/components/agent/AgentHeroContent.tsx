@@ -4,9 +4,10 @@ import React from 'react';
 const AgentHeroContent: React.FC = () => {
   return (
     <div className="space-y-6">
+      {/* Updated heading to match landing page styling with gradients */}
       <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
         Have an AI Agent idea?
-        <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 text-3xl md:text-4xl">
+        <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-brand-purple-light">
           Tell us about it and we'll build it for you.
         </span>
       </h1>
