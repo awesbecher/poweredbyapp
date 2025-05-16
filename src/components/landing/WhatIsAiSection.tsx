@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 
 const WhatIsAiSection = () => {
   return (
-    <section className="py-8 px-4"> {/* Reduced top padding from py-12 to py-8 */}
-      <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" /> {/* Reduced margin bottom from mb-16 to mb-12 */}
+    <section className="py-8 px-4"> {/* Reduced top padding */}
+      <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" />
       
       <div className="container mx-auto max-w-6xl text-center">
         <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
@@ -15,15 +15,16 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* YouTube Video Player - Updated with the correct embed URL format */}
+        {/* Updated YouTube embed with proper attributes and fallback */}
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
             <iframe
-              src="https://www.youtube.com/embed/C2FAFvwwnL0?si=way-XV9Qy4Rxi9Ek"
+              src="https://www.youtube.com/embed/C2FAFvwwnL0"
               title="What is an AI Agent?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full"
+              loading="lazy"
             ></iframe>
           </AspectRatio>
         </div>
