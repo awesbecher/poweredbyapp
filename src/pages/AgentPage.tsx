@@ -95,7 +95,7 @@ const AgentPage: React.FC = () => {
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
-                    <Card className="bg-black border-0 shadow-none rounded-none h-full p-8">
+                    <Card className="bg-black border-0 shadow-none rounded-none h-full p-8 py-12"> {/* Increased vertical padding from p-8 to p-8 py-12 */}
                       {isLoading && (
                         <div className="flex justify-center items-center h-[700px]">
                           <div className="relative">
