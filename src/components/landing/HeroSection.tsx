@@ -64,9 +64,9 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               <span className="block mt-1 text-white">Powered by AI Agents</span>
             </h1>
             
-            {/* Original subtitle - kept the same as requested */}
+            {/* Updated subtitle text as requested */}
             <p className="text-xl text-gray-200 max-w-xl">
-              We design, build, and deploy AI agents that automate work for businesses of all sizes. See what a custom agent can do for you.
+              Imagine AI agents that answer your calls, reply to your emails, send your texts, & automate your tasks. Tailored for SMBs, our solutions supercharge your workflows and wow your customers. Start your AI agent journey now.
             </p>
           </div>
           
