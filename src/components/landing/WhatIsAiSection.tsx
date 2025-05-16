@@ -15,16 +15,18 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* Updated YouTube embed with proper attributes and fallback */}
+        {/* Enhanced YouTube embed with additional attributes for improved reliability */}
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
             <iframe
-              src="https://www.youtube.com/embed/C2FAFvwwnL0"
+              src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0"
               title="What is an AI Agent?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full"
               loading="lazy"
+              importance="high"
+              frameBorder="0"
             ></iframe>
           </AspectRatio>
         </div>

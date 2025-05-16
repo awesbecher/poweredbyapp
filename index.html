@@ -12,11 +12,21 @@
     <meta property="og:description" content="Deploy bespoke voice, email & SMS AI agents to automate support, sales & scheduling for your small to medium business." />
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
+    <!-- Preconnect to essential domains -->
+    <link rel="preconnect" href="https://tally.so" />
+    <link rel="preconnect" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+
     <style>
-      /* Improved styling for Tally embed */
+      /* Improved styling for Tally embed with additional fallbacks */
       .tally-form-container {
         width: 100% !important;
         overflow: hidden !important;
+        min-height: 350px !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background-color: transparent !important;
       }
       
       .tally-form-container iframe {
@@ -27,16 +37,27 @@
         overflow: hidden !important;
       }
       
-      /* Make sure iframe fits properly */
+      /* Make sure iframe fits properly with more specific selectors */
       iframe[src*="tally.so"] {
         width: 100% !important;
+        height: 100% !important;
+        min-height: 350px !important;
         border: none !important;
         background: transparent !important;
         overflow: hidden !important;
+        display: block !important;
+      }
+      
+      /* Ensure YouTube embeds are visible */
+      iframe[src*="youtube"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
     </style>
-    <!-- Load Tally script with higher priority -->
-    <script async src="https://tally.so/widgets/embed.js"></script>
+    <!-- Load Tally script with higher priority using preload -->
+    <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" />
+    <script async defer importance="high" src="https://tally.so/widgets/embed.js"></script>
   </head>
 
   <body>
@@ -44,5 +65,16 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Extra fallback for Tally initialization -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if (window.Tally) {
+            console.log('Window load event - initializing Tally');
+            window.Tally.loadEmbeds();
+          }
+        }, 1000);
+      });
+    </script>
   </body>
 </html>
