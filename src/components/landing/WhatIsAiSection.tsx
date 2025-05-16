@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
@@ -7,23 +6,50 @@ import { Button } from '@/components/ui/button';
 const WhatIsAiSection = () => {
   const youtubeRef = useRef<HTMLIFrameElement>(null);
   
-  // Force reload YouTube iframe after component mount
+  // Enhanced YouTube iframe loading strategy
   useEffect(() => {
-    if (youtubeRef.current) {
-      const currentSrc = youtubeRef.current.src;
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        if (youtubeRef.current) {
-          youtubeRef.current.src = '';
-          setTimeout(() => {
-            if (youtubeRef.current) {
-              youtubeRef.current.src = currentSrc;
-              console.log('YouTube iframe reloaded');
-            }
-          }, 100);
-        }
-      }, 500);
-    }
+    // Function to load YouTube iframe
+    const loadYoutubeIframe = () => {
+      if (youtubeRef.current) {
+        // Store the original source
+        const originalSrc = "https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency";
+        
+        // Set to empty first to force a reload
+        youtubeRef.current.src = '';
+        
+        // Small delay before setting the src back
+        setTimeout(() => {
+          if (youtubeRef.current) {
+            youtubeRef.current.src = originalSrc;
+            console.log('YouTube iframe source set');
+            
+            // Add load event listener to confirm loading
+            youtubeRef.current.onload = () => {
+              console.log('YouTube iframe loaded successfully');
+            };
+            
+            // Add error handling
+            youtubeRef.current.onerror = () => {
+              console.error('YouTube iframe failed to load, retrying...');
+              setTimeout(loadYoutubeIframe, 1500);
+            };
+          }
+        }, 100);
+      }
+    };
+    
+    // Initial load
+    loadYoutubeIframe();
+    
+    // Set up retry attempts
+    const retryTimers = [
+      setTimeout(loadYoutubeIframe, 1500),
+      setTimeout(loadYoutubeIframe, 3000),
+      setTimeout(loadYoutubeIframe, 5000)
+    ];
+    
+    // Clean up timers on unmount
+    return () => retryTimers.forEach(timer => clearTimeout(timer));
   }, []);
 
   return (
@@ -38,16 +64,25 @@ const WhatIsAiSection = () => {
         
         {/* Enhanced YouTube embed with better loading strategy */}
         <div className="max-w-4xl mx-auto mb-8">
-          <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden">
+          <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden embed-container">
+            {/* Placeholder while YouTube is loading */}
+            <div className="embed-placeholder absolute inset-0 flex items-center justify-center bg-black/20 z-10" id="youtube-placeholder">
+              <div className="animate-pulse text-white text-lg">Loading video...</div>
+            </div>
+            
             <iframe
               ref={youtubeRef}
               src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
               title="What is an AI Agent?"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="w-full h-full"
+              className="w-full h-full relative z-20"
               loading="lazy"
-              frameBorder="0"
+              onLoad={() => {
+                // Hide placeholder when video loads
+                const placeholder = document.getElementById('youtube-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+              }}
             ></iframe>
           </AspectRatio>
         </div>

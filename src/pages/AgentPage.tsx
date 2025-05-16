@@ -45,69 +45,91 @@ const AgentPage: React.FC = () => {
     };
   }, []);
 
-  // Enhanced Tally form loading with retries and loading verification
+  // Completely overhauled Tally form loading with robust error handling and retries
   useEffect(() => {
-    // Function to load the Tally form with better error handling
+    // Function to load the Tally form with improved reliability
     const loadTallyForm = () => {
       if (!isLoading && formRef.current) {
         try {
-          // Clear any existing content
+          console.log('Attempting to load agent form...');
+          
+          // Clear any existing content to avoid duplicates
           formRef.current.innerHTML = '';
           
-          // Create and configure the iframe with direct injection
-          const iframe = document.createElement('iframe');
-          iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
-          iframe.width = '100%';
-          iframe.height = '1300px'; // Increased height to 1300px
-          iframe.frameBorder = '0';
-          iframe.title = 'Agent Form';
-          iframe.style.minHeight = '1300px'; // Increased min-height to 1300px
-          iframe.style.border = 'none';
-          iframe.style.backgroundColor = 'transparent';
-          iframe.style.display = 'block';
-          iframe.style.visibility = 'visible';
-          iframe.style.overflow = 'hidden';
+          // Add data attribute for the direct injection fallback
+          formRef.current.setAttribute('data-tally-src', 
+            'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1');
+          formRef.current.setAttribute('data-tally-height', '1500');
           
-          // Add load event to verify iframe loaded correctly
-          iframe.onload = () => {
-            console.log('Tally iframe loaded successfully in AgentPage');
-            // Try to initialize Tally explicitly
-            if (window && (window as any).Tally) {
-              try {
-                (window as any).Tally.loadEmbeds();
-              } catch (e) {
-                console.error('Error initializing Tally after iframe load:', e);
-              }
+          // Try to use the Tally global object first
+          if (window && (window as any).Tally) {
+            try {
+              console.log('Using Tally global object to load agent form');
+              (window as any).Tally.loadEmbeds();
+            } catch (e) {
+              console.error('Error using Tally global object for agent form:', e);
             }
-          };
+          }
           
-          // Add error handling
-          iframe.onerror = () => {
-            console.error('Tally iframe failed to load, retrying...');
-            if (loadRetries < 3) {
-              setTimeout(() => {
-                setLoadRetries(prev => prev + 1);
-                loadTallyForm();
-              }, 1000);
+          // Direct iframe injection as a reliable fallback
+          setTimeout(() => {
+            if (formRef.current && !formRef.current.querySelector('iframe')) {
+              // Create and configure the iframe with direct injection
+              const iframe = document.createElement('iframe');
+              iframe.src = 'https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1';
+              iframe.width = '100%';
+              iframe.height = '1500'; // Increased height significantly
+              iframe.frameBorder = '0';
+              iframe.title = 'Agent Form';
+              iframe.style.minHeight = '1500px'; // Increased min-height 
+              iframe.style.border = 'none';
+              iframe.style.backgroundColor = 'transparent';
+              iframe.style.display = 'block';
+              iframe.style.visibility = 'visible';
+              iframe.style.overflow = 'hidden';
+              
+              // Add load event to verify iframe loaded correctly
+              iframe.onload = () => {
+                console.log('Agent form iframe loaded successfully');
+              };
+              
+              // Add error handling
+              iframe.onerror = () => {
+                console.error('Agent form iframe failed to load');
+                if (loadRetries < 5) {
+                  setTimeout(() => {
+                    setLoadRetries(prev => prev + 1);
+                    loadTallyForm();
+                  }, 1500);
+                }
+              };
+              
+              // Append the iframe to the container
+              formRef.current.appendChild(iframe);
+              console.log('Directly injected agent form iframe');
             }
-          };
-          
-          // Append the iframe to the container
-          formRef.current.appendChild(iframe);
+          }, 500);
         } catch (error) {
-          console.error('Error creating Tally iframe:', error);
+          console.error('Error creating agent form iframe:', error);
         }
       }
     };
 
-    // Initial load
-    loadTallyForm();
+    // Initial load with delay to ensure DOM is ready
+    if (!isLoading) {
+      setTimeout(loadTallyForm, 500);
+    }
     
-    // Multiple retries with increasing delays to ensure DOM is ready
-    const retryTimers = [
-      setTimeout(loadTallyForm, 1500),
-      setTimeout(loadTallyForm, 3000)
-    ];
+    // Multiple retries with increasing delays
+    const retryDelays = [1500, 3000, 5000, 8000, 12000];
+    const retryTimers = retryDelays.map(delay => 
+      setTimeout(() => {
+        if (!isLoading && formRef.current && !formRef.current.querySelector('iframe')) {
+          console.log(`Retry attempt for agent form at ${delay}ms`);
+          loadTallyForm();
+        }
+      }, delay)
+    );
     
     return () => retryTimers.forEach(timer => clearTimeout(timer));
   }, [isLoading, loadRetries]);
@@ -133,30 +155,34 @@ const AgentPage: React.FC = () => {
                     <AgentHeroContent />
                   </div>
                   
-                  {/* Right Column - Tally.so embed with improved styling */}
+                  {/* Right Column - Tally.so embed with loading indicator */}
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
-                      {isLoading && (
-                        <div className="flex justify-center items-center h-[1300px]">
-                          <div className="relative">
-                            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                          </div>
+                      {/* Loading indicator that stays visible longer */}
+                      <div className={`flex justify-center items-center h-[200px] ${!isLoading && formRef.current?.querySelector('iframe') ? 'hidden' : 'block'}`}>
+                        <div className="relative">
+                          <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-purple-500 animate-spin"></div>
+                          <p className="text-white mt-4">Loading form...</p>
                         </div>
-                      )}
+                      </div>
+                      
+                      {/* Tally form container with data attributes for direct injection */}
                       <div 
                         ref={formRef}
-                        className={`tally-form-container agent-tally-form w-full ${isLoading ? 'hidden' : 'block'}`}
+                        className="tally-embed agent-tally-form w-full"
+                        data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1"
+                        data-tally-height="1500"
                         style={{ 
-                          minHeight: '1300px', // Increased to 1300px
+                          minHeight: '1500px',
                           display: 'block',
                           visibility: 'visible',
-                          paddingBottom: '64px', // Increased padding bottom to 64px
+                          paddingBottom: '80px',
                           overflow: 'hidden'
                         }}
                       >
-                        {/* Iframe will be inserted here by the useEffect */}
+                        {/* Iframe will be inserted here by JavaScript */}
                       </div>
                     </Card>
                   </div>

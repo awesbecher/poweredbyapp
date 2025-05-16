@@ -1,159 +1,215 @@
 
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
 
-// Enhanced function to load and initialize Tally with better error handling and retries
-const loadTallyScript = () => {
-  return new Promise((resolve) => {
-    try {
-      // Check if script is already loaded
-      if (!document.querySelector('script[src*="tally.so/widgets/embed.js"]')) {
-        console.log("No Tally script found. Loading it now...");
-        const script = document.createElement('script');
-        script.src = "https://tally.so/widgets/embed.js";
-        script.async = true;
-        script.defer = false;
-        script.setAttribute('crossorigin', 'anonymous');
-        script.onload = () => {
-          console.log("Tally script loaded successfully");
-          // Delay the loadEmbeds call to ensure the script is fully initialized
-          setTimeout(() => {
-            if ((window as any).Tally) {
-              console.log("Initializing Tally embeds");
-              try {
-                (window as any).Tally.loadEmbeds();
-                console.log("Tally embeds loaded");
-              } catch (error) {
-                console.error("Failed to load Tally embeds:", error);
-              }
-            } else {
-              console.warn("Tally object not available after script load");
-            }
-            resolve(true);
-          }, 500);
-        };
-        script.onerror = (error) => {
-          console.error("Failed to load Tally script:", error);
-          resolve(false);
-        };
-        document.body.appendChild(script);
-      } else {
-        // If script exists, try to initialize it
-        console.log("Tally script already exists");
-        if ((window as any).Tally) {
-          try {
-            (window as any).Tally.loadEmbeds();
-            console.log("Tally embeds re-initialized");
-          } catch (error) {
-            console.error("Error re-initializing Tally embeds:", error);
-          }
-        } else {
-          console.warn("Tally object not found despite script being present");
-        }
-        resolve(true);
-      }
-    } catch (e) {
-      console.error("Error in Tally initialization:", e);
-      resolve(false);
-    }
-  });
-};
-
-// Load Tally script immediately
-loadTallyScript().then((success) => {
-  console.log(`Tally initialization ${success ? "completed" : "failed"} at application start`);
-  
-  // Implement multiple retry attempts with increasing delays
-  if (!success) {
-    const retryDelays = [2000, 4000, 8000];
+// Completely overhauled embed management system
+const EmbedManager = {
+  init() {
+    console.log('Initializing EmbedManager');
+    this.loadTally();
+    this.setupObserver();
     
-    retryDelays.forEach((delay, index) => {
-      setTimeout(() => {
-        console.log(`Retry ${index + 1} of ${retryDelays.length} for Tally initialization`);
-        loadTallyScript();
-      }, delay);
+    // Set up additional load events
+    window.addEventListener('load', () => {
+      console.log('Window load event - reinitializing embeds');
+      this.loadTally();
+      this.refreshYouTube();
     });
-  }
-});
-
-// Set up a MutationObserver to detect DOM changes and reinitialize Tally forms
-// This helps ensure forms load after route changes or dynamic content updates
-document.addEventListener('DOMContentLoaded', () => {
-  const observer = new MutationObserver((mutations) => {
-    let shouldReloadTally = false;
-    let shouldReloadYouTube = false;
     
-    mutations.forEach((mutation) => {
-      // Check if any tally-related or youtube-related elements were added
-      if (mutation.type === 'childList') {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) { // Element node
-            const element = node as Element;
-            
-            // Check for Tally elements
-            if (
-              element.querySelector('.tally-form-container') || 
-              element.classList?.contains('tally-form-container') ||
-              element.querySelector('iframe[src*="tally.so"]')
-            ) {
-              shouldReloadTally = true;
-            }
-            
-            // Check for YouTube elements
-            if (
-              element.querySelector('iframe[src*="youtube"]') ||
-              (element.tagName === 'IFRAME' && (element as HTMLIFrameElement).src.includes('youtube'))
-            ) {
-              shouldReloadYouTube = true;
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM ready - initializing embeds');
+      this.loadTally();
+      setTimeout(() => this.refreshYouTube(), 1000);
+    });
+    
+    // Additional delayed initialization for reliability
+    setTimeout(() => this.loadTally(), 1500);
+    setTimeout(() => this.loadTally(), 3000);
+    setTimeout(() => this.loadTally(), 6000);
+  },
+  
+  loadTally() {
+    console.log('EmbedManager: Loading Tally forms');
+    
+    // First, try to use the Tally global object
+    if ((window as any).Tally) {
+      try {
+        console.log('Using Tally global object');
+        (window as any).Tally.loadEmbeds();
+      } catch (e) {
+        console.error('Error initializing Tally via global object:', e);
+        this.injectTallyForms();
+      }
+    } else {
+      // If Tally object isn't available, try loading the script
+      console.log('Tally global object not available');
+      this.loadTallyScript()
+        .then(success => {
+          if (!success) {
+            // If script loading fails, use direct injection
+            this.injectTallyForms();
           }
         });
+    }
+    
+    // Also attempt direct injection as a backup
+    setTimeout(() => this.injectTallyForms(), 1000);
+  },
+  
+  // Improved script loading with better error handling
+  loadTallyScript() {
+    return new Promise<boolean>((resolve) => {
+      try {
+        // Check if script already exists
+        if (document.querySelector('script[src*="tally.so/widgets/embed.js"]')) {
+          console.log('Tally script already exists');
+          resolve(true);
+          return;
+        }
+        
+        // Create and add the script
+        const script = document.createElement('script');
+        script.src = 'https://tally.so/widgets/embed.js';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        
+        // Handle successful load
+        script.onload = () => {
+          console.log('Tally script loaded successfully');
+          setTimeout(() => {
+            if ((window as any).Tally) {
+              try {
+                (window as any).Tally.loadEmbeds();
+                resolve(true);
+              } catch (e) {
+                console.error('Error initializing Tally after script load:', e);
+                resolve(false);
+              }
+            } else {
+              console.warn('Tally object not found after script load');
+              resolve(false);
+            }
+          }, 500);
+        };
+        
+        // Handle load failure
+        script.onerror = () => {
+          console.error('Failed to load Tally script');
+          resolve(false);
+        };
+        
+        // Add to document
+        document.head.appendChild(script);
+      } catch (e) {
+        console.error('Error loading Tally script:', e);
+        resolve(false);
       }
     });
-    
-    // Reload Tally if needed
-    if (shouldReloadTally && (window as any).Tally) {
-      console.log("DOM changed, reloading Tally embeds");
-      try {
-        (window as any).Tally.loadEmbeds();
-      } catch (e) {
-        console.error("Error reloading Tally embeds after DOM change:", e);
+  },
+  
+  // Direct injection of Tally forms as a reliable fallback
+  injectTallyForms() {
+    console.log('Using direct iframe injection for Tally forms');
+    document.querySelectorAll('[data-tally-src]').forEach(container => {
+      if (!container.querySelector('iframe')) {
+        try {
+          const iframe = document.createElement('iframe');
+          iframe.src = container.getAttribute('data-tally-src') || '';
+          iframe.width = '100%';
+          iframe.height = container.getAttribute('data-tally-height') || '500';
+          iframe.title = 'Tally Form';
+          iframe.style.border = 'none';
+          iframe.style.width = '100%';
+          iframe.style.minHeight = `${iframe.height}px`;
+          iframe.style.overflow = 'hidden';
+          
+          // Don't override if container already has an iframe
+          if (!container.querySelector('iframe')) {
+            container.innerHTML = '';
+            container.appendChild(iframe);
+            console.log(`Directly injected Tally iframe: ${iframe.src}`);
+          }
+        } catch (e) {
+          console.error('Error injecting Tally iframe:', e);
+        }
       }
-    }
-    
-    // Reload YouTube iframes if needed
-    if (shouldReloadYouTube) {
-      console.log("DOM changed, refreshing YouTube embeds");
-      document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {
+    });
+  },
+  
+  // Refresh YouTube embeds
+  refreshYouTube() {
+    console.log('EmbedManager: Refreshing YouTube videos');
+    document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {
+      try {
         // Cast to HTMLIFrameElement to access src property
-        const currentSrc = (iframe as HTMLIFrameElement).src;
-        (iframe as HTMLIFrameElement).src = '';
-        setTimeout(() => {
-          (iframe as HTMLIFrameElement).src = currentSrc;
-        }, 100);
-      });
-    }
-  });
-  
-  // Start observing changes to the document body
-  observer.observe(document.body, { 
-    childList: true, 
-    subtree: true 
-  });
-  
-  // Initial check for elements that might need initialization
-  setTimeout(() => {
-    if (document.querySelector('.tally-form-container') && (window as any).Tally) {
-      console.log("Initial check: Found Tally containers, initializing");
-      try {
-        (window as any).Tally.loadEmbeds();
+        const ytIframe = iframe as HTMLIFrameElement;
+        const currentSrc = ytIframe.src;
+        if (currentSrc) {
+          ytIframe.src = '';
+          setTimeout(() => {
+            ytIframe.src = currentSrc;
+            console.log(`Refreshed YouTube iframe: ${currentSrc}`);
+          }, 100);
+        }
       } catch (e) {
-        console.error("Error initializing Tally embeds on initial check:", e);
+        console.error('Error refreshing YouTube iframe:', e);
       }
+    });
+  },
+  
+  // Set up a mutation observer to detect DOM changes
+  setupObserver() {
+    try {
+      const observer = new MutationObserver((mutations) => {
+        let shouldCheckEmbeds = false;
+        
+        mutations.forEach((mutation) => {
+          // Check for relevant DOM changes
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node as Element;
+                
+                // Look for specific elements that might contain embeds
+                if (
+                  element.tagName === 'DIV' ||
+                  element.tagName === 'SECTION' ||
+                  element.querySelector('[data-tally-src]') ||
+                  element.querySelector('iframe')
+                ) {
+                  shouldCheckEmbeds = true;
+                }
+              }
+            });
+          }
+        });
+        
+        // If relevant changes were detected, reinitialize embeds
+        if (shouldCheckEmbeds) {
+          console.log('DOM changed, reinitializing embeds');
+          setTimeout(() => {
+            this.loadTally();
+            this.refreshYouTube();
+          }, 500);
+        }
+      });
+      
+      // Start observing the entire document
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+      
+      console.log('Mutation observer setup complete');
+    } catch (e) {
+      console.error('Error setting up mutation observer:', e);
     }
-  }, 2000);
-});
+  }
+};
+
+// Initialize the EmbedManager
+EmbedManager.init();
 
 // Render the React application
 createRoot(document.getElementById("root")!).render(<App />);

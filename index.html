@@ -13,7 +13,10 @@
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
     
-    <!-- Enhanced preconnects to speed up external resource loading -->
+    <!-- Load Tally script immediately - moved to HEAD -->
+    <script async src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
+    
+    <!-- Critical preloads for external resources -->
     <link rel="preconnect" href="https://tally.so" crossorigin />
     <link rel="dns-prefetch" href="https://tally.so" />
     <link rel="preconnect" href="https://www.youtube.com" crossorigin />
@@ -22,55 +25,48 @@
     <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
     <style>
-      /* Improved styling for Tally embed with additional fallbacks */
-      .tally-form-container {
+      /* Global styles for embedded content */
+      .embed-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.05);
+        min-height: 100px;
+      }
+      
+      /* Enhanced Tally specific styles */
+      .tally-embed {
         width: 100% !important;
-        overflow: hidden !important;
         min-height: 350px !important;
+        border: none !important;
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        background-color: transparent !important;
-        padding-bottom: 64px !important; /* Increased from 48px to 64px */
       }
       
-      .tally-form-container iframe {
-        width: 100% !important;
-        min-height: 350px !important;
-        border: none !important;
-        background-color: transparent !important;
-        overflow: hidden !important;
+      /* Make sure any iframe fits properly */
+      iframe {
+        max-width: 100%;
+        border: 0;
       }
       
-      /* Make sure iframe fits properly with more specific selectors */
-      iframe[src*="tally.so"] {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 350px !important;
-        border: none !important;
-        background: transparent !important;
-        overflow: hidden !important;
-        display: block !important;
+      /* Specific height overrides for different form types */
+      .agent-tally-form iframe {
+        min-height: 1400px !important; /* Increased height to ensure visibility */
       }
       
-      /* Agent form specific styles */
-      .agent-tally-form iframe[src*="tally.so"] {
-        min-height: 1300px !important; /* Increased from 1100px to 1300px */
-      }
-      
-      /* Ensure YouTube embeds are visible and interactive */
-      iframe[src*="youtube"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        max-width: 100% !important;
-        border: none !important;
+      /* Ensure placeholders look nice while loading */
+      .embed-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        min-height: inherit;
+        background-color: rgba(0, 0, 0, 0.05);
       }
     </style>
-    
-    <!-- Preload and load Tally script with higher priority -->
-    <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" crossorigin />
-    <script async defer src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
@@ -79,45 +75,106 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Enhanced fallback for Tally and YouTube loading -->
+    <!-- Direct embed initializer that doesn't rely on the Tally global object -->
     <script>
-      // Improved script to ensure Tally and YouTube embeds load properly
+      // Enhanced embed management
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded - initializing embeds');
+        
+        // Initialize all embeds on page load
+        initializeAllEmbeds();
+        
+        // Set up observers for route changes and DOM updates
+        setupObservers();
+        
+        // Additional initialization after a short delay
+        setTimeout(initializeAllEmbeds, 1000);
+        setTimeout(initializeAllEmbeds, 3000);
+      });
+      
+      // Handle window load event separately
       window.addEventListener('load', function() {
-        // Initialize Tally after window load
-        setTimeout(function() {
-          if (window.Tally) {
-            console.log('Window load event - initializing Tally');
-            try {
-              window.Tally.loadEmbeds();
-            } catch (e) {
-              console.error('Error initializing Tally:', e);
-            }
+        console.log('Window load event fired - ensuring embeds are initialized');
+        initializeAllEmbeds();
+        setTimeout(initializeAllEmbeds, 1500);
+      });
+      
+      // Function to initialize all embedded content
+      function initializeAllEmbeds() {
+        // Initialize Tally forms
+        if (window.Tally) {
+          try {
+            window.Tally.loadEmbeds();
+            console.log('Tally embeds initialized via global object');
+          } catch (e) {
+            console.error('Error initializing Tally via global object:', e);
+            directlyInjectTallyForms();
           }
-          
-          // Force YouTube iframes to reload
-          document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
-            const currentSrc = iframe.src;
+        } else {
+          console.log('Tally global object not available, using direct injection');
+          directlyInjectTallyForms();
+        }
+        
+        // Ensure YouTube videos are loaded properly
+        refreshYouTubeEmbeds();
+      }
+      
+      // Direct injection fallback for Tally forms when the global object fails
+      function directlyInjectTallyForms() {
+        document.querySelectorAll('[data-tally-src]').forEach(function(container) {
+          if (!container.querySelector('iframe')) {
+            const iframe = document.createElement('iframe');
+            iframe.src = container.getAttribute('data-tally-src');
+            iframe.width = '100%';
+            iframe.height = container.getAttribute('data-tally-height') || '500';
+            iframe.title = 'Tally Form';
+            iframe.setAttribute('frameborder', '0');
+            iframe.style.width = '100%';
+            iframe.style.height = container.getAttribute('data-tally-height') || '500px';
+            iframe.style.border = 'none';
+            container.innerHTML = '';
+            container.appendChild(iframe);
+            console.log('Directly injected Tally iframe for', iframe.src);
+          }
+        });
+      }
+      
+      // Function to refresh YouTube embeds
+      function refreshYouTubeEmbeds() {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
+          const currentSrc = iframe.src;
+          if (currentSrc) {
             iframe.src = '';
             setTimeout(function() {
               iframe.src = currentSrc;
+              console.log('Refreshed YouTube iframe:', currentSrc);
             }, 100);
-          });
-        }, 1000);
-      });
-      
-      // Backup initialization in case DOMContentLoaded fires after script loads
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          if (window.Tally) {
-            console.log('DOM ready - initializing Tally');
-            try {
-              window.Tally.loadEmbeds();
-            } catch (e) {
-              console.error('Error initializing Tally:', e);
-            }
           }
-        }, 1500);
-      });
+        });
+      }
+      
+      // Set up mutation observers to detect DOM changes
+      function setupObservers() {
+        const observer = new MutationObserver(function(mutations) {
+          let shouldCheckEmbeds = false;
+          
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length) {
+              shouldCheckEmbeds = true;
+            }
+          });
+          
+          if (shouldCheckEmbeds) {
+            setTimeout(initializeAllEmbeds, 100);
+          }
+        });
+        
+        // Start observing the document body for added nodes
+        observer.observe(document.body, { 
+          childList: true, 
+          subtree: true 
+        });
+      }
     </script>
   </body>
 </html>
