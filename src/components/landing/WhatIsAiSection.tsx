@@ -23,12 +23,15 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* Enhanced YouTube embed with better loading strategy */}
+        {/* Enhanced YouTube embed with visible loading state */}
         <div className="max-w-4xl mx-auto mb-8">
           <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden embed-container">
-            {/* Placeholder while YouTube is loading */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-10" id="youtube-placeholder">
-              <div className="text-white text-lg">Loading video...</div>
+            {/* Persistent placeholder that will be managed by the embedManager */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10" id="youtube-placeholder">
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-purple-500 animate-spin mx-auto"></div>
+                <div className="text-white text-lg mt-4">Loading video...</div>
+              </div>
             </div>
             
             <div ref={containerRef} className="w-full h-full">

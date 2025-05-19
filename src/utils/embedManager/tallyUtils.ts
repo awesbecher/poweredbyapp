@@ -1,6 +1,5 @@
-
 /**
- * Utilities for handling Tally form embeds
+ * Utilities for handling Tally form embeds with enhanced production reliability
  */
 
 /**
@@ -16,6 +15,7 @@ export function loadTally() {
       (window as any).Tally.loadEmbeds();
     } catch (e) {
       console.error('Error initializing Tally via global object:', e);
+      // Fall back to direct injection immediately
       injectTallyForms();
     }
   } else {
@@ -30,8 +30,9 @@ export function loadTally() {
       });
   }
   
-  // Also attempt direct injection as a backup
-  setTimeout(() => injectTallyForms(), 1000);
+  // Always attempt direct injection as a backup regardless of other methods
+  setTimeout(() => injectTallyForms(), 800);
+  setTimeout(() => injectTallyForms(), 2500);
 }
 
 /**
@@ -89,38 +90,78 @@ export function loadTallyScript(): Promise<boolean> {
 }
 
 /**
- * Directly injects Tally forms as iframe elements
+ * Directly injects Tally forms as iframe elements with enhanced reliability
  * Used as a reliable fallback when other methods fail
  */
 export function injectTallyForms() {
   console.log('Using direct iframe injection for Tally forms');
   document.querySelectorAll('[data-tally-src]').forEach(container => {
-    if (!container.querySelector('iframe')) {
-      try {
-        // Cast container to HTMLElement to safely access attributes
-        const containerEl = container as HTMLElement;
-        const src = containerEl.getAttribute('data-tally-src') || '';
-        const height = containerEl.getAttribute('data-tally-height') || '500';
-        
-        const iframe = document.createElement('iframe');
-        iframe.src = src;
-        iframe.width = '100%';
-        iframe.height = height;
-        iframe.title = 'Tally Form';
-        iframe.style.border = 'none';
-        iframe.style.width = '100%';
-        iframe.style.minHeight = `${height}px`;
-        iframe.style.overflow = 'hidden';
-        
-        // Don't override if container already has an iframe
-        if (!containerEl.querySelector('iframe')) {
-          containerEl.innerHTML = '';
-          containerEl.appendChild(iframe);
-          console.log(`Directly injected Tally iframe: ${src}`);
-        }
-      } catch (e) {
-        console.error('Error injecting Tally iframe:', e);
+    try {
+      // Cast container to HTMLElement to safely access attributes
+      const containerEl = container as HTMLElement;
+      const src = containerEl.getAttribute('data-tally-src') || '';
+      const height = containerEl.getAttribute('data-tally-height') || '500';
+      
+      // Skip empty sources or if already has working iframe
+      if (!src || (containerEl.querySelector('iframe') && 
+          (containerEl.querySelector('iframe') as HTMLIFrameElement).contentWindow)) {
+        return;
       }
+      
+      // Add a loading state if it doesn't exist
+      if (!containerEl.querySelector('.tally-loader')) {
+        const loader = document.createElement('div');
+        loader.className = 'tally-loader';
+        loader.innerHTML = `
+          <div style="display:flex;justify-content:center;align-items:center;height:100px;width:100%">
+            <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;animation:tally-spin 1s linear infinite"></div>
+          </div>
+          <style>
+            @keyframes tally-spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          </style>
+        `;
+        containerEl.appendChild(loader);
+      }
+      
+      // Create and configure iframe
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.width = '100%';
+      iframe.height = height;
+      iframe.title = 'Tally Form';
+      iframe.style.border = 'none';
+      iframe.style.width = '100%';
+      iframe.style.minHeight = `${height}px`;
+      iframe.style.overflow = 'hidden';
+      iframe.style.opacity = '0'; // Start hidden until loaded
+      
+      // Handle iframe load event
+      iframe.onload = () => {
+        console.log(`Tally iframe loaded: ${src}`);
+        // Remove loader and show form
+        const loader = containerEl.querySelector('.tally-loader');
+        if (loader) containerEl.removeChild(loader);
+        iframe.style.opacity = '1';
+      };
+      
+      // Handle load error with retry
+      iframe.onerror = () => {
+        console.error(`Error loading Tally iframe: ${src}`);
+        // Keep loader visible
+      };
+      
+      // Don't override if container already has a working iframe
+      const existingIframe = containerEl.querySelector('iframe') as HTMLIFrameElement;
+      if (!existingIframe || !existingIframe.contentWindow) {
+        if (existingIframe) containerEl.removeChild(existingIframe);
+        containerEl.appendChild(iframe);
+        console.log(`Directly injected Tally iframe: ${src}`);
+      }
+    } catch (e) {
+      console.error('Error injecting Tally iframe:', e);
     }
   });
 }

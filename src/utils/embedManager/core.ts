@@ -12,34 +12,68 @@ import { setupObserver } from './observerUtils';
  * Primary class for managing embedded content across the application
  */
 class EmbedManager {
+  initialized = false;
+
   /**
-   * Initialize all embed management functionality
+   * Initialize all embed management functionality with improved reliability
    */
   init() {
     console.log('Initializing EmbedManager');
-    loadTally();
+    
+    // Mark as initialized
+    this.initialized = true;
+    
+    // Immediate initialization
+    this.loadAllEmbeds();
+    
+    // Setup observer for dynamic content
     setupObserver(() => {
-      loadTally();
-      refreshYouTube();
+      this.loadAllEmbeds();
     });
     
     // Set up additional load events
     window.addEventListener('load', () => {
       console.log('Window load event - reinitializing embeds');
-      loadTally();
-      refreshYouTube();
+      this.loadAllEmbeds();
+      
+      // Additional delayed reinitializations for robustness
+      setTimeout(() => this.loadAllEmbeds(), 1000);
+      setTimeout(() => this.loadAllEmbeds(), 2500);
     });
     
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM ready - initializing embeds');
-      loadTally();
-      setTimeout(() => refreshYouTube(), 1000);
+      this.loadAllEmbeds();
     });
     
-    // Additional delayed initialization for reliability
-    setTimeout(() => loadTally(), 1500);
-    setTimeout(() => loadTally(), 3000);
-    setTimeout(() => loadTally(), 6000);
+    // Set up visibility change event for when user switches tabs/windows
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('Page became visible - reinitializing embeds');
+        this.loadAllEmbeds();
+      }
+    });
+    
+    // Production-focused initialization strategy with multiple retries
+    const retryIntervals = [800, 1500, 3000, 6000, 10000, 20000];
+    retryIntervals.forEach(delay => {
+      setTimeout(() => this.loadAllEmbeds(), delay);
+    });
+  }
+  
+  /**
+   * Load all embed types with a comprehensive strategy
+   */
+  loadAllEmbeds() {
+    console.log('EmbedManager: Loading all embeds');
+    this.loadTally();
+    this.refreshYouTube();
+    
+    // Double-check for any missed embeds after short delay
+    setTimeout(() => {
+      this.loadTally();
+      this.refreshYouTube();
+    }, 500);
   }
   
   /**
@@ -47,6 +81,11 @@ class EmbedManager {
    */
   loadTally() {
     loadTally();
+    
+    // Force direct injection as ultimate fallback
+    setTimeout(() => {
+      injectTallyForms();
+    }, 1500);
   }
   
   /**
