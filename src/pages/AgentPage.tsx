@@ -161,8 +161,6 @@ const AgentPage: React.FC = () => {
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
-                      {/* Removed loading indicator */}
-                      
                       {/* Tally form container with data attributes for direct injection */}
                       <div 
                         ref={formRef}

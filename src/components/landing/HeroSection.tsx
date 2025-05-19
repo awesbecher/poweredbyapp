@@ -186,8 +186,6 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               data-tally-src={tallyOptions.src}
               data-tally-height={tallyOptions.height}
             >
-              {/* Removed loading indicator */}
-              
               {/* Emergency reload button */}
               <button 
                 onClick={handleManualReload}
@@ -197,17 +195,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               </button>
             </div>
             
-            {/* Direct fallback link */}
-            <div className="mt-4 text-center">
-              <a 
-                href="https://tally.so/r/wgrjdd"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-purple-300 hover:text-purple-100 text-sm"
-              >
-                Form not loading? Click here
-              </a>
-            </div>
+            {/* Removed the direct fallback link */}
           </div>
         </div>
       </div>
