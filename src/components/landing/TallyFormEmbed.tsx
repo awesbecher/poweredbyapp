@@ -1,6 +1,6 @@
 
-import React, { useEffect } from 'react';
-import { useEmbed } from "@/hooks/useEmbed";
+import React from 'react';
+import { useTallyEmbed } from "@/hooks/embed/useTallyEmbed";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from 'lucide-react';
 
@@ -11,63 +11,26 @@ interface TallyFormEmbedProps {
 }
 
 /**
- * TallyFormEmbed component for embedding Tally forms with enhanced reliability
- * Leverages specialized hooks and utilities for handling embeds
+ * TallyFormEmbed component for embedding Tally forms
+ * Uses specialized useTallyEmbed hook for handling iframe embedding
  */
 const TallyFormEmbed = ({ 
   src, 
   height = '350', 
   additionalOptions = {} 
 }: TallyFormEmbedProps) => {
-  const tallyOptions = {
-    type: 'tally' as const,
-    src,
-    height,
-    additionalOptions
-  };
+  const { containerRef, handleManualReload } = useTallyEmbed({ 
+    src, 
+    height, 
+    additionalOptions 
+  });
   
-  // Use the refactored embed hook for better maintainability
-  const { containerRef } = useEmbed(tallyOptions);
-  
-  // Handle manual reload of form
-  const handleManualReload = () => {
-    if (containerRef.current) {
-      // Clear container and create a fresh iframe
-      containerRef.current.innerHTML = '';
-      
-      // Create new iframe with proper attributes
-      const iframe = document.createElement('iframe');
-      iframe.src = src;
-      iframe.width = '100%';
-      iframe.height = height;
-      iframe.style.border = 'none';
-      iframe.style.width = '100%';
-      iframe.style.minHeight = `${height}px`;
-      iframe.style.position = 'relative';
-      iframe.style.zIndex = '9999';
-      iframe.style.opacity = '1';
-      iframe.style.visibility = 'visible';
-      iframe.style.display = 'block';
-      
-      // Add the iframe to container
-      containerRef.current.appendChild(iframe);
-      console.log('Manual Tally form reload executed');
-    }
-  };
-
   return (
-    <div 
-      className="relative"
-    >
+    <div className="relative">
       <div
         ref={containerRef}
         className="tally-embed bg-transparent w-full relative z-30"
         style={{ minHeight: `${height}px` }}
-        data-tally-src={src}
-        data-tally-height={height}
-        {...Object.entries(additionalOptions).reduce((acc, [key, value]) => {
-          return { ...acc, [`data-tally-${key}`]: value };
-        }, {})}
       />
       
       {/* Emergency reload button */}

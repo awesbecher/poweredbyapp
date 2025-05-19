@@ -14,6 +14,26 @@ export interface TallyEmbedOptions extends EmbedOptions {
 export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: TallyEmbedOptions) => {
   const { containerRef, applyBaseStyles, createDirectIframe } = useEmbedCommon();
   
+  // Handle manual reload of form
+  const handleManualReload = () => {
+    if (!containerRef.current) return;
+    
+    // Clear container and create a fresh iframe
+    containerRef.current.innerHTML = '';
+    
+    // Create new iframe with proper attributes
+    const iframe = createDirectIframe(src, height);
+    if (iframe) {
+      // Set Tally-specific properties
+      iframe.title = 'Tally Form';
+      iframe.style.backgroundColor = 'transparent';
+      
+      // Add the iframe to container
+      containerRef.current.appendChild(iframe);
+      console.log('Manual Tally form reload executed');
+    }
+  };
+  
   useEffect(() => {
     if (!containerRef.current) return;
     
@@ -48,7 +68,7 @@ export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: T
         
         // For subsequent attempts, try direct injection
         console.log(`Attempt ${index + 1}: Direct Tally iframe injection`);
-        const iframe = createDirectIframe(src, `${height}px`);
+        const iframe = createDirectIframe(src, height);
         if (iframe && containerRef.current) {
           // Set Tally-specific properties
           iframe.title = 'Tally Form';
@@ -84,5 +104,8 @@ export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: T
     };
   }, [src, height, additionalOptions]);
   
-  return { containerRef };
+  return { 
+    containerRef,
+    handleManualReload 
+  };
 };
