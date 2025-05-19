@@ -59,7 +59,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             {/* Tally form container with explicit z-index management */}
             <div 
               ref={containerRef} 
-              className="tally-embed bg-transparent min-h-[350px] w-full relative z-30" {/* Increased z-index from 20 to 30 */}
+              className="tally-embed bg-transparent min-h-[350px] w-full relative z-30"
               style={{ 
                 position: 'relative',
                 zIndex: 30, // Consistent with className
