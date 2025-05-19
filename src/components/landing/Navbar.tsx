@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
   return (
     <nav 
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-black/90 backdrop-blur-md py-3' : 'bg-transparent py-5'
+        isScrolled ? 'bg-black shadow-md py-3' : 'bg-black py-5'
       }`}
     >
       <div className="container mx-auto px-4">
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
         
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-2 bg-black/95 mt-2 rounded-md">
+          <div className="md:hidden pt-4 pb-2 bg-black mt-2 rounded-md">
             <div className="flex flex-col gap-2 px-2">
               <a 
                 href="https://www.poweredby.agency/products" 
