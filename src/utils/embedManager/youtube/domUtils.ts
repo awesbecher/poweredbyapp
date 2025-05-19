@@ -3,6 +3,8 @@
  * DOM utility functions for YouTube embeds
  */
 
+import { TIMEOUTS } from './constants';
+
 /**
  * Apply styles to ensure iframe visibility
  */

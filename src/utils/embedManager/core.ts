@@ -5,7 +5,7 @@
  */
 
 import { loadTally, injectTallyForms } from './tallyUtils';
-import { refreshYouTube } from './youtubeUtils';
+import { refreshYouTube } from './youtube'; // Updated to the new path
 import { setupObserver } from './observerUtils';
 import { 
   initializeAllEmbeds, 
