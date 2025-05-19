@@ -5,6 +5,6 @@
  */
 
 export { embedManager } from './core';
-export { loadTally, injectTallyForms } from './tallyUtils';
+export { loadTally, injectTallyForms } from './tally';
 export { refreshYouTube } from './youtube';
 export { setupObserver } from './observerUtils';
