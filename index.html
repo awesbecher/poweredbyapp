@@ -13,257 +13,27 @@
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
     
-    <!-- Preload Tally script with high priority -->
+    <!-- Critical preloads and DNS prefetch -->
     <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" />
-    <script async src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
-    
-    <!-- Critical preloads for external resources -->
     <link rel="preconnect" href="https://tally.so" crossorigin />
     <link rel="dns-prefetch" href="https://tally.so" />
     <link rel="preconnect" href="https://www.youtube.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.youtube.com" />
     <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
-
-    <style>
-      /* Global styles for embedded content */
-      .embed-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background-color: rgba(0, 0, 0, 0.05);
-        min-height: 100px;
-      }
-      
-      /* Enhanced Tally specific styles */
-      .tally-embed {
-        width: 100% !important;
-        min-height: 350px !important;
-        border: none !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative !important;
-        z-index: 999 !important; /* Significantly increased z-index */
-        background: transparent !important;
-      }
-      
-      /* Make sure any iframe fits properly with proper z-index */
-      iframe {
-        max-width: 100%;
-        border: 0;
-        position: relative;
-        z-index: 1000; /* Maximum z-index to ensure visibility */
-      }
-      
-      /* Fix for dark backgrounds potentially covering elements */
-      .bg-gradient-to-b {
-        position: relative;
-        z-index: 1;
-      }
-      
-      /* Ensure embeds are above backgrounds */
-      .embed-container, .tally-embed, [data-tally-src] {
-        position: relative;
-        z-index: 999; /* Significantly increased z-index */
-      }
-      
-      /* Specific height overrides for different form types */
-      .agent-tally-form iframe {
-        min-height: 1400px !important; /* Increased height to ensure visibility */
-        z-index: 1000 !important; /* Maximum z-index to ensure visibility */
-      }
-      
-      /* Force YouTube iframes to be visible */
-      iframe[src*="youtube"] {
-        position: relative !important;
-        z-index: 1000 !important; /* Maximum z-index to ensure visibility */
-      }
-      
-      /* New rule to ensure embedded content is always on top */
-      body .tally-embed iframe,
-      body iframe[src*="youtube"],
-      body [data-tally-src],
-      body [data-tally-src] iframe {
-        position: relative !important;
-        z-index: 9999 !important; /* Highest possible z-index */
-        visibility: visible !important;
-        opacity: 1 !important;
-        display: block !important;
-        pointer-events: auto !important;
-        background: transparent !important;
-      }
-      
-      /* Reset any background colors that might be hiding content */
-      .from-deep-purple,
-      .bg-gradient-to-b[class*="from-deep-purple"],
-      [class*="bg-"] {
-        background-color: transparent !important; 
-      }
-    </style>
+    
+    <!-- Load Tally embed script early -->
+    <script async src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
+    
+    <!-- Preload the embed initializer script -->
+    <script type="module" src="/src/utils/embedManager/embedInitializer.ts" async defer></script>
   </head>
 
   <body>
     <div id="root"></div>
+    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Direct embed initializer that always runs regardless of other scripts -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM fully loaded - initializing embeds');
-        
-        // Initialize all embeds now and then after delays
-        setTimeout(initializeAllEmbeds, 100);
-        setTimeout(initializeAllEmbeds, 1000);
-        setTimeout(initializeAllEmbeds, 3000);
-        
-        // Set up observers for route changes and DOM updates
-        setupObservers();
-        
-        // Force YouTube and Tally to be visible
-        forceEmbedsVisibility();
-      });
-      
-      // Handle window load event separately
-      window.addEventListener('load', function() {
-        console.log('Window load event fired - ensuring embeds are initialized');
-        initializeAllEmbeds();
-        setTimeout(initializeAllEmbeds, 1500);
-        
-        // Additional visibility check
-        setTimeout(forceEmbedsVisibility, 2000);
-        setTimeout(forceEmbedsVisibility, 5000);
-      });
-      
-      // Function to ensure embeds are visible
-      function forceEmbedsVisibility() {
-        // Force YouTube videos to be visible
-        document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
-          iframe.style.position = 'relative';
-          iframe.style.zIndex = '30';
-        });
-        
-        // Force Tally forms to be visible
-        document.querySelectorAll('[data-tally-src]').forEach(function(container) {
-          container.style.position = 'relative';
-          container.style.zIndex = '20';
-          container.style.backgroundColor = 'transparent';
-          
-          const iframe = container.querySelector('iframe');
-          if (iframe) {
-            iframe.style.position = 'relative';
-            iframe.style.zIndex = '30';
-            iframe.style.opacity = '1';
-            iframe.style.visibility = 'visible';
-            iframe.style.display = 'block';
-          }
-        });
-      }
-      
-      // Function to initialize all embedded content
-      function initializeAllEmbeds() {
-        // Initialize Tally forms using multiple approaches
-        if (window.Tally) {
-          try {
-            window.Tally.loadEmbeds();
-            console.log('Tally embeds initialized via global object');
-          } catch (e) {
-            console.error('Error initializing Tally via global object:', e);
-            directlyInjectTallyForms();
-          }
-        } else {
-          console.log('Tally global object not available, using direct injection');
-          directlyInjectTallyForms();
-        }
-        
-        // Ensure YouTube videos are loaded properly
-        refreshYouTubeEmbeds();
-      }
-      
-      // Direct injection fallback for Tally forms when the global object fails
-      function directlyInjectTallyForms() {
-        console.log('Using direct iframe injection for Tally forms');
-        document.querySelectorAll('[data-tally-src]').forEach(function(container) {
-          if (!container.querySelector('iframe')) {
-            const iframe = document.createElement('iframe');
-            iframe.src = container.getAttribute('data-tally-src') || '';
-            iframe.width = '100%';
-            iframe.height = container.getAttribute('data-tally-height') || '500';
-            iframe.title = 'Tally Form';
-            iframe.style.border = 'none';
-            iframe.style.backgroundColor = 'transparent';
-            iframe.style.width = '100%';
-            iframe.style.minHeight = iframe.height + 'px';
-            iframe.style.overflow = 'hidden';
-            iframe.style.position = 'relative';
-            iframe.style.zIndex = '30';
-            iframe.style.opacity = '1';
-            iframe.style.visibility = 'visible';
-            iframe.style.display = 'block';
-            
-            // Don't override if container already has an iframe
-            if (!container.querySelector('iframe')) {
-              container.innerHTML = '';
-              container.appendChild(iframe);
-              console.log('Directly injected Tally iframe for', iframe.src);
-            }
-          }
-        });
-      }
-      
-      // Function to refresh YouTube embeds
-      function refreshYouTubeEmbeds() {
-        console.log('Refreshing YouTube videos');
-        document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
-          try {
-            iframe.style.position = 'relative';
-            iframe.style.zIndex = '30';
-            
-            const currentSrc = iframe.src;
-            if (currentSrc) {
-              iframe.src = '';
-              setTimeout(function() {
-                iframe.src = currentSrc;
-                console.log('Refreshed YouTube iframe:', currentSrc);
-              }, 100);
-            }
-          } catch (e) {
-            console.error('Error refreshing YouTube iframe:', e);
-          }
-        });
-      }
-      
-      // Set up mutation observers to detect DOM changes
-      function setupObservers() {
-        try {
-          const observer = new MutationObserver(function(mutations) {
-            let shouldCheckEmbeds = false;
-            
-            mutations.forEach(function(mutation) {
-              // Check for relevant DOM changes
-              if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                shouldCheckEmbeds = true;
-              }
-            });
-            
-            if (shouldCheckEmbeds) {
-              setTimeout(initializeAllEmbeds, 100);
-              setTimeout(forceEmbedsVisibility, 500);
-            }
-          });
-          
-          // Start observing the document body for added nodes
-          observer.observe(document.body, { 
-            childList: true, 
-            subtree: true 
-          });
-        } catch (e) {
-          console.error('Error setting up mutation observer:', e);
-        }
-      }
-    </script>
   </body>
 </html>
