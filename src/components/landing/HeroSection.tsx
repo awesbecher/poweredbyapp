@@ -27,7 +27,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   const { containerRef } = useEmbed(tallyOptions);
 
   return (
-    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24">
+    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative"> {/* Added relative positioning */}
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left column: Headline */}
@@ -54,18 +54,59 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
             </p>
           </div>
           
-          {/* Right column: Tally.so Embed with improved loading */}
-          <div className="flex flex-col">
-            {/* Tally form container */}
+          {/* Right column: Tally.so Embed with improved loading and visibility */}
+          <div className="flex flex-col relative z-10"> {/* Added z-index */}
+            {/* Tally form container with explicit z-index management */}
             <div 
               ref={containerRef} 
-              className="tally-embed bg-transparent min-h-[350px] w-full"
-            ></div>
+              className="tally-embed bg-transparent min-h-[350px] w-full relative z-20"
+              style={{ 
+                position: 'relative',
+                zIndex: 20,
+                backgroundColor: 'transparent'
+              }}
+            >
+              {/* The iframe will be inserted here by the useEmbed hook */}
+              
+              {/* Backup emergency placeholder in case nothing loads */}
+              <div 
+                id="emergency-tally-fallback" 
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ display: 'none', zIndex: 10 }}
+              >
+                <div className="text-center p-6 bg-white/10 backdrop-blur-lg rounded-lg">
+                  <p className="text-white mb-4">Having trouble loading the form?</p>
+                  <a 
+                    href="https://tally.so/r/wgrjdd" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                  >
+                    Open Form Directly
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* Emergency fallback script */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          // Show emergency fallback after 8 seconds if no iframe is loaded
+          setTimeout(() => {
+            const container = document.querySelector('.tally-embed');
+            const fallback = document.getElementById('emergency-tally-fallback');
+            if (container && !container.querySelector('iframe') && fallback) {
+              fallback.style.display = 'flex';
+            }
+          }, 8000);
+        `
+      }} />
     </section>
   );
 };
 
 export default HeroSection;
+

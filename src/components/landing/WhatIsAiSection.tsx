@@ -14,7 +14,7 @@ const WhatIsAiSection = () => {
   const { containerRef } = useEmbed(youtubeOptions);
 
   return (
-    <section className="py-8 px-4"> {/* Reduced top padding */}
+    <section className="py-8 px-4 relative"> {/* Added relative positioning */}
       <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" />
       
       <div className="container mx-auto max-w-6xl text-center">
@@ -23,9 +23,9 @@ const WhatIsAiSection = () => {
         </h2>
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
-        {/* Enhanced YouTube embed with visible loading state */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <AspectRatio ratio={16 / 9} className="bg-black/20 rounded-xl overflow-hidden embed-container">
+        {/* Enhanced YouTube embed with improved visibility */}
+        <div className="max-w-4xl mx-auto mb-8 relative z-10"> {/* Added z-index */}
+          <AspectRatio ratio={16 / 9} className="bg-transparent rounded-xl overflow-hidden embed-container">
             {/* Persistent placeholder that will be managed by the embedManager */}
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10" id="youtube-placeholder">
               <div className="text-center">
@@ -34,14 +34,25 @@ const WhatIsAiSection = () => {
               </div>
             </div>
             
-            <div ref={containerRef} className="w-full h-full">
+            {/* Force iframe to be visible with high z-index */}
+            <div ref={containerRef} className="w-full h-full relative z-20">
               <iframe
                 src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
                 title="What is an AI Agent?"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="w-full h-full relative z-20"
-                loading="lazy"
+                className="w-full h-full"
+                loading="eager"
+                importance="high"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  zIndex: 30
+                }}
                 onLoad={() => {
                   // Hide placeholder when video loads
                   const placeholder = document.getElementById('youtube-placeholder');
@@ -128,3 +139,4 @@ const WhatIsAiSection = () => {
 };
 
 export default WhatIsAiSection;
+

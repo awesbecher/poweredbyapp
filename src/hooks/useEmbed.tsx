@@ -19,6 +19,10 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
   useEffect(() => {
     if (!containerRef.current) return;
     
+    // Ensure container has proper styling
+    containerRef.current.style.position = 'relative';
+    containerRef.current.style.zIndex = '15';
+    
     // Configure container with appropriate data attributes
     if (type === 'tally') {
       containerRef.current.setAttribute('data-tally-src', src);
@@ -29,9 +33,18 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
         containerRef.current?.setAttribute(`data-tally-${key}`, value);
       });
       
-      // Add loading indicator
+      // Clear any existing content to prevent duplicates
+      const existingLoader = containerRef.current.querySelector('.tally-loader');
+      if (existingLoader) {
+        containerRef.current.removeChild(existingLoader);
+      }
+      
+      // Add visible loading indicator with z-index management
       const loadingDiv = document.createElement('div');
       loadingDiv.className = 'tally-loader';
+      loadingDiv.style.position = 'relative';
+      loadingDiv.style.zIndex = '10';
+      loadingDiv.style.backgroundColor = 'transparent';
       loadingDiv.innerHTML = `
         <div style="display:flex;justify-content:center;align-items:center;height:100px;width:100%">
           <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;animation:tally-spin 1s linear infinite"></div>
@@ -48,16 +61,46 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       
       // Use embedManager to load the Tally form
       setTimeout(() => embedManager.loadTally(), 100);
+      
+      // Force direct injection as ultimate fallback
+      setTimeout(() => {
+        if (containerRef.current && !containerRef.current.querySelector('iframe')) {
+          // Create and configure iframe manually
+          const iframe = document.createElement('iframe');
+          iframe.src = src;
+          iframe.width = '100%';
+          iframe.height = height;
+          iframe.title = 'Tally Form';
+          iframe.style.border = 'none';
+          iframe.style.width = '100%';
+          iframe.style.minHeight = `${height}px`;
+          iframe.style.overflow = 'hidden';
+          iframe.style.position = 'relative';
+          iframe.style.zIndex = '30'; // Ensure high z-index
+          iframe.style.backgroundColor = 'transparent';
+          
+          // Remove loader and append iframe
+          const loader = containerRef.current.querySelector('.tally-loader');
+          if (loader) containerRef.current.removeChild(loader);
+          containerRef.current.appendChild(iframe);
+          console.log('Emergency direct iframe injection for Tally form');
+        }
+      }, 3000);
     } 
     else if (type === 'youtube') {
-      // For YouTube, ensure the iframe has correct attributes
+      // For YouTube, ensure the iframe has correct attributes and z-index
+      containerRef.current.style.overflow = 'visible';
+      
       const iframe = containerRef.current.querySelector('iframe');
       
       if (iframe) {
+        // Set essential attributes and styling
         iframe.setAttribute('loading', 'eager');
         iframe.setAttribute('importance', 'high');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.setAttribute('allowFullscreen', 'true');
+        iframe.style.position = 'relative';
+        iframe.style.zIndex = '30'; // Ensure high z-index
         
         // If iframe already exists, refresh it
         const currentSrc = iframe.getAttribute('src') || '';
@@ -72,12 +115,20 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       
       // Use embedManager to refresh YouTube videos
       setTimeout(() => embedManager.refreshYouTube(), 300);
+      
+      // Ensure the placeholder has proper z-index if it exists
+      const placeholder = document.getElementById('youtube-placeholder');
+      if (placeholder) {
+        placeholder.style.zIndex = '25'; // Below iframe but above other elements
+      }
     }
     
     // Set up retry attempts with increasing delays
     const retryTimes = [800, 1500, 3000, 6000];
     const retryTimers = retryTimes.map(time => 
       setTimeout(() => {
+        if (!containerRef.current) return;
+        
         if (type === 'tally') {
           embedManager.loadTally();
         } else if (type === 'youtube') {
@@ -91,3 +142,4 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
   
   return { containerRef };
 };
+

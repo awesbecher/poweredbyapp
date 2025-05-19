@@ -1,3 +1,4 @@
+
 /**
  * Utilities for handling Tally form embeds with enhanced production reliability
  */
@@ -108,6 +109,11 @@ export function injectTallyForms() {
         return;
       }
       
+      // Ensure container is visible and positioned correctly
+      containerEl.style.position = 'relative';
+      containerEl.style.zIndex = '20';
+      containerEl.style.background = 'transparent';
+      
       // Add a loading state if it doesn't exist
       if (!containerEl.querySelector('.tally-loader')) {
         const loader = document.createElement('div');
@@ -137,6 +143,9 @@ export function injectTallyForms() {
       iframe.style.minHeight = `${height}px`;
       iframe.style.overflow = 'hidden';
       iframe.style.opacity = '0'; // Start hidden until loaded
+      iframe.style.position = 'relative';
+      iframe.style.zIndex = '30'; // Ensure high z-index
+      iframe.style.backgroundColor = 'transparent'; // Keep background transparent
       
       // Handle iframe load event
       iframe.onload = () => {
@@ -165,3 +174,4 @@ export function injectTallyForms() {
     }
   });
 }
+

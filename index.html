@@ -13,7 +13,8 @@
     <meta property="og:type" content="website" />
     <link rel="icon" href="/lovable-uploads/6824f512-cd18-4a70-ba33-41c138d9be24.png" />
     
-    <!-- Load Tally script with high priority -->
+    <!-- Preload Tally script with high priority -->
+    <link rel="preload" href="https://tally.so/widgets/embed.js" as="script" />
     <script async src="https://tally.so/widgets/embed.js" crossorigin="anonymous"></script>
     
     <!-- Critical preloads for external resources -->
@@ -43,17 +44,41 @@
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        position: relative !important;
+        z-index: 20 !important;
+        background: transparent !important;
       }
       
-      /* Make sure any iframe fits properly */
+      /* Make sure any iframe fits properly with proper z-index */
       iframe {
         max-width: 100%;
         border: 0;
+        position: relative;
+        z-index: 30;
+      }
+      
+      /* Fix for dark backgrounds potentially covering elements */
+      .bg-gradient-to-b {
+        position: relative;
+        z-index: 1;
+      }
+      
+      /* Ensure embeds are above backgrounds */
+      .embed-container, .tally-embed, [data-tally-src] {
+        position: relative;
+        z-index: 20;
       }
       
       /* Specific height overrides for different form types */
       .agent-tally-form iframe {
         min-height: 1400px !important; /* Increased height to ensure visibility */
+        z-index: 30 !important;
+      }
+      
+      /* Force YouTube iframes to be visible */
+      iframe[src*="youtube"] {
+        position: relative !important;
+        z-index: 30 !important;
       }
     </style>
   </head>
@@ -76,6 +101,9 @@
         
         // Set up observers for route changes and DOM updates
         setupObservers();
+        
+        // Force YouTube and Tally to be visible
+        forceEmbedsVisibility();
       });
       
       // Handle window load event separately
@@ -83,7 +111,36 @@
         console.log('Window load event fired - ensuring embeds are initialized');
         initializeAllEmbeds();
         setTimeout(initializeAllEmbeds, 1500);
+        
+        // Additional visibility check
+        setTimeout(forceEmbedsVisibility, 2000);
+        setTimeout(forceEmbedsVisibility, 5000);
       });
+      
+      // Function to ensure embeds are visible
+      function forceEmbedsVisibility() {
+        // Force YouTube videos to be visible
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
+          iframe.style.position = 'relative';
+          iframe.style.zIndex = '30';
+        });
+        
+        // Force Tally forms to be visible
+        document.querySelectorAll('[data-tally-src]').forEach(function(container) {
+          container.style.position = 'relative';
+          container.style.zIndex = '20';
+          container.style.backgroundColor = 'transparent';
+          
+          const iframe = container.querySelector('iframe');
+          if (iframe) {
+            iframe.style.position = 'relative';
+            iframe.style.zIndex = '30';
+            iframe.style.opacity = '1';
+            iframe.style.visibility = 'visible';
+            iframe.style.display = 'block';
+          }
+        });
+      }
       
       // Function to initialize all embedded content
       function initializeAllEmbeds() {
@@ -120,6 +177,11 @@
             iframe.style.width = '100%';
             iframe.style.minHeight = iframe.height + 'px';
             iframe.style.overflow = 'hidden';
+            iframe.style.position = 'relative';
+            iframe.style.zIndex = '30';
+            iframe.style.opacity = '1';
+            iframe.style.visibility = 'visible';
+            iframe.style.display = 'block';
             
             // Don't override if container already has an iframe
             if (!container.querySelector('iframe')) {
@@ -136,6 +198,9 @@
         console.log('Refreshing YouTube videos');
         document.querySelectorAll('iframe[src*="youtube"]').forEach(function(iframe) {
           try {
+            iframe.style.position = 'relative';
+            iframe.style.zIndex = '30';
+            
             const currentSrc = iframe.src;
             if (currentSrc) {
               iframe.src = '';
@@ -165,6 +230,7 @@
             
             if (shouldCheckEmbeds) {
               setTimeout(initializeAllEmbeds, 100);
+              setTimeout(forceEmbedsVisibility, 500);
             }
           });
           
@@ -180,3 +246,4 @@
     </script>
   </body>
 </html>
+
