@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +25,28 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   };
   
   const { containerRef } = useEmbed(tallyOptions);
+  
+  // Force iframe visibility after component mount
+  useEffect(() => {
+    const forceVisibility = () => {
+      if (containerRef.current) {
+        const iframe = containerRef.current.querySelector('iframe');
+        if (iframe) {
+          iframe.style.position = 'relative';
+          iframe.style.zIndex = '9999';
+          iframe.style.opacity = '1';
+          iframe.style.visibility = 'visible';
+          iframe.style.display = 'block';
+          iframe.style.background = 'transparent';
+        }
+      }
+    };
+    
+    // Apply multiple times to ensure it catches
+    setTimeout(forceVisibility, 1000);
+    setTimeout(forceVisibility, 3000);
+    setTimeout(forceVisibility, 6000);
+  }, [containerRef]);
 
   return (
     <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
@@ -62,7 +84,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               className="tally-embed bg-transparent min-h-[350px] w-full relative z-30"
               style={{ 
                 position: 'relative',
-                zIndex: 30, // Consistent with className
+                zIndex: 30,
                 backgroundColor: 'transparent'
               }}
             >

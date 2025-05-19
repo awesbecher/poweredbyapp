@@ -21,7 +21,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
     
     // Ensure container has proper styling with very high z-index
     containerRef.current.style.position = 'relative';
-    containerRef.current.style.zIndex = '50';
+    containerRef.current.style.zIndex = '9990';
     containerRef.current.style.backgroundColor = 'transparent';
     
     // Configure container with appropriate data attributes
@@ -43,13 +43,17 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       // Add visible loading indicator with z-index management
       const loadingDiv = document.createElement('div');
       loadingDiv.className = 'tally-loader';
-      loadingDiv.style.position = 'relative';
-      loadingDiv.style.zIndex = '40';
+      loadingDiv.style.position = 'absolute';
+      loadingDiv.style.inset = '0';
+      loadingDiv.style.zIndex = '9980';
       loadingDiv.style.backgroundColor = 'transparent';
+      loadingDiv.style.display = 'flex';
+      loadingDiv.style.alignItems = 'center';
+      loadingDiv.style.justifyContent = 'center';
       loadingDiv.innerHTML = `
-        <div style="display:flex;justify-content:center;align-items:center;height:100px;width:100%">
-          <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;animation:tally-spin 1s linear infinite"></div>
-          <p style="margin-left:15px;color:#8B5CF6">Loading form...</p>
+        <div style="text-align:center;background:rgba(0,0,0,0.5);padding:20px;border-radius:8px;">
+          <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;margin:0 auto;animation:tally-spin 1s linear infinite"></div>
+          <p style="margin-top:15px;color:white">Loading ${type === 'tally' ? 'form' : 'video'}...</p>
         </div>
         <style>
           @keyframes tally-spin {
@@ -77,7 +81,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
           iframe.style.minHeight = `${height}px`;
           iframe.style.overflow = 'hidden';
           iframe.style.position = 'relative';
-          iframe.style.zIndex = '60';
+          iframe.style.zIndex = '9999';
           iframe.style.backgroundColor = 'transparent';
           
           // Remove loader and append iframe
@@ -86,7 +90,31 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
           containerRef.current.appendChild(iframe);
           console.log('Emergency direct iframe injection for Tally form');
         }
-      }, 3000);
+      }, 2000);
+      
+      // Second attempt with longer delay
+      setTimeout(() => {
+        if (containerRef.current && !containerRef.current.querySelector('iframe')) {
+          const iframe = document.createElement('iframe');
+          iframe.src = src;
+          iframe.width = '100%';
+          iframe.height = height;
+          iframe.title = 'Tally Form';
+          iframe.style.border = 'none';
+          iframe.style.width = '100%';
+          iframe.style.minHeight = `${height}px`;
+          iframe.style.overflow = 'hidden';
+          iframe.style.position = 'relative';
+          iframe.style.zIndex = '9999';
+          iframe.style.backgroundColor = 'transparent';
+          
+          // Remove loader and append iframe
+          const loader = containerRef.current.querySelector('.tally-loader');
+          if (loader) containerRef.current.removeChild(loader);
+          containerRef.current.appendChild(iframe);
+          console.log('Second emergency attempt for Tally form');
+        }
+      }, 5000);
     } 
     else if (type === 'youtube') {
       // For YouTube, ensure the iframe has correct attributes and z-index
@@ -99,8 +127,13 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
         iframe.setAttribute('loading', 'eager');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.setAttribute('allowFullscreen', 'true');
-        iframe.style.position = 'relative';
-        iframe.style.zIndex = '60';
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.zIndex = '9999';
+        iframe.style.border = 'none';
         
         // If iframe already exists, refresh it
         const currentSrc = iframe.getAttribute('src') || '';
@@ -111,6 +144,22 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
             console.log(`Refreshed YouTube iframe: ${currentSrc}`);
           }, 100);
         }
+      } else {
+        // Direct iframe injection as fallback
+        const newIframe = document.createElement('iframe');
+        newIframe.src = src;
+        newIframe.title = "YouTube Video";
+        newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        newIframe.allowFullscreen = true;
+        newIframe.style.position = 'absolute';
+        newIframe.style.top = '0';
+        newIframe.style.left = '0';
+        newIframe.style.width = '100%';
+        newIframe.style.height = '100%';
+        newIframe.style.border = 'none';
+        newIframe.style.zIndex = '9999';
+        
+        containerRef.current.appendChild(newIframe);
       }
       
       // Use embedManager to refresh YouTube videos
@@ -119,7 +168,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       // Ensure the placeholder has proper z-index if it exists
       const placeholder = document.getElementById('youtube-placeholder');
       if (placeholder) {
-        placeholder.style.zIndex = '45';
+        placeholder.style.zIndex = '9980';
       }
     }
     

@@ -104,15 +104,35 @@ export function injectTallyForms() {
       const height = containerEl.getAttribute('data-tally-height') || '500';
       
       // Skip empty sources or if already has working iframe
-      if (!src || (containerEl.querySelector('iframe') && 
-          (containerEl.querySelector('iframe') as HTMLIFrameElement).contentWindow)) {
+      if (!src) return;
+      
+      // Check if there's already a working iframe
+      const existingIframe = containerEl.querySelector('iframe') as HTMLIFrameElement;
+      if (existingIframe && existingIframe.contentWindow) {
+        // Only enhance visibility of existing iframe
+        existingIframe.style.position = 'relative';
+        existingIframe.style.zIndex = '9999';
+        existingIframe.style.opacity = '1';
+        existingIframe.style.visibility = 'visible';
+        existingIframe.style.display = 'block';
+        existingIframe.style.background = 'transparent';
         return;
+      }
+      
+      // Remove existing non-working iframe if present
+      if (existingIframe) {
+        containerEl.removeChild(existingIframe);
       }
       
       // Ensure container is visible and positioned correctly
       containerEl.style.position = 'relative';
-      containerEl.style.zIndex = '20';
+      containerEl.style.zIndex = '9990';
       containerEl.style.background = 'transparent';
+      containerEl.style.minHeight = `${height}px`;
+      containerEl.style.width = '100%';
+      containerEl.style.display = 'block';
+      containerEl.style.opacity = '1';
+      containerEl.style.visibility = 'visible';
       
       // Add a loading state if it doesn't exist
       if (!containerEl.querySelector('.tally-loader')) {
@@ -132,7 +152,7 @@ export function injectTallyForms() {
         containerEl.appendChild(loader);
       }
       
-      // Create and configure iframe
+      // Create and configure iframe with maximum visibility settings
       const iframe = document.createElement('iframe');
       iframe.src = src;
       iframe.width = '100%';
@@ -144,7 +164,7 @@ export function injectTallyForms() {
       iframe.style.overflow = 'hidden';
       iframe.style.opacity = '0'; // Start hidden until loaded
       iframe.style.position = 'relative';
-      iframe.style.zIndex = '30'; // Ensure high z-index
+      iframe.style.zIndex = '9999'; // Highest possible z-index
       iframe.style.backgroundColor = 'transparent'; // Keep background transparent
       
       // Handle iframe load event
@@ -156,22 +176,11 @@ export function injectTallyForms() {
         iframe.style.opacity = '1';
       };
       
-      // Handle load error with retry
-      iframe.onerror = () => {
-        console.error(`Error loading Tally iframe: ${src}`);
-        // Keep loader visible
-      };
-      
-      // Don't override if container already has a working iframe
-      const existingIframe = containerEl.querySelector('iframe') as HTMLIFrameElement;
-      if (!existingIframe || !existingIframe.contentWindow) {
-        if (existingIframe) containerEl.removeChild(existingIframe);
-        containerEl.appendChild(iframe);
-        console.log(`Directly injected Tally iframe: ${src}`);
-      }
+      // Add the iframe to the container
+      containerEl.appendChild(iframe);
+      console.log(`Directly injected Tally iframe: ${src}`);
     } catch (e) {
       console.error('Error injecting Tally iframe:', e);
     }
   });
 }
-
