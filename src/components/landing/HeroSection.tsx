@@ -27,7 +27,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   const { containerRef } = useEmbed(tallyOptions);
 
   return (
-    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative"> {/* Added relative positioning */}
+    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5"> {/* Added explicit z-index */}
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left column: Headline */}
@@ -55,14 +55,14 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           </div>
           
           {/* Right column: Tally.so Embed with improved loading and visibility */}
-          <div className="flex flex-col relative z-10"> {/* Added z-index */}
+          <div className="flex flex-col relative z-20"> {/* Increased z-index from 10 to 20 */}
             {/* Tally form container with explicit z-index management */}
             <div 
               ref={containerRef} 
-              className="tally-embed bg-transparent min-h-[350px] w-full relative z-20"
+              className="tally-embed bg-transparent min-h-[350px] w-full relative z-30" {/* Increased z-index from 20 to 30 */}
               style={{ 
                 position: 'relative',
-                zIndex: 20,
+                zIndex: 30, // Consistent with className
                 backgroundColor: 'transparent'
               }}
             >
@@ -72,7 +72,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               <div 
                 id="emergency-tally-fallback" 
                 className="absolute inset-0 flex items-center justify-center"
-                style={{ display: 'none', zIndex: 10 }}
+                style={{ display: 'none', zIndex: 25 }}
               >
                 <div className="text-center p-6 bg-white/10 backdrop-blur-lg rounded-lg">
                   <p className="text-white mb-4">Having trouble loading the form?</p>
@@ -109,4 +109,3 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
 };
 
 export default HeroSection;
-

@@ -45,7 +45,7 @@
         visibility: visible !important;
         opacity: 1 !important;
         position: relative !important;
-        z-index: 20 !important;
+        z-index: 999 !important; /* Significantly increased z-index */
         background: transparent !important;
       }
       
@@ -54,7 +54,7 @@
         max-width: 100%;
         border: 0;
         position: relative;
-        z-index: 30;
+        z-index: 1000; /* Maximum z-index to ensure visibility */
       }
       
       /* Fix for dark backgrounds potentially covering elements */
@@ -66,19 +66,40 @@
       /* Ensure embeds are above backgrounds */
       .embed-container, .tally-embed, [data-tally-src] {
         position: relative;
-        z-index: 20;
+        z-index: 999; /* Significantly increased z-index */
       }
       
       /* Specific height overrides for different form types */
       .agent-tally-form iframe {
         min-height: 1400px !important; /* Increased height to ensure visibility */
-        z-index: 30 !important;
+        z-index: 1000 !important; /* Maximum z-index to ensure visibility */
       }
       
       /* Force YouTube iframes to be visible */
       iframe[src*="youtube"] {
         position: relative !important;
-        z-index: 30 !important;
+        z-index: 1000 !important; /* Maximum z-index to ensure visibility */
+      }
+      
+      /* New rule to ensure embedded content is always on top */
+      body .tally-embed iframe,
+      body iframe[src*="youtube"],
+      body [data-tally-src],
+      body [data-tally-src] iframe {
+        position: relative !important;
+        z-index: 9999 !important; /* Highest possible z-index */
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+        pointer-events: auto !important;
+        background: transparent !important;
+      }
+      
+      /* Reset any background colors that might be hiding content */
+      .from-deep-purple,
+      .bg-gradient-to-b[class*="from-deep-purple"],
+      [class*="bg-"] {
+        background-color: transparent !important; 
       }
     </style>
   </head>
@@ -246,4 +267,3 @@
     </script>
   </body>
 </html>
-

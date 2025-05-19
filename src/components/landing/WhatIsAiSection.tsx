@@ -14,7 +14,7 @@ const WhatIsAiSection = () => {
   const { containerRef } = useEmbed(youtubeOptions);
 
   return (
-    <section className="py-8 px-4 relative"> {/* Added relative positioning */}
+    <section className="py-8 px-4 relative z-10"> {/* Increased z-index from default to 10 */}
       <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" />
       
       <div className="container mx-auto max-w-6xl text-center">
@@ -24,10 +24,11 @@ const WhatIsAiSection = () => {
         <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
         
         {/* Enhanced YouTube embed with improved visibility */}
-        <div className="max-w-4xl mx-auto mb-8 relative z-10"> {/* Added z-index */}
+        <div className="max-w-4xl mx-auto mb-8 relative z-20"> {/* Increased z-index from 10 to 20 */}
           <AspectRatio ratio={16 / 9} className="bg-transparent rounded-xl overflow-hidden embed-container">
             {/* Persistent placeholder that will be managed by the embedManager */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10" id="youtube-placeholder">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-30" id="youtube-placeholder">
+              {/* Increased z-index from 10 to 30 */}
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-purple-500 animate-spin mx-auto"></div>
                 <div className="text-white text-lg mt-4">Loading video...</div>
@@ -35,7 +36,7 @@ const WhatIsAiSection = () => {
             </div>
             
             {/* Force iframe to be visible with high z-index */}
-            <div ref={containerRef} className="w-full h-full relative z-20">
+            <div ref={containerRef} className="w-full h-full relative z-40"> {/* Increased z-index from 20 to 40 */}
               <iframe
                 src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
                 title="What is an AI Agent?"
@@ -51,7 +52,7 @@ const WhatIsAiSection = () => {
                   width: '100%',
                   height: '100%',
                   border: 'none',
-                  zIndex: 30
+                  zIndex: 50 // Increased from 30 to 50
                 }}
                 onLoad={() => {
                   // Hide placeholder when video loads
