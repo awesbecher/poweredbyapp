@@ -4,7 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import './styles/embedStyles.css'; // Import the separate embed styles
 import { embedManager } from './utils/embedManager';
-import { initializeAllEmbeds } from './utils/embedManager/embedInitializer';
+import { initializeAllEmbeds, forceEmbedsVisibility } from './utils/embedManager/embedInitializer';
 
 /**
  * Immediately initialize the embedManager for maximum reliability
@@ -15,24 +15,46 @@ embedManager.init();
 // Also call the standalone initializer for redundancy
 initializeAllEmbeds();
 
+// Create a function to handle embed initialization
+const initializeEmbeds = () => {
+  console.log('Initializing embeds from main.tsx');
+  embedManager.loadAllEmbeds();
+  initializeAllEmbeds();
+  setTimeout(forceEmbedsVisibility, 500);
+};
+
 // Render the React application
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
 
 // Additional embed initialization after app mount
-setTimeout(() => {
-  console.log('Post-render embed initialization');
-  embedManager.loadAllEmbeds();
-  initializeAllEmbeds(); // Call standalone initializer again
-}, 1000);
+setTimeout(initializeEmbeds, 500);
+setTimeout(initializeEmbeds, 2000);
+setTimeout(initializeEmbeds, 5000);
 
-// Final safety check for production environments
+// Add a special debug function to the window for emergency reinitialization
+(window as any).reinitializeEmbeds = () => {
+  console.log('Manual embed reinitialization triggered');
+  initializeEmbeds();
+  setTimeout(forceEmbedsVisibility, 200);
+};
+
+// Additional safety check for production environments
 window.addEventListener('load', () => {
+  // First attempt
+  setTimeout(initializeEmbeds, 1000);
+  
+  // Secondary attempt with checks for broken embeds
   setTimeout(() => {
-    if (document.querySelector('[data-tally-src]:empty') || 
-        document.querySelector('iframe[src*="youtube"]:not([src])')) {
-      console.log('Final embed recovery attempt');
-      embedManager.loadAllEmbeds();
-      initializeAllEmbeds();
+    const brokenTallyForms = document.querySelectorAll('[data-tally-src]:empty');
+    const brokenYouTubeVideos = document.querySelectorAll('iframe[src*="youtube"]:not([src])');
+    
+    if (brokenTallyForms.length > 0 || brokenYouTubeVideos.length > 0) {
+      console.log(`Detected broken embeds: ${brokenTallyForms.length} Tally, ${brokenYouTubeVideos.length} YouTube`);
+      initializeEmbeds();
     }
-  }, 2500);
+  }, 3000);
+  
+  // Final backup attempt for stubborn cases
+  setTimeout(initializeEmbeds, 6000);
 });

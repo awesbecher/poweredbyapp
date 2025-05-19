@@ -9,8 +9,11 @@ import { TIMEOUTS } from './constants';
  * Apply styles to ensure iframe visibility
  */
 export function applyVisibilityStyles(iframe: HTMLIFrameElement) {
-  iframe.style.zIndex = '30';
+  iframe.style.zIndex = '9999'; // Much higher z-index to ensure visibility
   iframe.style.position = 'relative';
+  iframe.style.display = 'block';
+  iframe.style.opacity = '1';
+  iframe.style.visibility = 'visible';
 }
 
 /**
@@ -25,7 +28,7 @@ export function addLoadingPlaceholder(parent: HTMLElement) {
   placeholder.style.alignItems = 'center';
   placeholder.style.justifyContent = 'center';
   placeholder.style.backgroundColor = 'rgba(0,0,0,0.7)';
-  placeholder.style.zIndex = '25'; // High but below the iframe
+  placeholder.style.zIndex = '9980'; // High but below the iframe
   placeholder.innerHTML = `
     <div style="text-align:center">
       <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:40px;height:40px;margin:0 auto;animation:yt-spin 1s linear infinite"></div>
@@ -55,7 +58,11 @@ export function createFreshIframe(originalIframe: HTMLIFrameElement) {
   newIframe.allowFullscreen = true;
   newIframe.style.cssText = originalIframe.style.cssText;
   newIframe.style.position = 'relative';
-  newIframe.style.zIndex = '30';
+  newIframe.style.zIndex = '9999';
+  newIframe.style.display = 'block';
+  newIframe.style.opacity = '1';
+  newIframe.style.visibility = 'visible';
+  newIframe.style.border = 'none';
   
   return newIframe;
 }
@@ -77,7 +84,10 @@ export function createYouTubeIframe(videoId: string) {
   iframe.style.width = '100%';
   iframe.style.height = '100%';
   iframe.style.border = 'none';
-  iframe.style.zIndex = '30';
+  iframe.style.zIndex = '9999';
+  iframe.style.display = 'block';
+  iframe.style.opacity = '1';
+  iframe.style.visibility = 'visible';
   
   return iframe;
 }
@@ -94,7 +104,7 @@ export function createLoadingPlaceholder() {
   placeholder.style.alignItems = 'center';
   placeholder.style.justifyContent = 'center';
   placeholder.style.backgroundColor = 'rgba(0,0,0,0.7)';
-  placeholder.style.zIndex = '25';
+  placeholder.style.zIndex = '9980';
   placeholder.innerHTML = `
     <div style="text-align:center">
       <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:40px;height:40px;margin:0 auto;animation:yt-spin 1s linear infinite"></div>

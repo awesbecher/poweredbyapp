@@ -43,7 +43,28 @@ export function directlyInjectTallyForms() {
       const containerEl = container as HTMLElement;
       const src = containerEl.getAttribute('data-tally-src') || '';
       
-      if (!src || containerEl.querySelector('iframe')) return;
+      if (!src) return;
+      
+      // Check if we already have a working iframe
+      const existingIframe = containerEl.querySelector('iframe');
+      if (existingIframe && 
+          existingIframe.style.opacity !== '0' && 
+          existingIframe.style.visibility !== 'hidden') {
+        existingIframe.style.opacity = '1';
+        existingIframe.style.visibility = 'visible';
+        existingIframe.style.display = 'block';
+        existingIframe.style.zIndex = '9999';
+        return;
+      }
+      
+      // If iframe exists but might not be working, force it to be visible
+      if (existingIframe) {
+        existingIframe.style.opacity = '1';
+        existingIframe.style.visibility = 'visible';
+        existingIframe.style.display = 'block';
+        existingIframe.style.zIndex = '9999';
+        // Still create a new one just in case
+      }
       
       const iframe = document.createElement('iframe');
       iframe.src = src;
@@ -56,14 +77,17 @@ export function directlyInjectTallyForms() {
       iframe.style.minHeight = iframe.height + 'px';
       iframe.style.overflow = 'hidden';
       iframe.style.position = 'relative';
-      iframe.style.zIndex = '30';
+      iframe.style.zIndex = '9999';
       iframe.style.opacity = '1';
       iframe.style.visibility = 'visible';
       iframe.style.display = 'block';
       
-      containerEl.innerHTML = '';
-      containerEl.appendChild(iframe);
-      console.log('Directly injected Tally iframe for', src);
+      // Only replace if there's no iframe, otherwise just ensure it's visible
+      if (!existingIframe) {
+        containerEl.innerHTML = '';
+        containerEl.appendChild(iframe);
+        console.log('Directly injected Tally iframe for', src);
+      }
     } catch (e) {
       console.error('Error injecting Tally iframe:', e);
     }
@@ -79,7 +103,10 @@ export function refreshYouTubeEmbeds() {
     try {
       const ytIframe = iframe as HTMLIFrameElement;
       ytIframe.style.position = 'relative';
-      ytIframe.style.zIndex = '30';
+      ytIframe.style.zIndex = '9999';
+      ytIframe.style.opacity = '1';
+      ytIframe.style.visibility = 'visible';
+      ytIframe.style.display = 'block';
       
       const currentSrc = ytIframe.src;
       if (currentSrc) {
@@ -88,6 +115,16 @@ export function refreshYouTubeEmbeds() {
           ytIframe.src = currentSrc;
           console.log('Refreshed YouTube iframe:', currentSrc);
         }, 100);
+      } else {
+        // If the iframe has lost its src, attempt to recover it from data attributes
+        const parent = ytIframe.closest('[data-youtube-id]');
+        if (parent) {
+          const videoId = parent.getAttribute('data-youtube-id');
+          if (videoId) {
+            ytIframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}`;
+            console.log('Recovered YouTube iframe src with ID:', videoId);
+          }
+        }
       }
     } catch (e) {
       console.error('Error refreshing YouTube iframe:', e);
@@ -102,22 +139,28 @@ export function forceEmbedsVisibility() {
   // Force YouTube videos to be visible
   document.querySelectorAll('iframe[src*="youtube"]').forEach((iframe) => {
     (iframe as HTMLElement).style.position = 'relative';
-    (iframe as HTMLElement).style.zIndex = '30';
+    (iframe as HTMLElement).style.zIndex = '9999';
+    (iframe as HTMLElement).style.opacity = '1';
+    (iframe as HTMLElement).style.visibility = 'visible';
+    (iframe as HTMLElement).style.display = 'block';
   });
   
   // Force Tally forms to be visible
   document.querySelectorAll('[data-tally-src]').forEach((container) => {
     (container as HTMLElement).style.position = 'relative';
-    (container as HTMLElement).style.zIndex = '20';
+    (container as HTMLElement).style.zIndex = '9990';
     (container as HTMLElement).style.backgroundColor = 'transparent';
     
     const iframe = container.querySelector('iframe');
     if (iframe) {
       iframe.style.position = 'relative';
-      iframe.style.zIndex = '30';
+      iframe.style.zIndex = '9999';
       iframe.style.opacity = '1';
       iframe.style.visibility = 'visible';
       iframe.style.display = 'block';
+    } else {
+      // If no iframe exists at this point, force a direct injection
+      directlyInjectTallyForms();
     }
   });
 }
@@ -138,7 +181,7 @@ export function setupObservers() {
       
       if (shouldCheckEmbeds) {
         setTimeout(initializeAllEmbeds, 100);
-        setTimeout(forceEmbedsVisibility, 500);
+        setTimeout(forceEmbedsVisibility, 300);
       }
     });
     
@@ -164,9 +207,10 @@ if (typeof window !== 'undefined') {
       setupObservers();
       
       // Multiple attempts with increasing delays
-      setTimeout(initializeAllEmbeds, 1000);
-      setTimeout(initializeAllEmbeds, 3000);
-      setTimeout(forceEmbedsVisibility, 2000);
+      setTimeout(initializeAllEmbeds, 500);
+      setTimeout(initializeAllEmbeds, 1500);
+      setTimeout(forceEmbedsVisibility, 1000);
+      setTimeout(forceEmbedsVisibility, 3000);
     });
   } else {
     // DOM already loaded, run immediately
@@ -175,15 +219,18 @@ if (typeof window !== 'undefined') {
     setupObservers();
     
     // Multiple attempts with increasing delays
-    setTimeout(initializeAllEmbeds, 1000);
-    setTimeout(initializeAllEmbeds, 3000);
-    setTimeout(forceEmbedsVisibility, 2000);
+    setTimeout(initializeAllEmbeds, 500);
+    setTimeout(initializeAllEmbeds, 1500);
+    setTimeout(forceEmbedsVisibility, 1000);
+    setTimeout(forceEmbedsVisibility, 3000);
   }
   
   // Also run on window load
   window.addEventListener('load', () => {
     console.log('Window loaded - initializing from standalone');
     initializeAllEmbeds();
-    setTimeout(forceEmbedsVisibility, 1500);
+    setTimeout(forceEmbedsVisibility, 600);
+    setTimeout(initializeAllEmbeds, 1200);
+    setTimeout(forceEmbedsVisibility, 2000);
   });
 }

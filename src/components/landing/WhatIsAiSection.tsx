@@ -4,6 +4,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useEmbed } from '@/hooks/useEmbed';
+import { forceEmbedsVisibility } from '@/utils/embedManager/embedInitializer';
 
 const WhatIsAiSection = () => {
   const youtubeOptions = {
@@ -14,7 +15,7 @@ const WhatIsAiSection = () => {
   const { containerRef } = useEmbed(youtubeOptions);
   const sectionRef = useRef<HTMLElement>(null);
   
-  // Force YouTube iframe visibility
+  // Force YouTube iframe visibility with multiple attempts
   useEffect(() => {
     const forceYouTubeVisibility = () => {
       if (containerRef.current) {
@@ -29,6 +30,7 @@ const WhatIsAiSection = () => {
           iframe.style.border = 'none';
           iframe.style.opacity = '1';
           iframe.style.visibility = 'visible';
+          iframe.style.display = 'block';
           
           // Hide placeholder when video loads
           const placeholder = document.getElementById('youtube-placeholder');
@@ -40,6 +42,7 @@ const WhatIsAiSection = () => {
           newIframe.title = "What is an AI Agent?";
           newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
           newIframe.allowFullscreen = true;
+          newIframe.setAttribute('loading', 'eager');
           newIframe.style.position = 'absolute';
           newIframe.style.top = '0';
           newIframe.style.left = '0';
@@ -47,7 +50,11 @@ const WhatIsAiSection = () => {
           newIframe.style.height = '100%';
           newIframe.style.border = 'none';
           newIframe.style.zIndex = '9999';
+          newIframe.style.opacity = '1';
+          newIframe.style.visibility = 'visible';
+          newIframe.style.display = 'block';
           
+          // Make sure container is ready
           if (containerRef.current) {
             containerRef.current.appendChild(newIframe);
           }
@@ -56,10 +63,62 @@ const WhatIsAiSection = () => {
     };
     
     // Multiple attempts with increasing delays
-    setTimeout(forceYouTubeVisibility, 1000);
+    setTimeout(forceYouTubeVisibility, 300);
+    setTimeout(forceYouTubeVisibility, 800);
+    setTimeout(forceYouTubeVisibility, 1500);
     setTimeout(forceYouTubeVisibility, 3000);
-    setTimeout(forceYouTubeVisibility, 6000);
+    setTimeout(forceEmbedsVisibility, 2000);
+    setTimeout(forceEmbedsVisibility, 5000);
+    
+    // Add emergency button if video still fails to load
+    setTimeout(() => {
+      if (containerRef.current && !containerRef.current.querySelector('iframe[src]')) {
+        const placeholder = document.getElementById('youtube-placeholder');
+        if (placeholder) {
+          placeholder.innerHTML = `
+            <div class="text-center">
+              <p class="text-white mb-4">Video not loading?</p>
+              <a 
+                href="https://www.youtube.com/watch?v=C2FAFvwwnL0"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-purple-600 text-white px-4 py-2 rounded-md">
+                Watch on YouTube
+              </a>
+            </div>
+          `;
+        }
+      }
+    }, 6000);
   }, [containerRef]);
+
+  // Function to handle manual reload of video
+  const handleManualReload = () => {
+    if (containerRef.current) {
+      const newIframe = document.createElement('iframe');
+      newIframe.src = 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency';
+      newIframe.title = "What is an AI Agent?";
+      newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      newIframe.allowFullscreen = true;
+      newIframe.style.position = 'absolute';
+      newIframe.style.top = '0';
+      newIframe.style.left = '0';
+      newIframe.style.width = '100%';
+      newIframe.style.height = '100%';
+      newIframe.style.border = 'none';
+      newIframe.style.zIndex = '9999';
+      
+      // Replace existing content
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+        containerRef.current.appendChild(newIframe);
+      }
+      
+      // Hide placeholder
+      const placeholder = document.getElementById('youtube-placeholder');
+      if (placeholder) placeholder.style.display = 'none';
+    }
+  };
 
   return (
     <section ref={sectionRef} className="py-8 px-4 relative z-10">
@@ -83,7 +142,11 @@ const WhatIsAiSection = () => {
             </div>
             
             {/* Force iframe to be visible with high z-index */}
-            <div ref={containerRef} className="w-full h-full absolute inset-0 z-40">
+            <div 
+              ref={containerRef} 
+              className="w-full h-full absolute inset-0 z-40"
+              data-youtube-id="C2FAFvwwnL0"
+            >
               <iframe
                 src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
                 title="What is an AI Agent?"
@@ -98,7 +161,10 @@ const WhatIsAiSection = () => {
                   width: '100%',
                   height: '100%',
                   border: 'none',
-                  zIndex: 9999
+                  zIndex: 9999,
+                  opacity: 1,
+                  visibility: 'visible',
+                  display: 'block'
                 }}
                 onLoad={() => {
                   // Hide placeholder when video loads
@@ -107,7 +173,27 @@ const WhatIsAiSection = () => {
                 }}
               ></iframe>
             </div>
+            
+            {/* Emergency reload button */}
+            <button 
+              onClick={handleManualReload}
+              className="embed-emergency-button"
+            >
+              Reload Video
+            </button>
           </AspectRatio>
+          
+          {/* Direct fallback link */}
+          <div className="mt-2 text-center">
+            <a 
+              href="https://www.youtube.com/watch?v=C2FAFvwwnL0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-300 hover:text-purple-100 text-sm"
+            >
+              Video not loading? Watch on YouTube
+            </a>
+          </div>
         </div>
         
         {/* Button Grid in a single horizontal row */}

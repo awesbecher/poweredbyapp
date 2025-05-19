@@ -7,6 +7,7 @@
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.05);
   min-height: 100px;
+  z-index: 5;
 }
 
 /* Enhanced Tally specific styles */
@@ -18,7 +19,7 @@
   visibility: visible !important;
   opacity: 1 !important;
   position: relative !important;
-  z-index: 999 !important; /* Significantly increased z-index */
+  z-index: 9999 !important; /* Significantly increased z-index */
   background: transparent !important;
 }
 
@@ -26,8 +27,20 @@
 iframe {
   max-width: 100%;
   border: 0;
-  position: relative;
-  z-index: 1000; /* Maximum z-index to ensure visibility */
+  position: relative !important;
+  z-index: 9999 !important; /* Maximum z-index to ensure visibility */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Ensure all YouTube embeds are visible */
+iframe[src*="youtube"] {
+  position: relative !important;
+  z-index: 9999 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
 }
 
 /* Fix for dark backgrounds potentially covering elements */
@@ -37,24 +50,20 @@ iframe {
 }
 
 /* Ensure embeds are above backgrounds */
-.embed-container, .tally-embed, [data-tally-src] {
+.embed-container, 
+.tally-embed, 
+[data-tally-src] {
   position: relative;
-  z-index: 999; /* Significantly increased z-index */
+  z-index: 9990 !important; /* Significantly increased z-index */
 }
 
 /* Specific height overrides for different form types */
 .agent-tally-form iframe {
   min-height: 1400px !important; /* Increased height to ensure visibility */
-  z-index: 1000 !important; /* Maximum z-index to ensure visibility */
+  z-index: 9999 !important; /* Maximum z-index to ensure visibility */
 }
 
-/* Force YouTube iframes to be visible */
-iframe[src*="youtube"] {
-  position: relative !important;
-  z-index: 1000 !important; /* Maximum z-index to ensure visibility */
-}
-
-/* New rule to ensure embedded content is always on top */
+/* Global rule to force embed visibility */
 body .tally-embed iframe,
 body iframe[src*="youtube"],
 body [data-tally-src],
@@ -72,5 +81,49 @@ body [data-tally-src] iframe {
 .from-deep-purple,
 .bg-gradient-to-b[class*="from-deep-purple"],
 [class*="bg-"] {
-  background-color: transparent !important; 
+  position: relative;
+  z-index: 1;
+}
+
+/* Emergency styles to force visibility */
+.tally-loader,
+.youtube-loading-placeholder {
+  z-index: 9980 !important;
+}
+
+/* Add emergency visibility button */
+.embed-emergency-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(139, 92, 246, 0.8);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 10000;
+  display: none;
+}
+
+/* Make button appear after a delay if iframe is still not visible */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes showEmergencyButton {
+    to { display: block; }
+  }
+  
+  .embed-container:hover .embed-emergency-button {
+    animation: showEmergencyButton 0s 8s forwards;
+  }
+}
+
+/* Add styles that reset any opacity=0, display=none or visibility=hidden used on iframes */
+iframe[style*="opacity: 0"],
+iframe[style*="display: none"],
+iframe[style*="visibility: hidden"] {
+  opacity: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+  z-index: 9999 !important;
 }
