@@ -94,6 +94,7 @@ export function refreshYouTube() {
           newIframe.className = ytIframe.className;
           newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
           newIframe.allowFullscreen = true;
+          // Removed 'importance' attribute as it's not standard
           newIframe.style.cssText = ytIframe.style.cssText;
           newIframe.style.position = 'relative';
           newIframe.style.zIndex = '30';
@@ -136,6 +137,8 @@ export function createYouTubeEmbed(elementSelector: string, videoId: string) {
     iframe.height = '100%';
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     iframe.allowFullscreen = true;
+    iframe.setAttribute('loading', 'eager');
+    // Removed 'importance' attribute
     iframe.style.position = 'absolute';
     iframe.style.top = '0';
     iframe.style.left = '0';
@@ -198,4 +201,3 @@ export function createYouTubeEmbed(elementSelector: string, videoId: string) {
     console.error('Error creating YouTube embed:', e);
   }
 }
-

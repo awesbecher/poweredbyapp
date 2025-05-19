@@ -94,9 +94,8 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       const iframe = containerRef.current.querySelector('iframe');
       
       if (iframe) {
-        // Set essential attributes and styling
+        // Set essential attributes and styling - removed 'importance' attribute
         iframe.setAttribute('loading', 'eager');
-        iframe.setAttribute('importance', 'high');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.setAttribute('allowFullscreen', 'true');
         iframe.style.position = 'relative';
@@ -142,4 +141,3 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
   
   return { containerRef };
 };
-

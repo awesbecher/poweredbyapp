@@ -43,7 +43,7 @@ const WhatIsAiSection = () => {
                 allowFullScreen
                 className="w-full h-full"
                 loading="eager"
-                importance="high"
+                // Removed the 'importance' attribute as it's not a standard HTML attribute for iframes
                 style={{
                   position: 'absolute',
                   top: 0,
@@ -139,4 +139,3 @@ const WhatIsAiSection = () => {
 };
 
 export default WhatIsAiSection;
-
