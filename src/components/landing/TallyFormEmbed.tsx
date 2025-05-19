@@ -1,136 +1,55 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useEmbed } from "@/hooks/useEmbed";
-import { forceEmbedsVisibility, initializeAllEmbeds } from "@/utils/embedManager/embedInitializer";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from 'lucide-react';
 
 interface TallyFormEmbedProps {
   src: string;
-  height: string;
+  height?: string;
   additionalOptions?: Record<string, string>;
 }
 
-const TallyFormEmbed = ({ src, height, additionalOptions }: TallyFormEmbedProps) => {
+/**
+ * TallyFormEmbed component for embedding Tally forms with enhanced reliability
+ * Leverages specialized hooks and utilities for handling embeds
+ */
+const TallyFormEmbed = ({ 
+  src, 
+  height = '350', 
+  additionalOptions = {} 
+}: TallyFormEmbedProps) => {
   const tallyOptions = {
-    src,
     type: 'tally' as const,
+    src,
     height,
-    additionalOptions: additionalOptions || {}
+    additionalOptions
   };
   
+  // Use the refactored embed hook for better maintainability
   const { containerRef } = useEmbed(tallyOptions);
   
-  // Force iframe visibility after component mount with multiple attempts
-  useEffect(() => {
-    const forceVisibility = () => {
-      if (containerRef.current) {
-        const iframe = containerRef.current.querySelector('iframe');
-        if (iframe) {
-          iframe.style.position = 'relative';
-          iframe.style.zIndex = '9999';
-          iframe.style.opacity = '1';
-          iframe.style.visibility = 'visible';
-          iframe.style.display = 'block';
-          iframe.style.background = 'transparent';
-          
-          // Hide any loader once iframe is loaded
-          const loader = containerRef.current.querySelector('.tally-loader');
-          if (loader) {
-            loader.remove();
-          }
-        } else {
-          // If no iframe exists, create one directly
-          const directIframe = document.createElement('iframe');
-          directIframe.src = tallyOptions.src;
-          directIframe.width = '100%';
-          directIframe.height = tallyOptions.height;
-          directIframe.style.border = 'none';
-          directIframe.style.width = '100%';
-          directIframe.style.minHeight = `${tallyOptions.height}px`;
-          directIframe.style.position = 'relative';
-          directIframe.style.zIndex = '9999';
-          directIframe.style.opacity = '1';
-          directIframe.style.visibility = 'visible';
-          directIframe.style.display = 'block';
-          
-          // Remove any existing content and add the iframe
-          containerRef.current.innerHTML = '';
-          containerRef.current.appendChild(directIframe);
-          console.log('Emergency direct iframe creation for Tally form');
-        }
-      }
-    };
-    
-    // Add emergency button after a delay if iframe still doesn't appear
-    const addEmergencyButton = () => {
-      if (containerRef.current && !containerRef.current.querySelector('iframe')) {
-        const button = document.createElement('button');
-        button.className = 'bg-purple-600 text-white px-4 py-2 rounded-md mt-4';
-        button.textContent = 'Click to Load Form';
-        button.onclick = () => {
-          // Create iframe directly
-          const directIframe = document.createElement('iframe');
-          directIframe.src = tallyOptions.src;
-          directIframe.width = '100%';
-          directIframe.height = tallyOptions.height;
-          directIframe.style.border = 'none';
-          directIframe.style.width = '100%';
-          directIframe.style.minHeight = `${tallyOptions.height}px`;
-          directIframe.style.position = 'relative';
-          directIframe.style.zIndex = '9999';
-          
-          // Add the iframe to container
-          if (containerRef.current) {
-            containerRef.current.innerHTML = '';
-            containerRef.current.appendChild(directIframe);
-          }
-          
-          // Remove the button
-          button.remove();
-        };
-        
-        // Add button to container
-        containerRef.current.appendChild(button);
-      }
-    };
-    
-    // Apply multiple times to ensure it catches
-    setTimeout(forceVisibility, 300);
-    setTimeout(forceVisibility, 800);
-    setTimeout(forceVisibility, 1500);
-    setTimeout(forceVisibility, 3000);
-    setTimeout(forceVisibility, 6000);
-    
-    // Make sure global embed visibility is also triggered
-    setTimeout(forceEmbedsVisibility, 500);
-    setTimeout(forceEmbedsVisibility, 2000);
-    setTimeout(forceEmbedsVisibility, 5000);
-    
-    // Add emergency button as a last resort
-    setTimeout(addEmergencyButton, 7000);
-    
-    // Also trigger global embed initialization
-    setTimeout(initializeAllEmbeds, 1000);
-    setTimeout(initializeAllEmbeds, 4000);
-  }, [containerRef, tallyOptions.src, tallyOptions.height]);
-
-  // Function to handle manual reload of form
+  // Handle manual reload of form
   const handleManualReload = () => {
     if (containerRef.current) {
+      // Clear container and create a fresh iframe
+      containerRef.current.innerHTML = '';
+      
+      // Create new iframe with proper attributes
       const iframe = document.createElement('iframe');
-      iframe.src = tallyOptions.src;
+      iframe.src = src;
       iframe.width = '100%';
-      iframe.height = tallyOptions.height;
+      iframe.height = height;
       iframe.style.border = 'none';
       iframe.style.width = '100%';
-      iframe.style.minHeight = `${tallyOptions.height}px`;
+      iframe.style.minHeight = `${height}px`;
       iframe.style.position = 'relative';
       iframe.style.zIndex = '9999';
       iframe.style.opacity = '1';
       iframe.style.visibility = 'visible';
       iframe.style.display = 'block';
       
-      // Clear container and add new iframe
-      containerRef.current.innerHTML = '';
+      // Add the iframe to container
       containerRef.current.appendChild(iframe);
       console.log('Manual Tally form reload executed');
     }
@@ -138,23 +57,30 @@ const TallyFormEmbed = ({ src, height, additionalOptions }: TallyFormEmbedProps)
 
   return (
     <div 
-      ref={containerRef} 
-      className="tally-embed bg-transparent min-h-[350px] w-full relative z-30"
-      style={{ 
-        position: 'relative',
-        zIndex: 30,
-        backgroundColor: 'transparent'
-      }}
-      data-tally-src={tallyOptions.src}
-      data-tally-height={tallyOptions.height}
+      className="relative"
     >
+      <div
+        ref={containerRef}
+        className="tally-embed bg-transparent w-full relative z-30"
+        style={{ minHeight: `${height}px` }}
+        data-tally-src={src}
+        data-tally-height={height}
+        {...Object.entries(additionalOptions).reduce((acc, [key, value]) => {
+          return { ...acc, [`data-tally-${key}`]: value };
+        }, {})}
+      />
+      
       {/* Emergency reload button */}
-      <button 
+      <Button
         onClick={handleManualReload}
-        className="embed-emergency-button"
+        variant="outline"
+        size="sm"
+        className="absolute top-0 right-0 bg-white/10 hover:bg-white/20 text-white text-xs p-2 z-50"
+        title="Force reload form"
       >
-        Force Reload Form
-      </button>
+        <RefreshCw className="h-4 w-4" />
+        <span className="sr-only">Reload Form</span>
+      </Button>
     </div>
   );
 };

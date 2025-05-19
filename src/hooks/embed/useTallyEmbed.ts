@@ -9,6 +9,7 @@ export interface TallyEmbedOptions extends EmbedOptions {
 
 /**
  * Custom hook specifically for Tally form embeds
+ * Handles initialization, visibility, and fallback mechanisms
  */
 export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: TallyEmbedOptions) => {
   const { containerRef, applyBaseStyles, createDirectIframe } = useEmbedCommon();
@@ -16,7 +17,7 @@ export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: T
   useEffect(() => {
     if (!containerRef.current) return;
     
-    // Apply base styles and configuration
+    // Apply base styles and configure container
     applyBaseStyles();
     
     // Configure container with Tally-specific data attributes
@@ -28,32 +29,28 @@ export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: T
       containerRef.current?.setAttribute(`data-tally-${key}`, value);
     });
     
-    // Clear any existing loader elements
-    const existingLoader = containerRef.current.querySelector('.tally-loader');
-    if (existingLoader) {
-      containerRef.current.removeChild(existingLoader);
-    }
-    
     // Initialize the Tally form using the embedManager
     setTimeout(() => embedManager.loadTally(), 100);
     
-    // Set up multiple retry attempts with increasing delays
+    // Set up retry attempts with increasing delays
     const retryTimes = [800, 1500, 3000, 5000];
     
-    // Create direct iframe fallbacks with increasing delays
-    const fallbackTimers = retryTimes.map((delay, index) => {
+    // Create retry attempts with increasing delays
+    const retryTimers = retryTimes.map((delay, index) => {
       return setTimeout(() => {
         if (!containerRef.current || containerRef.current.querySelector('iframe')) return;
         
+        // For first attempt, just try reloading
         if (index === 0) {
           embedManager.loadTally();
           return;
         }
         
-        // Direct iframe injection as ultimate fallback
+        // For subsequent attempts, try direct injection
         console.log(`Attempt ${index + 1}: Direct Tally iframe injection`);
         const iframe = createDirectIframe(src, `${height}px`);
-        if (iframe) {
+        if (iframe && containerRef.current) {
+          // Set Tally-specific properties
           iframe.title = 'Tally Form';
           iframe.style.backgroundColor = 'transparent';
           
@@ -61,13 +58,30 @@ export const useTallyEmbed = ({ src, height = '350', additionalOptions = {} }: T
           const existingIframe = containerRef.current.querySelector('iframe');
           if (existingIframe) containerRef.current.removeChild(existingIframe);
           
+          // Add the new iframe
           containerRef.current.appendChild(iframe);
         }
       }, delay);
     });
     
+    // Ensure forms are visible after all content is loaded
+    const visibilityTimer = setTimeout(() => {
+      if (containerRef.current) {
+        const iframe = containerRef.current.querySelector('iframe');
+        if (iframe) {
+          iframe.style.opacity = '1';
+          iframe.style.visibility = 'visible';
+          iframe.style.position = 'relative';
+          iframe.style.zIndex = '9999';
+        }
+      }
+    }, 2000);
+    
     // Cleanup timers on unmount
-    return () => fallbackTimers.forEach(timer => clearTimeout(timer));
+    return () => {
+      retryTimers.forEach(timer => clearTimeout(timer));
+      clearTimeout(visibilityTimer);
+    };
   }, [src, height, additionalOptions]);
   
   return { containerRef };
