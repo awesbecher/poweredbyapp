@@ -21,8 +21,8 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
     
     // Ensure container has proper styling with very high z-index
     containerRef.current.style.position = 'relative';
-    containerRef.current.style.zIndex = '50'; // Increased from 15 to 50
-    containerRef.current.style.backgroundColor = 'transparent'; // Ensure background is transparent
+    containerRef.current.style.zIndex = '50';
+    containerRef.current.style.backgroundColor = 'transparent';
     
     // Configure container with appropriate data attributes
     if (type === 'tally') {
@@ -44,7 +44,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       const loadingDiv = document.createElement('div');
       loadingDiv.className = 'tally-loader';
       loadingDiv.style.position = 'relative';
-      loadingDiv.style.zIndex = '40'; // Increased from 10 to 40
+      loadingDiv.style.zIndex = '40';
       loadingDiv.style.backgroundColor = 'transparent';
       loadingDiv.innerHTML = `
         <div style="display:flex;justify-content:center;align-items:center;height:100px;width:100%">
@@ -77,7 +77,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
           iframe.style.minHeight = `${height}px`;
           iframe.style.overflow = 'hidden';
           iframe.style.position = 'relative';
-          iframe.style.zIndex = '60'; // Increased from 30 to 60
+          iframe.style.zIndex = '60';
           iframe.style.backgroundColor = 'transparent';
           
           // Remove loader and append iframe
@@ -95,12 +95,12 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       const iframe = containerRef.current.querySelector('iframe');
       
       if (iframe) {
-        // Set essential attributes and styling - removed 'importance' attribute
+        // Set essential attributes and styling
         iframe.setAttribute('loading', 'eager');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.setAttribute('allowFullscreen', 'true');
         iframe.style.position = 'relative';
-        iframe.style.zIndex = '60'; // Increased from 30 to 60
+        iframe.style.zIndex = '60';
         
         // If iframe already exists, refresh it
         const currentSrc = iframe.getAttribute('src') || '';
@@ -119,7 +119,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       // Ensure the placeholder has proper z-index if it exists
       const placeholder = document.getElementById('youtube-placeholder');
       if (placeholder) {
-        placeholder.style.zIndex = '45'; // Increased from 25 to 45 (below iframe but above other elements)
+        placeholder.style.zIndex = '45';
       }
     }
     

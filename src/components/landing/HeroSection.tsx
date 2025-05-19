@@ -27,7 +27,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
   const { containerRef } = useEmbed(tallyOptions);
 
   return (
-    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5"> {/* Added explicit z-index */}
+    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left column: Headline */}
@@ -55,7 +55,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           </div>
           
           {/* Right column: Tally.so Embed with improved loading and visibility */}
-          <div className="flex flex-col relative z-20"> {/* Increased z-index from 10 to 20 */}
+          <div className="flex flex-col relative z-20">
             {/* Tally form container with explicit z-index management */}
             <div 
               ref={containerRef} 
