@@ -1,76 +1,76 @@
-
 import React, { useEffect, useRef } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { useEmbed } from '@/hooks/useEmbed';
-import { forceEmbedsVisibility } from '@/utils/embedManager/embedInitializer';
 
 const WhatIsAiSection = () => {
-  const youtubeOptions = {
-    type: 'youtube' as const,
-    src: 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency',
-  };
-  
-  const { containerRef } = useEmbed(youtubeOptions);
+  const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   
   // Force YouTube iframe visibility with multiple attempts
   useEffect(() => {
-    const forceYouTubeVisibility = () => {
-      if (containerRef.current) {
-        const iframe = containerRef.current.querySelector('iframe');
-        if (iframe) {
-          iframe.style.position = 'absolute';
-          iframe.style.top = '0';
-          iframe.style.left = '0';
-          iframe.style.width = '100%';
-          iframe.style.height = '100%';
-          iframe.style.zIndex = '9999';
-          iframe.style.border = 'none';
-          iframe.style.opacity = '1';
-          iframe.style.visibility = 'visible';
-          iframe.style.display = 'block';
-          
-          // Hide placeholder when video loads
-          const placeholder = document.getElementById('youtube-placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        } else {
-          // Direct iframe injection as fallback
-          const newIframe = document.createElement('iframe');
-          newIframe.src = 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency';
-          newIframe.title = "What is an AI Agent?";
-          newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-          newIframe.allowFullscreen = true;
-          newIframe.setAttribute('loading', 'eager');
-          newIframe.style.position = 'absolute';
-          newIframe.style.top = '0';
-          newIframe.style.left = '0';
-          newIframe.style.width = '100%';
-          newIframe.style.height = '100%';
-          newIframe.style.border = 'none';
-          newIframe.style.zIndex = '9999';
-          newIframe.style.opacity = '1';
-          newIframe.style.visibility = 'visible';
-          newIframe.style.display = 'block';
-          
-          // Make sure container is ready
-          if (containerRef.current) {
-            containerRef.current.appendChild(newIframe);
-          }
-        }
+    const createAndInjectYouTubeIframe = () => {
+      if (!containerRef.current) return;
+      
+      // Check if iframe already exists
+      const existingIframe = containerRef.current.querySelector('iframe');
+      
+      // If iframe exists and is loaded properly, just ensure it's visible
+      if (existingIframe && existingIframe.contentWindow) {
+        existingIframe.style.position = 'absolute';
+        existingIframe.style.top = '0';
+        existingIframe.style.left = '0';
+        existingIframe.style.width = '100%';
+        existingIframe.style.height = '100%';
+        existingIframe.style.border = 'none';
+        existingIframe.style.zIndex = '9999';
+        existingIframe.style.opacity = '1';
+        existingIframe.style.visibility = 'visible';
+        existingIframe.style.display = 'block';
+        
+        // Hide placeholder when video exists
+        const placeholder = document.getElementById('youtube-placeholder');
+        if (placeholder) placeholder.style.display = 'none';
+        
+        return;
       }
+      
+      // Clear container before injecting
+      if (existingIframe) {
+        containerRef.current.removeChild(existingIframe);
+      }
+      
+      // Create new iframe with all necessary attributes
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=' + window.location.origin;
+      iframe.title = "What is an AI Agent?";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.style.position = 'absolute';
+      iframe.style.top = '0';
+      iframe.style.left = '0';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.zIndex = '9999';
+      iframe.style.opacity = '1';
+      iframe.style.visibility = 'visible';
+      iframe.style.display = 'block';
+      
+      // Add the iframe to container
+      containerRef.current.appendChild(iframe);
+      
+      // Hide placeholder
+      const placeholder = document.getElementById('youtube-placeholder');
+      if (placeholder) placeholder.style.display = 'none';
     };
     
     // Multiple attempts with increasing delays
-    setTimeout(forceYouTubeVisibility, 300);
-    setTimeout(forceYouTubeVisibility, 800);
-    setTimeout(forceYouTubeVisibility, 1500);
-    setTimeout(forceYouTubeVisibility, 3000);
-    setTimeout(forceEmbedsVisibility, 2000);
-    setTimeout(forceEmbedsVisibility, 5000);
+    setTimeout(createAndInjectYouTubeIframe, 300);
+    setTimeout(createAndInjectYouTubeIframe, 1000);
+    setTimeout(createAndInjectYouTubeIframe, 3000);
     
-    // Add emergency button if video still fails to load
+    // Show fallback after timeout
     setTimeout(() => {
       if (containerRef.current && !containerRef.current.querySelector('iframe[src]')) {
         const placeholder = document.getElementById('youtube-placeholder');
@@ -89,30 +89,33 @@ const WhatIsAiSection = () => {
           `;
         }
       }
-    }, 6000);
-  }, [containerRef]);
+    }, 5000);
+  }, []);
 
   // Function to handle manual reload of video
   const handleManualReload = () => {
     if (containerRef.current) {
-      const newIframe = document.createElement('iframe');
-      newIframe.src = 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency';
-      newIframe.title = "What is an AI Agent?";
-      newIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-      newIframe.allowFullscreen = true;
-      newIframe.style.position = 'absolute';
-      newIframe.style.top = '0';
-      newIframe.style.left = '0';
-      newIframe.style.width = '100%';
-      newIframe.style.height = '100%';
-      newIframe.style.border = 'none';
-      newIframe.style.zIndex = '9999';
+      // Clear container
+      containerRef.current.innerHTML = '';
       
-      // Replace existing content
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-        containerRef.current.appendChild(newIframe);
-      }
+      // Create new iframe with all necessary attributes
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=' + window.location.origin;
+      iframe.title = "What is an AI Agent?";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.style.position = 'absolute';
+      iframe.style.top = '0';
+      iframe.style.left = '0';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.zIndex = '9999';
+      iframe.style.opacity = '1';
+      iframe.style.visibility = 'visible';
+      
+      // Add the iframe to container
+      containerRef.current.appendChild(iframe);
       
       // Hide placeholder
       const placeholder = document.getElementById('youtube-placeholder');
@@ -132,55 +135,45 @@ const WhatIsAiSection = () => {
         
         {/* Enhanced YouTube embed with improved visibility */}
         <div className="max-w-4xl mx-auto mb-8 relative z-20">
-          <AspectRatio ratio={16 / 9} className="bg-transparent rounded-xl overflow-hidden embed-container">
-            {/* Persistent placeholder that will be managed by the embedManager */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-30" id="youtube-placeholder">
+          <AspectRatio ratio={16 / 9} className="bg-black rounded-xl overflow-hidden embed-container">
+            {/* Placeholder that shows while video is loading */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10" id="youtube-placeholder">
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-purple-500 animate-spin mx-auto"></div>
                 <div className="text-white text-lg mt-4">Loading video...</div>
               </div>
             </div>
             
-            {/* Force iframe to be visible with high z-index */}
+            {/* Container for direct iframe injection */}
             <div 
               ref={containerRef} 
-              className="w-full h-full absolute inset-0 z-40"
-              data-youtube-id="C2FAFvwwnL0"
-            >
-              <iframe
-                src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
-                title="What is an AI Agent?"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-                loading="eager"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  zIndex: 9999,
-                  opacity: 1,
-                  visibility: 'visible',
-                  display: 'block'
-                }}
-                onLoad={() => {
-                  // Hide placeholder when video loads
-                  const placeholder = document.getElementById('youtube-placeholder');
-                  if (placeholder) placeholder.style.display = 'none';
-                }}
-              ></iframe>
-            </div>
+              className="absolute inset-0 z-20"
+              style={{
+                width: '100%',
+                height: '100%'
+              }}
+            />
             
             {/* Emergency reload button */}
             <button 
               onClick={handleManualReload}
-              className="embed-emergency-button"
+              className="absolute bottom-4 right-4 bg-purple-600/80 text-white text-sm px-3 py-1 rounded z-30 hover:bg-purple-600"
             >
               Reload Video
             </button>
+            
+            {/* Backup direct iframe */}
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/C2FAFvwwnL0?origin=https://poweredby.agency"
+              title="What is an AI Agent?"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full border-0 z-10"
+              loading="eager"
+              style={{
+                zIndex: 9990
+              }}
+            ></iframe>
           </AspectRatio>
           
           {/* Direct fallback link */}

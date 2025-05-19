@@ -1,41 +1,9 @@
 
-/* Global styles for embedded content */
-.embed-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.05);
-  min-height: 100px;
-  z-index: 5;
-}
-
-/* Enhanced Tally specific styles */
-.tally-embed {
-  width: 100% !important;
-  min-height: 350px !important;
-  border: none !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 9999 !important; /* Significantly increased z-index */
-  background: transparent !important;
-}
-
-/* Make sure any iframe fits properly with proper z-index */
-iframe {
-  max-width: 100%;
-  border: 0;
-  position: relative !important;
-  z-index: 9999 !important; /* Maximum z-index to ensure visibility */
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-}
-
-/* Ensure all YouTube embeds are visible */
-iframe[src*="youtube"] {
+/* Global embed visibility override styles */
+iframe[src*="youtube"],
+iframe[src*="tally"],
+.tally-embed iframe,
+[data-tally-src] iframe {
   position: relative !important;
   z-index: 9999 !important;
   opacity: 1 !important;
@@ -43,54 +11,33 @@ iframe[src*="youtube"] {
   display: block !important;
 }
 
-/* Fix for dark backgrounds potentially covering elements */
-.bg-gradient-to-b {
-  position: relative;
-  z-index: 1;
-}
-
-/* Ensure embeds are above backgrounds */
-.embed-container, 
-.tally-embed, 
+/* Tally form specific styles */
+.tally-embed,
 [data-tally-src] {
-  position: relative;
-  z-index: 9990 !important; /* Significantly increased z-index */
-}
-
-/* Specific height overrides for different form types */
-.agent-tally-form iframe {
-  min-height: 1400px !important; /* Increased height to ensure visibility */
-  z-index: 9999 !important; /* Maximum z-index to ensure visibility */
-}
-
-/* Global rule to force embed visibility */
-body .tally-embed iframe,
-body iframe[src*="youtube"],
-body [data-tally-src],
-body [data-tally-src] iframe {
+  min-height: 350px !important;
   position: relative !important;
-  z-index: 9999 !important; /* Highest possible z-index */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
-  pointer-events: auto !important;
+  z-index: 9990 !important;
   background: transparent !important;
+  width: 100% !important;
+  display: block !important;
 }
 
-/* Reset any background colors that might be hiding content */
+/* YouTube container styles */
+.embed-container {
+  position: relative;
+  overflow: hidden;
+  background-color: black;
+  min-height: 100px;
+}
+
+/* Remove any background elements that could overlap embeds */
 .from-deep-purple,
-.bg-gradient-to-b[class*="from-deep-purple"],
-[class*="bg-"] {
+.bg-gradient-to-b[class*="from-deep-purple"] {
   position: relative;
   z-index: 1;
 }
 
-/* Emergency styles to force visibility */
-.youtube-loading-placeholder {
-  z-index: 9980 !important;
-}
-
-/* Add emergency visibility button */
+/* Emergency styles */
 .embed-emergency-button {
   position: absolute;
   bottom: 10px;
@@ -103,26 +50,4 @@ body [data-tally-src] iframe {
   font-size: 12px;
   cursor: pointer;
   z-index: 10000;
-  display: none;
-}
-
-/* Make button appear after a delay if iframe is still not visible */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes showEmergencyButton {
-    to { display: block; }
-  }
-  
-  .embed-container:hover .embed-emergency-button {
-    animation: showEmergencyButton 0s 8s forwards;
-  }
-}
-
-/* Add styles that reset any opacity=0, display=none or visibility=hidden used on iframes */
-iframe[style*="opacity: 0"],
-iframe[style*="display: none"],
-iframe[style*="visibility: hidden"] {
-  opacity: 1 !important;
-  display: block !important;
-  visibility: visible !important;
-  z-index: 9999 !important;
 }
