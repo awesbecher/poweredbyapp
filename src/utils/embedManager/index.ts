@@ -6,5 +6,5 @@
 
 export { embedManager } from './core';
 export { loadTally, injectTallyForms } from './tallyUtils';
-export { refreshYouTube } from './youtubeUtils';
+export { refreshYouTube } from './youtube';
 export { setupObserver } from './observerUtils';
