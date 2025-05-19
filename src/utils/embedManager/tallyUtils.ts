@@ -146,7 +146,7 @@ export function injectTallyForms() {
         containerEl.removeChild(existingIframe);
       }
       
-      // Prepare container and add loading state
+      // Prepare container 
       prepareContainer(containerEl, height);
       
       // Create and configure iframe
@@ -187,30 +187,7 @@ function prepareContainer(container: HTMLElement, height: string) {
   container.style.opacity = '1';
   container.style.visibility = 'visible';
   
-  // Add a loading state if it doesn't exist
-  if (!container.querySelector('.tally-loader')) {
-    addLoader(container);
-  }
-}
-
-/**
- * Add loading indicator to container
- */
-function addLoader(container: HTMLElement) {
-  const loader = document.createElement('div');
-  loader.className = 'tally-loader';
-  loader.innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:center;height:100px;width:100%">
-      <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;animation:tally-spin 1s linear infinite"></div>
-    </div>
-    <style>
-      @keyframes tally-spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  `;
-  container.appendChild(loader);
+  // Removing loader creation code
 }
 
 /**
@@ -226,7 +203,7 @@ function createTallyIframe(src: string, height: string, container: HTMLElement):
   iframe.style.width = '100%';
   iframe.style.minHeight = `${height}px`;
   iframe.style.overflow = 'hidden';
-  iframe.style.opacity = '0'; // Start hidden until loaded
+  iframe.style.opacity = '1'; // Changed from 0 to 1 to be visible immediately
   iframe.style.position = 'relative';
   iframe.style.zIndex = '9999'; // Highest possible z-index
   iframe.style.backgroundColor = 'transparent'; // Keep background transparent
@@ -234,10 +211,9 @@ function createTallyIframe(src: string, height: string, container: HTMLElement):
   // Handle iframe load event
   iframe.onload = () => {
     console.log(`Tally iframe loaded: ${src}`);
-    // Remove loader and show form
+    // Remove loader if it exists
     const loader = container.querySelector('.tally-loader');
     if (loader) container.removeChild(loader);
-    iframe.style.opacity = '1';
   };
   
   return iframe;

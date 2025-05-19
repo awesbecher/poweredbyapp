@@ -86,7 +86,6 @@ body [data-tally-src] iframe {
 }
 
 /* Emergency styles to force visibility */
-.tally-loader,
 .youtube-loading-placeholder {
   z-index: 9980 !important;
 }

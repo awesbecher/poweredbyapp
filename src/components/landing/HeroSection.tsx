@@ -186,13 +186,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
               data-tally-src={tallyOptions.src}
               data-tally-height={tallyOptions.height}
             >
-              {/* Initial loading state */}
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center p-6">
-                  <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-purple-500 animate-spin mx-auto"></div>
-                  <p className="mt-4 text-white">Loading form...</p>
-                </div>
-              </div>
+              {/* Removed loading indicator */}
               
               {/* Emergency reload button */}
               <button 

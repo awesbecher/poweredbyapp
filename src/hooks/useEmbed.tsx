@@ -40,29 +40,7 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
         containerRef.current.removeChild(existingLoader);
       }
       
-      // Add visible loading indicator with z-index management
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'tally-loader';
-      loadingDiv.style.position = 'absolute';
-      loadingDiv.style.inset = '0';
-      loadingDiv.style.zIndex = '9980';
-      loadingDiv.style.backgroundColor = 'transparent';
-      loadingDiv.style.display = 'flex';
-      loadingDiv.style.alignItems = 'center';
-      loadingDiv.style.justifyContent = 'center';
-      loadingDiv.innerHTML = `
-        <div style="text-align:center;background:rgba(0,0,0,0.5);padding:20px;border-radius:8px;">
-          <div style="border:3px solid #f3f3f3;border-top:3px solid #8B5CF6;border-radius:50%;width:30px;height:30px;margin:0 auto;animation:tally-spin 1s linear infinite"></div>
-          <p style="margin-top:15px;color:white">Loading ${type === 'tally' ? 'form' : 'video'}...</p>
-        </div>
-        <style>
-          @keyframes tally-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        </style>
-      `;
-      containerRef.current.appendChild(loadingDiv);
+      // Remove loading indicator code
       
       // Use embedManager to load the Tally form
       setTimeout(() => embedManager.loadTally(), 100);
@@ -83,10 +61,12 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
           iframe.style.position = 'relative';
           iframe.style.zIndex = '9999';
           iframe.style.backgroundColor = 'transparent';
+          iframe.style.opacity = '1'; // Make immediately visible
           
-          // Remove loader and append iframe
+          // Remove loader if it exists
           const loader = containerRef.current.querySelector('.tally-loader');
           if (loader) containerRef.current.removeChild(loader);
+          
           containerRef.current.appendChild(iframe);
           console.log('Emergency direct iframe injection for Tally form');
         }
@@ -107,10 +87,12 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
           iframe.style.position = 'relative';
           iframe.style.zIndex = '9999';
           iframe.style.backgroundColor = 'transparent';
+          iframe.style.opacity = '1'; // Make immediately visible
           
-          // Remove loader and append iframe
+          // Remove loader if it exists
           const loader = containerRef.current.querySelector('.tally-loader');
           if (loader) containerRef.current.removeChild(loader);
+          
           containerRef.current.appendChild(iframe);
           console.log('Second emergency attempt for Tally form');
         }
@@ -164,12 +146,6 @@ export const useEmbed = ({ type, src, height = '350', additionalOptions = {} }: 
       
       // Use embedManager to refresh YouTube videos
       setTimeout(() => embedManager.refreshYouTube(), 300);
-      
-      // Ensure the placeholder has proper z-index if it exists
-      const placeholder = document.getElementById('youtube-placeholder');
-      if (placeholder) {
-        placeholder.style.zIndex = '9980';
-      }
     }
     
     // Set up retry attempts with increasing delays

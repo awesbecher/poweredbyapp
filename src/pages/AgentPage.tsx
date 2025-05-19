@@ -87,6 +87,7 @@ const AgentPage: React.FC = () => {
               iframe.style.display = 'block';
               iframe.style.visibility = 'visible';
               iframe.style.overflow = 'hidden';
+              iframe.style.opacity = '1'; // Make immediately visible
               
               // Add load event to verify iframe loaded correctly
               iframe.onload = () => {
@@ -155,18 +156,12 @@ const AgentPage: React.FC = () => {
                     <AgentHeroContent />
                   </div>
                   
-                  {/* Right Column - Tally.so embed with loading indicator */}
+                  {/* Right Column - Tally.so embed - removing loading indicator */}
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
-                      {/* Loading indicator that stays visible longer */}
-                      <div className={`flex justify-center items-center h-[200px] ${!isLoading && formRef.current?.querySelector('iframe') ? 'hidden' : 'block'}`}>
-                        <div className="relative">
-                          <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-purple-500 animate-spin"></div>
-                          <p className="text-white mt-4">Loading form...</p>
-                        </div>
-                      </div>
+                      {/* Removed loading indicator */}
                       
                       {/* Tally form container with data attributes for direct injection */}
                       <div 
