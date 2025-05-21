@@ -20,7 +20,7 @@ const HeroHeadline = () => {
       </h1>
       
       {/* Updated subtitle text */}
-      <p className="text-base text-gray-200 max-w-xl">
+      <p className="text-lg text-gray-200 max-w-xl">
         Imagine AI agents that answer your calls, reply to your emails, send your texts, & automate your tasks. Tailored for SMBs, our solutions supercharge your workflows and wow your customers. Start your AI agent journey now.
       </p>
     </div>
