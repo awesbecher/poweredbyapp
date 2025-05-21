@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
@@ -25,43 +24,6 @@ const ensureTallyScript = () => {
       console.error('Error initializing Tally:', e);
     }
   }
-};
-
-// Direct iframe injection for all Tally forms
-const injectTallyForms = () => {
-  document.querySelectorAll('[data-tally-src]').forEach((container) => {
-    const containerEl = container as HTMLElement;
-    const src = containerEl.getAttribute('data-tally-src') || '';
-    const height = containerEl.getAttribute('data-tally-height') || '500';
-    
-    if (!src) return;
-    
-    // Check if iframe already exists and is working
-    const existingIframe = containerEl.querySelector('iframe');
-    if (existingIframe && existingIframe.contentWindow) {
-      existingIframe.style.opacity = '1';
-      existingIframe.style.visibility = 'visible';
-      return;
-    }
-    
-    // Create iframe with all necessary attributes
-    const iframe = document.createElement('iframe');
-    iframe.src = src;
-    iframe.width = '100%';
-    iframe.height = height;
-    iframe.style.border = 'none';
-    iframe.style.width = '100%';
-    iframe.style.minHeight = height + 'px';
-    iframe.style.position = 'relative';
-    iframe.style.zIndex = '9999';
-    iframe.style.opacity = '1';
-    iframe.style.visibility = 'visible';
-    
-    // Replace existing content
-    containerEl.innerHTML = '';
-    containerEl.appendChild(iframe);
-    console.log(`Directly injected Tally iframe for: ${src}`);
-  });
 };
 
 // Initialize YouTube embeds
@@ -109,24 +71,12 @@ const forceEmbedsVisibility = () => {
     (iframe as HTMLElement).style.display = 'block';
     (iframe as HTMLElement).style.zIndex = '9999';
   });
-  
-  // Force Tally forms to be visible
-  document.querySelectorAll('[data-tally-src]').forEach((container) => {
-    const iframe = container.querySelector('iframe');
-    if (iframe) {
-      iframe.style.opacity = '1';
-      iframe.style.visibility = 'visible';
-      iframe.style.display = 'block';
-      iframe.style.zIndex = '9999';
-    }
-  });
 };
 
 // Initialize everything
 const initializeEmbeds = () => {
   console.log('Initializing embeds from main.tsx');
   ensureTallyScript();
-  injectTallyForms();
   initializeYouTube();
   forceEmbedsVisibility();
 };

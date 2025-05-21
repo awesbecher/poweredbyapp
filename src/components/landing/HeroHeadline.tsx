@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const HeroHeadline = () => {
@@ -17,7 +16,7 @@ const HeroHeadline = () => {
                          inline-block transform transition-all duration-500 hover:scale-[1.02] pb-2">
           Smarter Work,
         </span>
-        <span className="block mt-1 text-white">Powered by AI Agents</span>
+        <span className="block mt-1 text-white">Powered by AI</span>
       </h1>
       
       {/* Updated subtitle text */}

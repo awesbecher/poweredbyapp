@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,8 +9,8 @@ interface TallyFormEmbedProps {
 }
 
 /**
- * TallyFormEmbed component for embedding Tally forms with direct iframe approach
- * Uses multiple embedding strategies for maximum reliability
+ * TallyFormEmbed component for embedding Tally forms.
+ * Relies on data-attributes for Tally's main script to initialize the embed.
  */
 const TallyFormEmbed = ({ 
   src, 
@@ -27,70 +26,33 @@ const TallyFormEmbed = ({
     containerRef.current.style.position = 'relative';
     containerRef.current.style.minHeight = `${height}px`;
     containerRef.current.style.width = '100%';
-    containerRef.current.style.zIndex = '9999';
+    containerRef.current.style.zIndex = '9999'; // Keep z-index high for visibility
     containerRef.current.style.backgroundColor = 'transparent';
     containerRef.current.style.display = 'block';
     
-    // First attempt - Add data attributes for Tally's widget
+    // Set data attributes for Tally's widget to pick up
     containerRef.current.setAttribute('data-tally-src', src);
     containerRef.current.setAttribute('data-tally-height', height);
     
-    // Add any additional options
+    // Add any additional options as data-tally-* attributes
     Object.entries(additionalOptions).forEach(([key, value]) => {
-      containerRef.current?.setAttribute(`data-tally-${key}`, value);
+      containerRef.current?.setAttribute(`data-tally-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
     });
     
-    // Attempt to use global Tally object directly
-    if ((window as any).Tally) {
-      try {
-        (window as any).Tally.loadEmbeds();
-        console.log('Tally form initialized via global object');
-      } catch (e) {
-        console.error('Error loading Tally via global object:', e);
-      }
+    // Attempt to trigger Tally's loadEmbeds if Tally object is present and has not been done by main.tsx yet.
+    // This is a safety net, main.tsx should ideally handle this.
+    if ((window as any).Tally && typeof (window as any).Tally.loadEmbeds === 'function') {
+      // Delay slightly to ensure DOM attributes are set and Tally script has a chance to run from main.tsx
+      setTimeout(() => {
+        try {
+          console.log('TallyFormEmbed: Attempting to call Tally.loadEmbeds() as a fallback.');
+          (window as any).Tally.loadEmbeds();
+        } catch (e) {
+          console.error('TallyFormEmbed: Error calling Tally.loadEmbeds():', e);
+        }
+      }, 50); // Short delay
     }
-    
-    // Direct iframe injection as a reliable fallback
-    const directInject = () => {
-      if (!containerRef.current) return;
-      
-      // Check if iframe already exists and is working
-      const existingIframe = containerRef.current.querySelector('iframe');
-      if (existingIframe && existingIframe.contentWindow) {
-        existingIframe.style.opacity = '1';
-        existingIframe.style.visibility = 'visible';
-        return;
-      }
-      
-      // Clear container for fresh iframe
-      containerRef.current.innerHTML = '';
-      
-      // Create iframe with all necessary attributes
-      const iframe = document.createElement('iframe');
-      iframe.src = src;
-      iframe.width = '100%';
-      iframe.height = height;
-      iframe.title = 'Tally Form';
-      iframe.style.border = 'none';
-      iframe.style.width = '100%';
-      iframe.style.minHeight = height + 'px';
-      iframe.style.overflow = 'hidden';
-      iframe.style.position = 'relative';
-      iframe.style.zIndex = '9999';
-      iframe.style.backgroundColor = 'transparent';
-      iframe.style.opacity = '1';
-      iframe.style.visibility = 'visible';
-      iframe.style.display = 'block';
-      
-      // Add the iframe to container
-      containerRef.current.appendChild(iframe);
-      console.log('Direct iframe injection completed');
-    };
-    
-    // Multiple attempts with increasing delays
-    setTimeout(directInject, 100);
-    setTimeout(directInject, 1000);
-    setTimeout(directInject, 2500);
+
   }, [src, height, additionalOptions]);
   
   // Handle manual reload button click
@@ -124,7 +86,7 @@ const TallyFormEmbed = ({
     <div className="relative">
       <div
         ref={containerRef}
-        className="tally-embed bg-transparent w-full relative z-30"
+        className="tally-embed bg-transparent w-full relative z-30" // Ensure class is present for potential global styling/selection
         style={{ minHeight: `${height}px` }}
       />
       
