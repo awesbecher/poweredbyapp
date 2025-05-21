@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/landing/Navbar';
@@ -7,12 +6,10 @@ import AgentHeroContent from '@/components/agent/AgentHeroContent';
 import ThankYouMessage from '@/components/agent/ThankYouMessage';
 import { Card } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import TallyFormEmbed from '@/components/landing/TallyFormEmbed';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const formRef = React.useRef<HTMLDivElement>(null);
   
   // Listen for messages from the Tally iframe with improved error handling
   useEffect(() => {
@@ -66,15 +63,12 @@ const AgentPage: React.FC = () => {
                     <AgentHeroContent />
                   </div>
                   
-                  {/* Right Column - Tally.so embed - removing loading indicator */}
+                  {/* Right Column */}
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
                     <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
-                      <TallyFormEmbed
-                        src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&dynamicHeight=1"
-                        height="1500"
-                      />
+                      {/* Removed TallyFormEmbed component */}
                     </Card>
                   </div>
                 </div>
