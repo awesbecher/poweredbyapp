@@ -6,6 +6,7 @@ import AgentHeroContent from '@/components/agent/AgentHeroContent';
 import ThankYouMessage from '@/components/agent/ThankYouMessage';
 import { Card } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ensureTallyScript } from '../main';
 
 const AgentPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -29,6 +30,11 @@ const AgentPage: React.FC = () => {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
+  }, []);
+
+  // Ensure Tally script is loaded
+  useEffect(() => {
+    ensureTallyScript();
   }, []);
 
   // Set loading to false after a short delay
@@ -67,8 +73,19 @@ const AgentPage: React.FC = () => {
                   <div className="md:w-[40%] bg-black rounded-r-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark"></div>
                     
-                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-16">
-                      {/* Removed TallyFormEmbed component */}
+                    <Card className="bg-black border-0 shadow-none rounded-none h-full py-16 flex flex-col justify-center items-center">
+                      {/* New Tally Form Embed */}
+                      <iframe
+                        data-tally-src="https://tally.so/embed/wvp76X?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+                        loading="lazy"
+                        width="100%"
+                        height="200" // Tally's dynamicHeight might adjust this
+                        frameBorder="0"
+                        marginHeight={0}
+                        marginWidth={0}
+                        title="Landing Page | Agent Form"
+                        className="w-full h-full min-h-[400px] flex-grow"
+                      ></iframe>
                     </Card>
                   </div>
                 </div>

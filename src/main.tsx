@@ -4,7 +4,7 @@ import './index.css';
 import './styles/embedStyles.css';
 
 // Ensure Tally script is loaded
-const ensureTallyScript = () => {
+export const ensureTallyScript = () => {
   // Check if Tally script exists
   if (!(window as any).Tally && !document.querySelector('script[src*="tally.so/widgets/embed.js"]')) {
     console.log('Loading Tally script directly');
@@ -18,7 +18,7 @@ const ensureTallyScript = () => {
   // Initialize if Tally object exists
   if ((window as any).Tally) {
     try {
-      // (window as any).Tally.loadEmbeds(); // Temporarily commented out
+      (window as any).Tally.loadEmbeds();
       console.log('Tally forms initialized from main.tsx');
     } catch (e) {
       console.error('Error initializing Tally:', e);
