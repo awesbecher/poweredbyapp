@@ -2,7 +2,7 @@ import React from 'react';
 
 const HeroHeadline = () => {
   return (
-    <div className="space-y-6"> 
+    <div className="flex flex-col items-start space-y-6"> 
       {/* Purple pill text box */}
       <div className="inline-block px-6 py-3 rounded-full bg-purple-800/20 backdrop-blur-sm border border-purple-500/30 mb-4">
         <p className="text-sm text-purple-300 font-medium">
