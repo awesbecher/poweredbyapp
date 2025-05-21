@@ -42,28 +42,28 @@ const HeroSection: React.FC<HeroSectionProps> = ({ form, formStep, onSubmit, ind
         <div className="flex flex-wrap justify-center gap-4 my-12 max-w-4xl mx-auto">
           <Button 
             variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            className="bg-gradient-to-br from-brand-purple via-brand-purple-dark to-deep-purple text-white font-medium border border-purple-400/60 hover:opacity-90 hover:scale-[1.03] transform transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-purple-500/40 py-3 px-6 rounded-lg"
             onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
           >
             AI Voice
           </Button>
           <Button 
             variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            className="bg-gradient-to-br from-brand-purple via-brand-purple-dark to-deep-purple text-white font-medium border border-purple-400/60 hover:opacity-90 hover:scale-[1.03] transform transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-purple-500/40 py-3 px-6 rounded-lg"
             onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
           >
             AI Receptionist
           </Button>
           <Button 
             variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            className="bg-gradient-to-br from-brand-purple via-brand-purple-dark to-deep-purple text-white font-medium border border-purple-400/60 hover:opacity-90 hover:scale-[1.03] transform transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-purple-500/40 py-3 px-6 rounded-lg"
             onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
           >
             AI Email
           </Button>
           <Button 
             variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            className="bg-gradient-to-br from-brand-purple via-brand-purple-dark to-deep-purple text-white font-medium border border-purple-400/60 hover:opacity-90 hover:scale-[1.03] transform transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-purple-500/40 py-3 px-6 rounded-lg"
             onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
           >
             AI SMS-Text
