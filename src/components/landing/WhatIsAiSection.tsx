@@ -189,38 +189,6 @@ const WhatIsAiSection = () => {
           </div>
         </div>
         
-        {/* Button Grid in a single horizontal row */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-4xl mx-auto">
-          <Button 
-            variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
-            onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
-          >
-            AI Voice
-          </Button>
-          <Button 
-            variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
-            onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
-          >
-            AI Receptionist
-          </Button>
-          <Button 
-            variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
-            onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
-          >
-            AI Email
-          </Button>
-          <Button 
-            variant="default" 
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
-            onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
-          >
-            AI SMS-Text
-          </Button>
-        </div>
-        
         <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 transition-transform hover:scale-105">
             <div className="mb-5 h-16 flex items-center justify-center">

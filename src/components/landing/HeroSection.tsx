@@ -2,6 +2,7 @@ import React from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import HeroHeadline from './HeroHeadline';
+import { Button } from '@/components/ui/button';
 
 interface HeroSectionProps {
   form: UseFormReturn<z.infer<any>>;
@@ -36,6 +37,39 @@ const HeroSection: React.FC<HeroSectionProps> = ({ form, formStep, onSubmit, ind
             </iframe>
           </div>
         </div>
+
+        {/* Button Grid */}
+        <div className="flex flex-wrap justify-center gap-4 my-12 max-w-4xl mx-auto">
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/voice-chat"}
+          >
+            AI Voice
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/ai-receptionist"}
+          >
+            AI Receptionist
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/email-agent"}
+          >
+            AI Email
+          </Button>
+          <Button 
+            variant="default" 
+            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium"
+            onClick={() => window.location.href = "https://www.poweredby.agency/text-agent"}
+          >
+            AI SMS-Text
+          </Button>
+        </div>
+        
       </div>
     </section>
   );
