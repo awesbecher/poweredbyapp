@@ -18,7 +18,7 @@ const ensureTallyScript = () => {
   // Initialize if Tally object exists
   if ((window as any).Tally) {
     try {
-      (window as any).Tally.loadEmbeds();
+      // (window as any).Tally.loadEmbeds(); // Temporarily commented out
       console.log('Tally forms initialized from main.tsx');
     } catch (e) {
       console.error('Error initializing Tally:', e);

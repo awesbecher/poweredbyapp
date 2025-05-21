@@ -12,6 +12,8 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps) => {
+  const tallyFormSrc = "https://tally.so/embed/wgrjdd?alignLeft=1"; // Temporarily removed &dynamicHeight=1
+
   return (
     <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
       <div className="container mx-auto">
@@ -23,7 +25,7 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           <div className="flex flex-col relative z-20">
             {/* Tally form container with explicit z-index management */}
             <TallyFormEmbed 
-              src='https://tally.so/embed/wgrjdd?alignLeft=1&dynamicHeight=1'
+              src={tallyFormSrc}
               height='350'
               additionalOptions={{ 
                 alignLeft: '1', 

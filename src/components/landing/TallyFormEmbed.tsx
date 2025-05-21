@@ -1,85 +1,75 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 interface TallyFormEmbedProps {
   src: string;
-  height?: string;
+  height: string;
   additionalOptions?: Record<string, string>;
 }
 
-/**
- * TallyFormEmbed component for embedding Tally forms.
- * Relies on data-attributes for Tally's main script to initialize the embed.
- */
-const TallyFormEmbed = ({ 
-  src, 
-  height = '350', 
-  additionalOptions = {} 
-}: TallyFormEmbedProps) => {
+const TallyFormEmbed: React.FC<TallyFormEmbedProps> = ({ src, height, additionalOptions = {} }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+  const [attempt, setAttempt] = useState(0);
+  const maxAttempts = 10;
+
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    // Apply direct styles to container
-    container.style.position = 'relative';
-    container.style.minHeight = `${height}px`;
-    container.style.width = '100%';
-    container.style.zIndex = '9999'; // Keep z-index high for visibility
-    container.style.backgroundColor = 'transparent';
-    container.style.display = 'block';
-    
-    // Set data attributes for Tally's widget to pick up
-    container.setAttribute('data-tally-src', src);
-    container.setAttribute('data-tally-height', height);
-    
-    // Add any additional options as data-tally-* attributes
-    Object.entries(additionalOptions).forEach(([key, value]) => {
-      container.setAttribute(`data-tally-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
-    });
-    
-    let attempts = 0;
-    const maxAttempts = 10; // Try for up to 5 seconds (10 * 500ms)
-
     const tryLoad = () => {
       if ((window as any).Tally && typeof (window as any).Tally.loadEmbeds === 'function') {
-        try {
-          (window as any).Tally.loadEmbeds();
-          console.log(`TallyFormEmbed (${src}): Successfully called Tally.loadEmbeds().`);
-        } catch (e) {
-          console.error(`TallyFormEmbed (${src}): Error calling Tally.loadEmbeds():`, e);
-        }
+        console.log(`TallyFormEmbed (${src}): Successfully called Tally.loadEmbeds().`);
+        (window as any).Tally.loadEmbeds();
+      } else if (attempt < maxAttempts) {
+        console.log(`TallyFormEmbed (${src}): Tally not ready, attempt ${attempt + 1}. Retrying in 500ms.`);
+        setTimeout(() => {
+          setAttempt(prevAttempt => prevAttempt + 1);
+        }, 500);
       } else {
-        attempts++;
-        if (attempts < maxAttempts) {
-          console.log(`TallyFormEmbed (${src}): Tally not ready, attempt ${attempts}. Retrying in 500ms.`);
-          setTimeout(tryLoad, 500);
-        } else {
-          console.error(`TallyFormEmbed (${src}): Tally not ready after ${maxAttempts} attempts. Form may not load.`);
-        }
+        console.warn(`TallyFormEmbed (${src}): Tally not ready after ${maxAttempts} attempts. Form may not load.`);
       }
     };
 
-    // Initial attempt to load, slightly delayed to ensure attributes are set and DOM is stable.
-    setTimeout(tryLoad, 100); // Start checks after 100ms
+    // Initial attempt
+    tryLoad();
 
-  }, [src, height, additionalOptions]);
-  
+  }, [src, attempt, maxAttempts]); // Rerun if src or attempt changes
+
+  // Construct data attributes
+  const dataAttributes: Record<string, string> = {
+    'data-tally-src': src,
+    'data-tally-height': height,
+    'data-tally-width': '100%', // Default to 100% width
+    'data-tally-align-left': additionalOptions.alignLeft || '1',
+    'data-tally-hide-title': additionalOptions.hideTitle || '0',
+    'data-tally-emoji-text': additionalOptions.emojiText || '👋',
+    'data-tally-emoji-animation': additionalOptions.emojiAnimation || 'wave',
+    // Add other common Tally options if needed, ensuring they are strings
+    'data-tally-transparent-background': additionalOptions.transparentBackground || '0', // Explicitly set to 0 unless overridden
+    'data-tally-dynamic-height': additionalOptions.dynamicHeight || '0', // Explicitly set to 0 unless overridden
+  };
+
+  // Filter out any additionalOptions that are not standard or might conflict if not explicitly handled
+  for (const key in additionalOptions) {
+    if (key.startsWith('data-tally-')) { // Allow any custom data-tally-* attributes
+      dataAttributes[key] = additionalOptions[key];
+    } else if (['alignLeft', 'hideTitle', 'emojiText', 'emojiAnimation', 'transparentBackground', 'dynamicHeight'].includes(key)) {
+      // Already handled, do nothing
+    } else {
+      // For other known Tally params that don't start with data-tally-, map them
+      // Example: if Tally had a param like 'layout', it would be: 'data-tally-layout': additionalOptions.layout
+      // For now, we only handle explicitly known ones or pass through data-tally-*
+    }
+  }
+
   return (
     <div className="relative">
       <div
         ref={containerRef}
-        className="tally-embed bg-transparent w-full relative z-30"
-        style={{
-          minHeight: `${height}px`,
-          border: '2px solid red', // Temporary debug border
-          backgroundColor: 'yellow', // Temporary debug background
-          padding: '10px' // Temporary debug padding
-        }}
+        className="tally-embed w-full relative z-30" // Removed bg-transparent, Tally should handle this
+        style={{ minHeight: `${height}px` }} // Keep minHeight for layout purposes
+        {...dataAttributes} // Spread all Tally data attributes here
       >
-        Tally form for "{src}" should load here. If you see this, the Tally script hasn't replaced this container.
+        {/* Tally script will replace this div's content or an iframe will be inserted here */}
+        {/* Placeholder content removed to allow Tally to fully control this div */}
       </div>
     </div>
   );
