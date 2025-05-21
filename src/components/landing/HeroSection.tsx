@@ -20,11 +20,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ form, formStep, onSubmit, ind
         {/* Main content area with text and form - Grid for md, Flex for lg */}
         <div className="grid md:grid-cols-2 lg:flex lg:flex-row lg:gap-x-16 items-start mb-16">
           {/* Left column: Headline - Takes more space on lg screens */}
-          <div className="md:col-span-1 lg:w-3/5">
+          <div className="lg:w-3/5">
             <HeroHeadline />
           </div>
           {/* Right column: Tally.so Embed - Takes less space on lg screens */}
-          <div className="md:col-span-1 lg:w-2/5 mt-10 md:mt-0 flex flex-col relative z-20">
+          <div className="md:col-span-1 lg:w-2/5 mt-10 md:mt-0 flex flex-col relative z-20 bg-black/30 backdrop-blur-sm p-6 md:p-8 rounded-xl shadow-2xl border border-white/10">
+            <h3 className="text-2xl font-bold text-white mb-4 text-center md:text-left">Get Started Today!</h3>
             <iframe 
               data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
               loading="lazy" 
