@@ -14,7 +14,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ form, formStep, onSubmit, ind
   const videoId = "nJ7yDAbGCiM"; // Your YouTube video ID
 
   return (
-    <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
+    <section className="pt-32 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
       <div className="container mx-auto">
         {/* Main content area with text and form - Grid for md, Flex for lg */}
         <div className="grid md:grid-cols-2 lg:flex lg:flex-row lg:gap-x-16 items-start mb-16">
