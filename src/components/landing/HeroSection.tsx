@@ -16,13 +16,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ form, formStep, onSubmit, ind
   return (
     <section className="pt-28 pb-10 px-4 md:px-12 lg:px-24 relative z-5">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
-          {/* Left column: Headline */}
-          <div className="lg:w-1/2">
+        {/* Main content area with text and form - Grid for md, Flex for lg */}
+        <div className="grid md:grid-cols-2 lg:flex lg:flex-row lg:gap-x-16 items-start mb-16">
+          {/* Left column: Headline - Takes more space on lg screens */}
+          <div className="md:col-span-1 lg:w-3/5">
             <HeroHeadline />
           </div>
-          {/* Right column: Tally.so Embed */}
-          <div className="lg:w-1/2 mt-10 lg:mt-0 flex flex-col relative z-20">
+          {/* Right column: Tally.so Embed - Takes less space on lg screens */}
+          <div className="md:col-span-1 lg:w-2/5 mt-10 md:mt-0 flex flex-col relative z-20">
             <iframe 
               data-tally-src="https://tally.so/embed/wgrjdd?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
               loading="lazy" 
