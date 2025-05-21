@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -24,11 +23,10 @@ const HeroSection = ({ form, formStep, onSubmit, industries }: HeroSectionProps)
           <div className="flex flex-col relative z-20">
             {/* Tally form container with explicit z-index management */}
             <TallyFormEmbed 
-              src='https://tally.so/embed/wgrjdd?alignLeft=1&transparentBackground=1&dynamicHeight=1'
+              src='https://tally.so/embed/wgrjdd?alignLeft=1&dynamicHeight=1'
               height='350'
               additionalOptions={{ 
                 alignLeft: '1', 
-                transparentBackground: '1', 
                 dynamicHeight: '1'
               }}
             />
