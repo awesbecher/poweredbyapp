@@ -71,9 +71,16 @@ const TallyFormEmbed = ({
     <div className="relative">
       <div
         ref={containerRef}
-        className="tally-embed bg-transparent w-full relative z-30" // Ensure class is present for potential global styling/selection
-        style={{ minHeight: `${height}px` }}
-      />
+        className="tally-embed bg-transparent w-full relative z-30"
+        style={{
+          minHeight: `${height}px`,
+          border: '2px solid red', // Temporary debug border
+          backgroundColor: 'yellow', // Temporary debug background
+          padding: '10px' // Temporary debug padding
+        }}
+      >
+        Tally form for "{src}" should load here. If you see this, the Tally script hasn't replaced this container.
+      </div>
     </div>
   );
 };
