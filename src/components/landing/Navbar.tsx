@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -67,7 +66,7 @@ const Navbar: React.FC = () => {
           </div>
           
           {/* Action Button */}
-          <div className="flex-shrink-0">
+          <div className="hidden md:flex flex-shrink-0 items-center">
             <div className="flex items-center gap-2">
               <Link to="/agent">
                 <Button 

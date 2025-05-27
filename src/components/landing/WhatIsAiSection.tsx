@@ -125,13 +125,13 @@ const WhatIsAiSection = () => {
 
   return (
     <section ref={sectionRef} className="py-8 px-4 relative z-10">
-      <Separator className="max-w-6xl mx-auto bg-white/20 mb-12" />
+      <Separator className="max-w-6xl mx-auto bg-white/20 mb-8 md:mb-12" />
       
       <div className="container mx-auto max-w-6xl text-center">
-        <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6">
           What's an AI Agent?
         </h2>
-        <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-12"></div>
+        <div className="w-24 h-1 bg-[#8B5CF6] mx-auto mb-8 md:mb-12"></div>
         
         {/* Enhanced YouTube embed with improved visibility */}
         <div className="max-w-4xl mx-auto mb-8 relative z-20">
@@ -190,7 +190,7 @@ const WhatIsAiSection = () => {
         </div>
         
         <div className="mt-12 grid md:grid-cols-3 gap-8 text-center">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 transition-transform hover:scale-105">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-6 transition-transform hover:scale-105">
             <div className="mb-5 h-16 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
@@ -199,10 +199,12 @@ const WhatIsAiSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-3 text-white">Always Listening</h3>
-            <p className="text-gray-300">AI agents can process incoming messages 24/7, ensuring no customer inquiry goes unanswered.</p>
+            <p className="text-gray-300 text-sm">
+              AI agents can process incoming messages 24/7, ensuring no customer inquiry goes unanswered.
+            </p>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 transition-transform hover:scale-105">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-6 transition-transform hover:scale-105">
             <div className="mb-5 h-16 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -210,10 +212,12 @@ const WhatIsAiSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-3 text-white">Instant Responses</h3>
-            <p className="text-gray-300">Your AI agent responds immediately to customer queries, delivering information without any wait time.</p>
+            <p className="text-gray-300 text-sm">
+              Your AI agent responds immediately to customer queries, delivering information without any wait time.
+            </p>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 transition-transform hover:scale-105">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-6 transition-transform hover:scale-105">
             <div className="mb-5 h-16 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
@@ -224,7 +228,9 @@ const WhatIsAiSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-3 text-white">Trained On Your Data</h3>
-            <p className="text-gray-300">Custom AI agents leverage your business knowledge to provide accurate and tailored responses.</p>
+            <p className="text-gray-300 text-sm">
+              Custom AI agents leverage your business knowledge to provide accurate and tailored responses.
+            </p>
           </div>
         </div>
       </div>

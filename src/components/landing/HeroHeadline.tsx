@@ -2,9 +2,9 @@ import React from 'react';
 
 const HeroHeadline = () => {
   return (
-    <div className="flex flex-col items-start space-y-6"> 
+    <div className="flex flex-col items-start space-y-4 md:space-y-6"> 
       {/* Purple pill text box */}
-      <div className="inline-block px-6 py-3 rounded-full bg-purple-800/20 backdrop-blur-sm border border-purple-500/30 mb-4">
+      <div className="inline-block px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-purple-800/20 backdrop-blur-sm border border-purple-500/30 mb-4">
         <p className="text-sm text-purple-300 font-medium">
           AI agents that work 24/7 so you don't have to.
         </p>
@@ -20,7 +20,7 @@ const HeroHeadline = () => {
       </h1>
       
       {/* Updated subtitle text */}
-      <p className="text-lg text-gray-200 max-w-xl">
+      <p className="text-base md:text-lg text-gray-200 max-w-xl">
         Imagine AI agents that answer your calls, reply to your emails, send your texts, & automate your tasks. Tailored for SMBs, our solutions supercharge your workflows and wow your customers. Start your AI agent journey now.
       </p>
     </div>
